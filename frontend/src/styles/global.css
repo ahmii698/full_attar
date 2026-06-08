@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #000000;
+  color: #ffffff;
+}
+
+.app {
+  min-height: 100vh;
+  background: #000000;
+}
+
+.main {
+  padding-top: 65px;
+  min-height: calc(100vh - 65px);
+}
+
+.gold {
+  background: linear-gradient(135deg, #d4af37, #ffd700, #f9a602);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Common Button Styles */
+.explore-btn {
+  background: linear-gradient(135deg, #d4af37, #ffd700);
+  border: none;
+  padding: 14px 42px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.explore-btn:hover {
+  transform: translateY(-2px);
+  gap: 15px;
+}
+
+/* Common Section Styles */
+.products-section {
+  padding: 60px 60px 40px;
+}
+
+.section-heading {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-heading h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.heading-divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #d4af37, transparent);
+  margin: 10px auto;
+}
+
+.section-heading p {
+  color: rgba(255,255,255,0.5);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+}
+
+/* Common Shop Header */
+.shop-header {
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #0a0a0a, #000000);
+}
+
+.shop-header h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #ffffff, #d4af37);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.shop-header p {
+  color: rgba(255,255,255,0.5);
+  font-size: 16px;
+}

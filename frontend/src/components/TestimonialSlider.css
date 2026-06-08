@@ -1,0 +1,172 @@
+/* ========== TESTIMONIAL SLIDER ========== */
+.testimonials-section {
+  padding: 60px;
+  background: #050505;
+  position: relative;
+}
+
+.testimonial-slider {
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+  padding: 20px 40px;
+}
+
+.testimonial-slide {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(212,175,55,0.1);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  transition: 0.3s;
+  animation: fadeInSlide 0.5s ease-out;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.testimonial-slide .quote-icon {
+  font-size: 50px;
+  color: #d4af37;
+  opacity: 0.3;
+  margin-bottom: 15px;
+  font-family: 'Georgia', serif;
+}
+
+.testimonial-slide .testimonial-text {
+  color: rgba(255,255,255,0.8);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  font-size: 15px;
+  font-style: italic;
+}
+
+.testimonial-slide .testimonial-rating {
+  color: #d4af37;
+  margin-bottom: 15px;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+
+.testimonial-slide .testimonial-name {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.testimonial-slide .testimonial-location {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 5px;
+}
+
+.testimonial-slide .testimonial-date {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* Navigation Buttons */
+.slider-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(212,175,55,0.1);
+  border: 1px solid rgba(212,175,55,0.3);
+  color: #d4af37;
+  font-size: 30px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slider-nav:hover {
+  background: rgba(212,175,55,0.2);
+  border-color: #d4af37;
+}
+
+.slider-nav.prev {
+  left: -20px;
+}
+
+.slider-nav.next {
+  right: -20px;
+}
+
+/* Dots Indicator */
+.slider-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.slider-dot {
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.3);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.slider-dot.active {
+  background: #d4af37;
+  width: 25px;
+  border-radius: 10px;
+}
+
+.slider-dot:hover {
+  background: rgba(212,175,55,0.7);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .testimonials-section {
+    padding: 40px 20px;
+  }
+  
+  .testimonial-slider {
+    padding: 10px 30px;
+  }
+  
+  .testimonial-slide {
+    padding: 25px;
+  }
+  
+  .slider-nav.prev {
+    left: -10px;
+  }
+  
+  .slider-nav.next {
+    right: -10px;
+  }
+  
+  .slider-nav {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+  }
+  
+  .testimonial-slide .testimonial-text {
+    font-size: 13px;
+  }
+  
+  .testimonial-slide .testimonial-name {
+    font-size: 16px;
+  }
+}

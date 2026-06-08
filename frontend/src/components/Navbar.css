@@ -1,0 +1,389 @@
+/* IMPORTANT: Body ya main content ke liye - Navbar ki height handle karne ke liye */
+body {
+  padding-top: 100px;
+}
+
+/* Ya phir agar specific container hai to uske liye */
+.main-content,
+.hero-wrapper,
+.page-wrapper {
+  padding-top: 20px;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  background: #000000;
+  z-index: 1000;
+}
+
+/* ========== SIMPLE NATURAL LOGO - NO EXTRA EFFECTS ========== */
+.logo {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding-left: 15px;
+}
+
+.logo-img {
+  height: 120px;
+  width: auto;
+  max-width: 240px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.03);
+}
+
+.nav-links {
+  display: flex;
+  gap: 35px;
+  align-items: center;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #d4af37;
+}
+
+/* Nav Icons */
+.nav-icons {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.8);
+  transition: 0.3s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.icon-btn:hover {
+  color: #d4af37;
+}
+
+.wishlist-link, .cart-icon {
+  position: relative;
+}
+
+.cart-count {
+  position: absolute;
+  top: -10px;
+  right: -14px;
+  background: #d4af37;
+  color: #000000;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 50%;
+  min-width: 18px;
+  text-align: center;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* ========== USER MENU DROPDOWN ========== */
+.user-menu-container {
+  position: relative;
+}
+
+.user-btn {
+  cursor: pointer;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 12px;
+  width: 240px;
+  background: #0a0a0a;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 12px;
+  padding: 12px;
+  z-index: 100;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
+
+.user-info {
+  padding: 10px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  margin-bottom: 10px;
+}
+
+.user-name {
+  display: block;
+  font-weight: 700;
+  font-size: 15px;
+  color: #d4af37;
+}
+
+.user-email {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  word-break: break-all;
+}
+
+.user-dropdown a {
+  display: block;
+  padding: 10px 12px;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.user-dropdown a:hover {
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+}
+
+.logout-btn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 10px 12px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logout-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+}
+
+.mobile-logout-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  text-align: left;
+  padding: 8px 0;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* ========== MEGA MENU STYLES ========== */
+.mega-menu-container {
+  position: static;
+}
+
+.mega-trigger {
+  cursor: pointer;
+}
+
+.mega-menu.full-width {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #0a0a0a;
+  border: none;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 0;
+  padding: 25px 60px;
+  z-index: 999;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  margin-top: 0;
+}
+
+.mega-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #d4af37;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+  z-index: 1001;
+}
+
+.mega-close-btn:hover {
+  background: rgba(212, 175, 55, 0.2);
+  transform: scale(1.1);
+}
+
+.mega-menu-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.mega-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  margin-bottom: 0;
+}
+
+.mega-col h4 {
+  color: #d4af37;
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-weight: 700;
+  border-left: 3px solid #d4af37;
+  padding-left: 12px;
+}
+
+.mega-col ul {
+  list-style: none;
+}
+
+.mega-col li {
+  margin-bottom: 8px;
+}
+
+.mega-col a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 12px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.mega-col a:hover {
+  color: #d4af37;
+}
+
+/* ========== MOBILE MENU ========== */
+.mobile-menu {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  right: 0;
+  background: #0a0a0a;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 999;
+}
+
+.mobile-menu a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 10px 0;
+  font-weight: 500;
+}
+
+.mobile-menu .mobile-logout-btn {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  padding: 10px 0;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 992px) {
+  .navbar {
+    padding: 15px 30px;
+  }
+  .nav-links {
+    display: none;
+  }
+  .mobile-menu-btn {
+    display: block;
+  }
+  .mega-menu.full-width {
+    display: none;
+  }
+  .logo-img {
+    height: 90px;
+  }
+  body {
+    padding-top: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 12px 20px;
+  }
+  .nav-icons {
+    gap: 18px;
+  }
+  .logo-img {
+    height: 75px;
+  }
+  body {
+    padding-top: 65px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 10px 15px;
+  }
+  .nav-icons {
+    gap: 12px;
+  }
+  .icon-btn {
+    font-size: 18px;
+  }
+  .user-dropdown {
+    right: -60px;
+    width: 220px;
+  }
+  .logo-img {
+    height: 65px;
+  }
+  body {
+    padding-top: 55px;
+  }
+}

@@ -1,0 +1,244 @@
+.outlets-page {
+  min-height: 100vh;
+  background: #000000;
+}
+
+/* Hero Section */
+.outlets-hero {
+  background: #0a0a0a;
+  padding: 60px 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.outlets-hero-content h1 {
+  font-size: 48px;
+  margin-bottom: 15px;
+  color: #ffffff;
+}
+
+.outlets-hero-content p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+}
+
+/* Outlets Grid */
+.outlets-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+.outlets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+.outlet-card {
+  background: #111111;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 24px;
+  padding: 25px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.outlet-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+.outlet-card.selected {
+  border-color: #d4af37;
+  background: #1a1a1a;
+}
+
+.outlet-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.outlet-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #d4af37;
+}
+
+.outlet-card.selected .outlet-icon {
+  background: rgba(212, 175, 55, 0.2);
+  color: #ffd700;
+}
+
+.outlet-card-header h3 {
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.outlet-card.selected .outlet-card-header h3 {
+  color: #d4af37;
+}
+
+.outlet-details {
+  margin-bottom: 15px;
+}
+
+.outlet-details p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+}
+
+.outlet-details p svg {
+  color: #d4af37;
+  font-size: 14px;
+}
+
+.outlet-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.feature-tag {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  color: #d4af37;
+}
+
+.outlet-card.selected .feature-tag {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+.outlet-btn {
+  width: 100%;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #d4af37;
+  padding: 10px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.outlet-btn:hover {
+  background: rgba(212, 175, 55, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Map Section */
+.outlets-map-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 40px 80px;
+  text-align: center;
+}
+
+.outlets-map-section h3 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #d4af37;
+}
+
+.outlets-map-section > p {
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 25px;
+}
+
+.outlets-map-container {
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  margin-bottom: 20px;
+}
+
+.map-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(212, 175, 55, 0.1);
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 13px;
+  color: #d4af37;
+}
+
+.map-note svg {
+  color: #ffd700;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .outlets-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .outlets-container {
+    padding: 40px 20px;
+  }
+  
+  .outlets-hero-content h1 {
+    font-size: 36px;
+  }
+  
+  .outlets-map-section h3 {
+    font-size: 24px;
+  }
+  
+  .outlets-map-section {
+    padding: 30px 20px 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .outlets-hero {
+    padding: 40px 20px;
+  }
+  
+  .outlets-hero-content h1 {
+    font-size: 28px;
+  }
+  
+  .outlet-card {
+    padding: 20px;
+  }
+  
+  .outlet-card-header h3 {
+    font-size: 16px;
+  }
+  
+  .outlet-details p {
+    font-size: 12px;
+  }
+  
+  .feature-tag {
+    font-size: 10px;
+  }
+  
+  .outlets-map-section h3 {
+    font-size: 20px;
+  }
+}
