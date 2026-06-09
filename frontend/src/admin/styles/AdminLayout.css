@@ -1,0 +1,26 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #0a0a0a;
+}
+
+.admin-main {
+  flex: 1;
+  margin-left: 280px;
+  min-height: 100vh;
+}
+
+.admin-content {
+  padding: 30px;
+}
+
+/* Loading */
+.admin-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #d4af37;
+  font-size: 18px;
+}

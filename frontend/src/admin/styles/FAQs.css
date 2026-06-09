@@ -1,0 +1,74 @@
+.faqs-admin-page {
+  animation: fadeIn 0.3s ease;
+}
+
+.faq-form-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.faq-form-section h3 {
+  color: #d4af37;
+  margin-bottom: 20px;
+}
+
+.faq-list-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.faq-list-section h3 {
+  color: #d4af37;
+  margin-bottom: 20px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+}
+
+.status-badge.active {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.status-badge.inactive {
+  background: rgba(108, 117, 125, 0.2);
+  color: #6c757d;
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 11px;
+  margin: 0 3px;
+}
+
+.admin-btn-secondary {
+  background: rgba(108, 117, 125, 0.15);
+  color: #6c757d;
+  border: 1px solid #6c757d;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}

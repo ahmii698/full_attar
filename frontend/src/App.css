@@ -27,3 +27,21 @@
 @import './pages/LoginPage.css';
 @import './pages/ProfilePage.css';
 @import './pages/OrdersPage.css';
+
+/* ========== ADMIN PANEL STYLES ========== */
+@import './admin/styles/AdminLayout.css';
+@import './admin/styles/AdminSidebar.css';
+@import './admin/styles/AdminHeader.css';
+@import './admin/styles/AdminLogin.css';
+@import './admin/styles/Dashboard.css';
+@import './admin/styles/Products.css';
+@import './admin/styles/ProductForm.css';
+@import './admin/styles/BlogForm.css';
+@import './admin/styles/Blogs.css';
+@import './admin/styles/Orders.css';
+@import './admin/styles/Users.css';
+@import './admin/styles/Testimonials.css';
+@import './admin/styles/Contacts.css';
+@import './admin/styles/Subscribers.css';
+@import './admin/styles/FAQs.css';
+@import './admin/styles/Outlets.css';

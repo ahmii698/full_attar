@@ -9,10 +9,16 @@ class User extends Authenticatable
 {
     use HasFactory, HasApiTokens;
     
-    protected $table = 'users';            // YEH ADD KARO
-    protected $primaryKey = 'user_id';     // YEH ADD KARO
+    protected $table = 'users';
+    protected $primaryKey = 'user_id';
     protected $fillable = ['name', 'email', 'password', 'phone', 'address'];
     protected $hidden = ['password'];
     
-    public $timestamps = true;              // YEH ADD KARO
+    public $timestamps = true;
+    
+    // Add this relation
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id', 'user_id');
+    }
 }

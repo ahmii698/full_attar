@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { CartProvider } from './contexts/CartContext'
 import Navbar from './components/Navbar'
@@ -24,6 +24,28 @@ import OrdersPage from './pages/OrdersPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import FAQPage from './pages/FAQPage'
+
+// ========== ADMIN PANEL IMPORTS ==========
+import { AdminAuthProvider } from './admin/contexts/AdminAuthContext'
+import AdminLayout from './admin/components/AdminLayout'
+import AdminLogin from './admin/pages/AdminLogin'
+import Dashboard from './admin/pages/Dashboard'
+import Products from './admin/pages/Products'
+import ProductForm from './admin/pages/ProductForm'
+import Blogs from './admin/pages/Blogs'
+import BlogForm from './admin/pages/BlogForm'
+import Orders from './admin/pages/Orders'
+import Users from './admin/pages/Users'
+import Testimonials from './admin/pages/Testimonials'
+import Contacts from './admin/pages/Contacts'
+import Subscribers from './admin/pages/Subscribers'
+
+// ========== NEW ADMIN IMPORTS ==========
+import HeroSettings from './admin/pages/HeroSettings'
+import Banners from './admin/pages/Banners'
+import SiteSettings from './admin/pages/SiteSettings'
+import FAQs from './admin/pages/FAQs'
+import Outlets from './admin/pages/Outlets'
 
 function App() {
   return (
@@ -67,6 +89,64 @@ function App() {
         </div>
       </CartProvider>
     </AuthProvider>
+  )
+}
+
+// ========== SEPARATE ADMIN APP (outside main app) ==========
+export function AdminApp() {
+  return (
+    <AdminAuthProvider>
+      <Routes>
+        {/* Login page - no layout */}
+        <Route path="/login" element={<AdminLogin />} />
+        
+        {/* Admin pages with layout */}
+        <Route path="/" element={<AdminLayout />}>
+          {/* INDEX ROUTE - NOW GOES TO PRODUCTS, NOT DASHBOARD */}
+          <Route index element={<Navigate to="products" />} />
+          
+          {/* Products */}
+          <Route path="products" element={<Products />} />
+          <Route path="products/create" element={<ProductForm />} />
+          <Route path="products/edit/:id" element={<ProductForm />} />
+          
+          {/* Blogs */}
+          <Route path="blogs" element={<Blogs />} />
+          <Route path="blogs/create" element={<BlogForm />} />
+          <Route path="blogs/edit/:id" element={<BlogForm />} />
+          
+          {/* Orders */}
+          <Route path="orders" element={<Orders />} />
+          
+          {/* Users */}
+          <Route path="users" element={<Users />} />
+          
+          {/* Testimonials */}
+          <Route path="testimonials" element={<Testimonials />} />
+          
+          {/* Contacts */}
+          <Route path="contacts" element={<Contacts />} />
+          
+          {/* Subscribers */}
+          <Route path="subscribers" element={<Subscribers />} />
+          
+          {/* Outlets */}
+          <Route path="outlets" element={<Outlets />} />
+          
+          {/* FAQs */}
+          <Route path="faqs" element={<FAQs />} />
+          
+          {/* Hero Settings */}
+          <Route path="hero-settings" element={<HeroSettings />} />
+          
+          {/* Banners */}
+          <Route path="banners" element={<Banners />} />
+          
+          {/* Site Settings */}
+          <Route path="site-settings" element={<SiteSettings />} />
+        </Route>
+      </Routes>
+    </AdminAuthProvider>
   )
 }
 

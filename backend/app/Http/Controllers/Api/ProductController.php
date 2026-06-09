@@ -57,6 +57,13 @@ class ProductController extends Controller
         return response()->json($products);
     }
     
+    // Get deals - YEH METHOD ADD KARO
+    public function deals()
+    {
+        $products = Product::where('is_deal', 1)->get();
+        return response()->json($products);
+    }
+    
     // Get categories
     public function categories()
     {

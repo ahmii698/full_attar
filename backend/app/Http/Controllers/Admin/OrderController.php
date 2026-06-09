@@ -7,21 +7,18 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    // Get all orders
     public function index()
     {
-        $orders = Order::with('user')->latest()->get();
+        $orders = Order::with('user')->get();
         return response()->json($orders);
     }
-    
-    // Get single order
+
     public function show($id)
     {
         $order = Order::with('user', 'items')->findOrFail($id);
         return response()->json($order);
     }
-    
-    // Update order status
+
     public function updateStatus(Request $request, $id)
     {
         $order = Order::findOrFail($id);

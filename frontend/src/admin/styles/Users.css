@@ -1,0 +1,101 @@
+.users-admin-page {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.admin-page-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.admin-data-table-container {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 16px;
+  overflow-x: auto;
+}
+
+.admin-data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-data-table th {
+  text-align: left;
+  padding: 15px;
+  background: rgba(212, 175, 55, 0.05);
+  color: #d4af37;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-data-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+}
+
+.admin-data-table tr:hover td {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+.admin-btn-danger {
+  background: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.admin-btn-danger:hover {
+  background: #dc3545;
+  color: #ffffff;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.empty-state p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+}
+
+.admin-loading {
+  text-align: center;
+  padding: 50px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+  .admin-data-table th,
+  .admin-data-table td {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  
+  .admin-btn-danger {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+}

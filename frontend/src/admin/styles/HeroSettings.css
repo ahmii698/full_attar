@@ -1,0 +1,22 @@
+.hero-settings-page {
+  animation: fadeIn 0.3s ease;
+}
+
+.settings-form {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(212,175,55,0.1);
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.stats-section {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(212,175,55,0.1);
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.stats-section h3 {
+  color: #d4af37;
+  margin-bottom: 20px;
+}
