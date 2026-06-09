@@ -31,9 +31,6 @@ function AdminSidebar() {
           <i className="fas fa-bell"></i> Subscribers
         </NavLink>
         
-        {/* ========== NEW SECTION ========== */}
-        <div className="sidebar-divider"></div>
-        
         {/* Outlets LINK */}
         <NavLink to="/admin/outlets" className="nav-item">
           <i className="fas fa-store"></i> Outlets

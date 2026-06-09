@@ -28,7 +28,7 @@ function AdminLogin() {
       }
       localStorage.setItem('admin_token', 'mock-token-12345')
       localStorage.setItem('admin_data', JSON.stringify(mockAdmin))
-      navigate('/admin/dashboard')
+      navigate('/admin/products')  // ← YAHAN CHANGE KIYA (dashboard se products)
     } else {
       setError('Invalid email or password')
     }
@@ -37,7 +37,7 @@ function AdminLogin() {
     // Original API call - jab backend ready ho toh uncomment karna
     // const success = await login(email, password)
     // if (success) {
-    //   navigate('/admin/dashboard')
+    //   navigate('/admin/products')
     // } else {
     //   setError('Invalid email or password')
     // }

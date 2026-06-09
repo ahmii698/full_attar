@@ -60,13 +60,6 @@
   border-left-color: #d4af37;
 }
 
-/* Sidebar Divider */
-.sidebar-divider {
-  height: 1px;
-  background: rgba(212, 175, 55, 0.2);
-  margin: 15px 25px;
-}
-
 /* Scrollbar */
 .admin-sidebar::-webkit-scrollbar {
   width: 4px;
