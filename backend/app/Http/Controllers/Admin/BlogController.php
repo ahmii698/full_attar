@@ -21,20 +21,74 @@ class BlogController extends Controller
 
     public function store(Request $request)
     {
-        $blog = Blog::create($request->all());
-        return response()->json($blog, 201);
+        try {
+            $blog = Blog::create($request->all());
+            return response()->json($blog, 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function update(Request $request, $id)
     {
-        $blog = Blog::findOrFail($id);
-        $blog->update($request->all());
-        return response()->json($blog);
+        try {
+            $blog = Blog::find($id);
+            
+            if (!$blog) {
+                return response()->json(['error' => 'Blog not found'], 404);
+            }
+            
+            // Update fields
+            if ($request->has('title')) {
+                $blog->title = $request->title;
+            }
+            if ($request->has('category')) {
+                $blog->category = $request->category;
+            }
+            if ($request->has('excerpt')) {
+                $blog->excerpt = $request->excerpt;
+            }
+            if ($request->has('content')) {
+                $blog->content = $request->content;
+            }
+            if ($request->has('author')) {
+                $blog->author = $request->author;
+            }
+            if ($request->has('tags')) {
+                $blog->tags = $request->tags;
+            }
+            if ($request->has('image_url')) {
+                $blog->image_url = $request->image_url;
+            }
+            if ($request->has('date')) {
+                $blog->date = $request->date;
+            }
+            if ($request->has('read_time')) {
+                $blog->read_time = $request->read_time;
+            }
+            
+            $blog->save();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $blog
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function destroy($id)
     {
-        Blog::destroy($id);
-        return response()->json(['success' => true]);
+        try {
+            $blog = Blog::find($id);
+            if ($blog) {
+                $blog->delete();
+            }
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

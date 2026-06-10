@@ -8,9 +8,9 @@ class Blog extends Model
 {
     use HasFactory;
     
-    protected $table = 'blogs';              // YEH ADD KARO
-    protected $primaryKey = 'blog_id';       // YEH ADD KARO
+    protected $table = 'blogs';
+    protected $primaryKey = 'blog_id';
     protected $fillable = ['title', 'content', 'excerpt', 'image_url', 'category', 'tags', 'author', 'date', 'read_time'];
     
-    public $timestamps = true;               // YEH ADD KARO
+    public $timestamps = false;  // ← YEH CHANGE KARO
 }

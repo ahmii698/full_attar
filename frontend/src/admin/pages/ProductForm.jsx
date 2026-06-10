@@ -7,6 +7,7 @@ function ProductForm() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [isDuplicateMode, setIsDuplicateMode] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -26,6 +27,7 @@ function ProductForm() {
   const [image, setImage] = useState(null)
   const [preview, setPreview] = useState('')
   const [isEdit, setIsEdit] = useState(false)
+  const [originalImageUrl, setOriginalImageUrl] = useState('')
 
   useEffect(() => {
     if (id) {
@@ -57,12 +59,24 @@ function ProductForm() {
           description: product.description || ''
         })
         setPreview(product.image_url)
+        setOriginalImageUrl(product.image_url)
       }
     } catch (error) {
       console.error('Error fetching product:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleDuplicate = () => {
+    setIsDuplicateMode(true)
+    setIsEdit(false)
+    // Add " (Copy)" to the product name
+    setFormData(prev => ({
+      ...prev,
+      name: prev.name + ' (Copy)'
+    }))
+    // Keep the original image URL for preview
   }
 
   const handleChange = (e) => {
@@ -89,12 +103,18 @@ function ProductForm() {
     Object.keys(formData).forEach(key => {
       data.append(key, formData[key])
     })
+    
+    // Image handling - priority: new uploaded image > original image URL
     if (image) {
+      // User uploaded a new image
       data.append('image', image)
+    } else if (isDuplicateMode && originalImageUrl) {
+      // Duplicate mode: use the same image URL from original product
+      data.append('image_url', originalImageUrl)
     }
 
     try {
-      if (isEdit) {
+      if (isEdit && !isDuplicateMode) {
         await updateProduct(id, data)
       } else {
         await createProduct(data)
@@ -102,19 +122,46 @@ function ProductForm() {
       navigate('/admin/products')
     } catch (error) {
       console.error('Error saving product:', error)
-      alert('Error saving product')
+      alert('Error saving product: ' + (error.response?.data?.error || error.message))
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading && isEdit) return <div className="loading">Loading product...</div>
+  const handleCancelDuplicate = () => {
+    setIsDuplicateMode(false)
+    setIsEdit(true)
+    fetchProduct()
+  }
+
+  if (loading && isEdit && !isDuplicateMode) return <div className="loading">Loading product...</div>
 
   return (
     <div className="product-form">
       <div className="form-header">
-        <h2>{isEdit ? 'Edit Product' : 'Add New Product'}</h2>
-        <Link to="/admin/products" className="btn-secondary">Back to Products</Link>
+        <div>
+          <h2>
+            {isDuplicateMode 
+              ? 'Duplicate Product' 
+              : (isEdit ? 'Edit Product' : 'Add New Product')}
+          </h2>
+          {isEdit && !isDuplicateMode && (
+            <p className="duplicate-hint">You can duplicate this product to create a similar one</p>
+          )}
+        </div>
+        <div className="header-buttons">
+          {isEdit && !isDuplicateMode && (
+            <button type="button" onClick={handleDuplicate} className="btn-duplicate">
+              Duplicate Product
+            </button>
+          )}
+          {isDuplicateMode && (
+            <button type="button" onClick={handleCancelDuplicate} className="btn-cancel-duplicate">
+              Cancel Duplicate
+            </button>
+          )}
+          <Link to="/admin/products" className="btn-secondary">Back to Products</Link>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -129,6 +176,11 @@ function ProductForm() {
               className="form-control"
               required
             />
+            {isDuplicateMode && (
+              <small className="form-text text-info">
+                Product name has been modified. You can change it as needed.
+              </small>
+            )}
           </div>
 
           <div className="form-group">
@@ -236,11 +288,16 @@ function ProductForm() {
             {preview && (
               <div className="image-preview">
                 <img src={preview} alt="Preview" />
+                {isDuplicateMode && !image && (
+                  <small className="form-text text-info">
+                    Same image will be used from original product
+                  </small>
+                )}
               </div>
             )}
           </div>
 
-          {/* ========== DEAL FIELDS - ADDED ========== */}
+          {/* Deal Fields */}
           <div className="form-group checkbox-group">
             <label className="checkbox-label">
               <input
@@ -265,7 +322,7 @@ function ProductForm() {
                   className="form-control"
                   placeholder="e.g., 2100"
                 />
-                <small className="form-text">Original price after discount</small>
+                <small className="form-text">Price after discount</small>
               </div>
 
               <div className="form-group">
@@ -321,7 +378,9 @@ function ProductForm() {
 
         <div className="form-actions">
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Saving...' : (isEdit ? 'Update Product' : 'Create Product')}
+            {loading ? 'Saving...' : 
+              (isDuplicateMode ? 'Create Duplicate Product' : 
+                (isEdit ? 'Update Product' : 'Create Product'))}
           </button>
           <Link to="/admin/products" className="btn-secondary">Cancel</Link>
         </div>

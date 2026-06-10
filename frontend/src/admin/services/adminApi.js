@@ -1,7 +1,12 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api/admin'
+  baseURL: 'http://localhost:8000/api/admin',
+  withCredentials: true,  // Add this for CORS
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 })
 
 API.interceptors.request.use((config) => {
@@ -56,8 +61,8 @@ export const deleteContact = (id) => API.delete(`/contacts/${id}`)
 
 // ========== SUBSCRIBERS ==========
 export const getSubscribers = () => API.get('/subscribers')
-export const getSubscriber = (id) => API.get(`/subscribers/${id}`)  // ADD THIS
-export const toggleSubscriberStatus = (id, status) => API.put(`/subscribers/${id}/status`, { is_active: status })  // ADD THIS
+export const getSubscriber = (id) => API.get(`/subscribers/${id}`)
+export const toggleSubscriberStatus = (id, status) => API.put(`/subscribers/${id}/status`, { is_active: status })
 export const deleteSubscriber = (id) => API.delete(`/subscribers/${id}`)
 
 // ========== OUTLETS ==========

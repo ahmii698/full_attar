@@ -30,18 +30,32 @@ class TestimonialController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $testimonial = Testimonial::findOrFail($id);
-            $testimonial->update([
-                'user_name' => $request->user_name,
-                'user_location' => $request->user_location,
-                'rating' => $request->rating,
-                'review' => $request->review,
-                'date' => $request->date,
-                'is_approved' => $request->is_approved ?? $testimonial->is_approved
+            $testimonial = Testimonial::find($id);
+            
+            if (!$testimonial) {
+                return response()->json(['error' => 'Testimonial not found'], 404);
+            }
+            
+            // Direct update
+            $testimonial->user_name = $request->user_name;
+            $testimonial->user_location = $request->user_location;
+            $testimonial->rating = $request->rating;
+            $testimonial->review = $request->review;
+            $testimonial->date = $request->date;
+            
+            $testimonial->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Updated successfully',
+                'data' => $testimonial
             ]);
-            return response()->json($testimonial);
+            
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to update testimonial'], 500);
+            return response()->json([
+                'error' => $e->getMessage(),
+                'line' => $e->getLine()
+            ], 500);
         }
     }
 

@@ -124,8 +124,10 @@ Route::prefix('admin')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
     
-    // Testimonials Management
+    // ========== TESTIMONIALS MANAGEMENT (FIXED - UPDATE ROUTE ADDED) ==========
     Route::get('/testimonials', [TestimonialController::class, 'index']);
+    Route::get('/testimonials/{id}', [TestimonialController::class, 'show']);
+    Route::put('/testimonials/{id}', [TestimonialController::class, 'update']);        // ← ADDED
     Route::put('/testimonials/{id}/approve', [TestimonialController::class, 'approve']);
     Route::delete('/testimonials/{id}', [TestimonialController::class, 'destroy']);
     
@@ -136,8 +138,8 @@ Route::prefix('admin')->group(function () {
     
     // Newsletter Subscribers
     Route::get('/subscribers', [SubscriberController::class, 'index']);
-    Route::get('/subscribers/{id}', [SubscriberController::class, 'show']);  // ADD THIS
-    Route::put('/subscribers/{id}/status', [SubscriberController::class, 'updateStatus']);  // ADD THIS
+    Route::get('/subscribers/{id}', [SubscriberController::class, 'show']);
+    Route::put('/subscribers/{id}/status', [SubscriberController::class, 'updateStatus']);
     Route::delete('/subscribers/{id}', [SubscriberController::class, 'destroy']);
     
     // ========== HERO SECTION ADMIN APIs ==========

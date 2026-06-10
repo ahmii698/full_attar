@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import '../styles/HeroSettings.css'
 
 function HeroSettings() {
   const [hero, setHero] = useState(null)
   const [stats, setStats] = useState([])
   const [loading, setLoading] = useState(true)
+  const [image, setImage] = useState(null)
+  const [imagePreview, setImagePreview] = useState('')
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     fetchHeroData()
@@ -23,6 +27,9 @@ function HeroSettings() {
       ])
       setHero(heroRes.data[0] || null)
       setStats(statsRes.data)
+      if (heroRes.data[0]?.image_url) {
+        setImagePreview(heroRes.data[0].image_url)
+      }
     } catch (error) {
       console.error('Error fetching hero data:', error)
     } finally {
@@ -30,16 +37,48 @@ function HeroSettings() {
     }
   }
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setImage(file)
+      setImagePreview(URL.createObjectURL(file))
+    }
+  }
+
   const updateHero = async (data) => {
+    setSaving(true)
     try {
       const token = localStorage.getItem('admin_token')
-      await axios.put(`http://localhost:8000/api/admin/hero-sliders/${hero.slider_id}`, data, {
-        headers: { Authorization: `Bearer ${token}` }
+      let formData = new FormData()
+      
+      formData.append('badge_text', data.badge_text || '')
+      formData.append('title', data.title || '')
+      formData.append('subtitle', data.subtitle || '')
+      formData.append('description', data.description || '')
+      formData.append('button_text', data.button_text || 'Explore Collection')
+      formData.append('button_link', data.button_link || '/shop')
+      formData.append('is_active', data.is_active || 1)
+      
+      if (image) {
+        formData.append('image', image)
+      }
+      
+      // Use PUT with FormData (need to send as POST with _method)
+      await axios.post(`http://localhost:8000/api/admin/hero-sliders/${hero.slider_id}?_method=PUT`, formData, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       })
+      
       alert('Hero updated successfully!')
+      setImage(null)
+      fetchHeroData()
     } catch (error) {
       console.error('Error updating hero:', error)
-      alert('Error updating hero')
+      alert('Error updating hero: ' + (error.response?.data?.error || error.message))
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -76,6 +115,7 @@ function HeroSettings() {
               className="form-control"
             />
           </div>
+          
           <div className="form-group">
             <label>Title</label>
             <input
@@ -85,6 +125,7 @@ function HeroSettings() {
               className="form-control"
             />
           </div>
+          
           <div className="form-group">
             <label>Subtitle</label>
             <input
@@ -94,6 +135,7 @@ function HeroSettings() {
               className="form-control"
             />
           </div>
+          
           <div className="form-group">
             <label>Description</label>
             <textarea
@@ -103,6 +145,7 @@ function HeroSettings() {
               rows="8"
             />
           </div>
+          
           <div className="form-group">
             <label>Button Text</label>
             <input
@@ -112,36 +155,71 @@ function HeroSettings() {
               className="form-control"
             />
           </div>
+          
+          {/* Image Upload Section */}
           <div className="form-group">
-            <label>Image URL</label>
-            <input
-              type="text"
-              value={hero.image_url || ''}
-              onChange={(e) => setHero({...hero, image_url: e.target.value})}
-              className="form-control"
-            />
+            <label>Hero Image</label>
+            <div className="image-upload-section">
+              {imagePreview && (
+                <div className="current-image">
+                  <img 
+                    src={imagePreview} 
+                    alt="Hero Preview" 
+                    className="hero-image-preview"
+                  />
+                  <button 
+                    type="button" 
+                    className="remove-image-btn"
+                    onClick={() => {
+                      setImagePreview('')
+                      setImage(null)
+                      setHero({...hero, image_url: ''})
+                    }}
+                  >
+                    Remove Image
+                  </button>
+                </div>
+              )}
+              
+              <div className="upload-area">
+                <input
+                  type="file"
+                  id="hero-image-input"
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  className="file-input"
+                />
+                <label htmlFor="hero-image-input" className="upload-label">
+                  <i className="fas fa-cloud-upload-alt"></i> Choose Image from Desktop
+                </label>
+                <small className="form-text">Recommended size: 600x600px. JPG, PNG, WEBP</small>
+              </div>
+            </div>
           </div>
-          <button onClick={() => updateHero(hero)} className="admin-btn-primary">Save Changes</button>
+          
+          <button onClick={() => updateHero(hero)} className="admin-btn-primary" disabled={saving}>
+            {saving ? 'Saving...' : 'Save Changes'}
+          </button>
         </div>
       )}
 
-      <div className="stats-section" style={{marginTop: '40px'}}>
+      <div className="stats-section">
         <h3>Hero Stats</h3>
         {stats.map((stat) => (
-          <div key={stat.stat_id} className="stat-row" style={{display: 'flex', gap: '10px', marginBottom: '10px'}}>
+          <div key={stat.stat_id} className="stat-row">
             <input
               type="text"
               value={stat.stat_value}
               onChange={(e) => updateStat(stat.stat_id, {...stat, stat_value: e.target.value})}
-              className="form-control"
-              style={{width: '100px'}}
+              className="form-control stat-value"
+              placeholder="Value"
             />
             <input
               type="text"
               value={stat.stat_label}
               onChange={(e) => updateStat(stat.stat_id, {...stat, stat_label: e.target.value})}
-              className="form-control"
-              style={{flex: 1}}
+              className="form-control stat-label"
+              placeholder="Label"
             />
           </div>
         ))}

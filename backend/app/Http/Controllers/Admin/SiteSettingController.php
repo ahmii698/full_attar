@@ -6,7 +6,7 @@ use App\Models\SiteSetting;
 use App\Models\SocialLink;
 use Illuminate\Http\Request;
 
-class SiteSettingController extends Controller
+class SiteSettingController extends Controller  // ← Changed from AdminSiteSettingController
 {
     public function index()
     {
@@ -18,7 +18,8 @@ class SiteSettingController extends Controller
     {
         $setting = SiteSetting::where('setting_key', $key)->first();
         if ($setting) {
-            $setting->update(['setting_value' => $request->value]);
+            $setting->setting_value = $request->value;
+            $setting->save();
         }
         return response()->json(['success' => true]);
     }
@@ -32,7 +33,8 @@ class SiteSettingController extends Controller
     public function socialLinksUpdate(Request $request, $id)
     {
         $link = SocialLink::findOrFail($id);
-        $link->update($request->all());
-        return response()->json($link);
+        $link->url = $request->url;
+        $link->save();
+        return response()->json(['success' => true]);
     }
 }

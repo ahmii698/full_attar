@@ -8,9 +8,10 @@ class Testimonial extends Model
 {
     use HasFactory;
     
-    protected $table = 'testimonials';       // YEH ADD KARO
-    protected $primaryKey = 'testimonial_id'; // YEH ADD KARO
+    protected $table = 'testimonials';
+    protected $primaryKey = 'testimonial_id';
     protected $fillable = ['user_name', 'user_location', 'rating', 'review', 'date', 'is_approved'];
     
-    public $timestamps = true;               // YEH ADD KARO
+    // Temporarily disable timestamps
+    public $timestamps = false;
 }

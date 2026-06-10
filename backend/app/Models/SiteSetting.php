@@ -8,4 +8,6 @@ class SiteSetting extends Model
     protected $table = 'site_settings';
     protected $primaryKey = 'setting_id';
     protected $fillable = ['setting_key', 'setting_value', 'setting_type'];
+    
+    public $timestamps = false;  // ← YEH ADD KARO
 }
