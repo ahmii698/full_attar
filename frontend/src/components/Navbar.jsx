@@ -161,7 +161,9 @@ function Navbar() {
             )}
           </div>
           
-          <NavLink to="/best-sellers" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>BEST SELLERS</NavLink>
+          {/* ✅ CHANGE: BEST SELLERS → TOP SELLERS */}
+          <NavLink to="/top-sellers" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>TOP SELLERS</NavLink>
+          
           <NavLink to="/deals" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>DEALS</NavLink>
           <NavLink to="/outlets" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>OUR OUTLETS</NavLink>
           <NavLink to="/blogs" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>BLOGS</NavLink>
@@ -222,7 +224,10 @@ function Navbar() {
         <div className="mobile-menu">
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>HOME</Link>
           <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)}>SHOP</Link>
-          <Link to="/best-sellers" onClick={() => setIsMobileMenuOpen(false)}>BEST SELLERS</Link>
+          
+          {/* ✅ CHANGE: BEST SELLERS → TOP SELLERS (Mobile menu) */}
+          <Link to="/top-sellers" onClick={() => setIsMobileMenuOpen(false)}>TOP SELLERS</Link>
+          
           <Link to="/deals" onClick={() => setIsMobileMenuOpen(false)}>DEALS</Link>
           <Link to="/outlets" onClick={() => setIsMobileMenuOpen(false)}>OUR OUTLETS</Link>
           <Link to="/blogs" onClick={() => setIsMobileMenuOpen(false)}>BLOGS</Link>

@@ -1,42 +1,94 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
 import SectionHeading from '../components/SectionHeading'
 import ProductCard from '../components/ProductCard'
 import CategoryBanner from '../components/CategoryBanner'
 import FAQSection from '../components/FAQSection'
 import TestimonialSlider from '../components/TestimonialSlider'
-import ContactPage from './ContactPage'  // <-- Changed: ContactMapSection se ContactPage kar diya
+import ContactPage from './ContactPage'
 import Newsletter from '../components/Newsletter'
 
 // Import your images
 import westernAttarImg from '../assets/western-attar.jpg'
 import easternAttarImg from '../assets/eastern-attar.jpg'
 
-const topSellers = [
-  { id: 1, name: "Black & Silver Platinum", price: "Rs. 2,100", rating: 1330 },
-  { id: 2, name: "Ameer Al Oud", price: "Rs. 1,800", rating: 890 },
-  { id: 3, name: "Oud Al Aswad", price: "Rs. 3,200", rating: 650 },
-  { id: 4, name: "Sultan E Ameer", price: "Rs. 4,500", rating: 420 },
-]
-
-const newArrivals = [
-  { id: 5, name: "Winter Collection 2024", price: "Rs. 2,500", rating: 120 },
-  { id: 6, name: "Oudh Al Ward", price: "Rs. 3,800", rating: 95 },
-  { id: 7, name: "Silver & White", price: "Rs. 1,950", rating: 78 },
-  { id: 8, name: "Musk Al Mahal", price: "Rs. 5,200", rating: 156 },
-]
-
 function HomePage() {
+  const [topSellers, setTopSellers] = useState([])
+  const [deals, setDeals] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      
+      // Fetch top sellers from API (is_top_seller = 1)
+      const topRes = await fetch(`${API_BASE_URL}/top-sellers`)
+      const topData = await topRes.json()
+      setTopSellers(topData)
+      
+      // Fetch deals from API (is_deal = 1)
+      const dealsRes = await fetch(`${API_BASE_URL}/deals`)
+      const dealsData = await dealsRes.json()
+      setDeals(dealsData)
+      
+    } catch (err) {
+      console.error('Error fetching data:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="homepage">
+        <Hero />
+        <div className="loading-container">Loading products...</div>
+      </div>
+    )
+  }
+
+  // Get only first 4 products
+  const displayTopSellers = topSellers.slice(0, 4)
+  const displayDeals = deals.slice(0, 4)
+
   return (
     <div className="homepage">
       <Hero />
       
-      {/* Top Sellers Section */}
+      {/* Top Sellers Section - Only 4 products with View All button */}
       <section className="products-section">
-        <SectionHeading title="Top Sellers" subtitle="Our most loved fragrances" />
+        <div className="section-header-with-link">
+          <SectionHeading title="Top Sellers" subtitle="Our most loved fragrances" />
+          <Link to="/top-sellers" className="view-all-btn">
+            View All →
+          </Link>
+        </div>
         <div className="products-grid">
-          {topSellers.map(product => (
-            <ProductCard key={product.id} {...product} />
-          ))}
+          {displayTopSellers.length === 0 ? (
+            <div className="no-products">No top sellers found.</div>
+          ) : (
+            displayTopSellers.map(product => (
+              <ProductCard 
+                key={product.product_id || product.id}
+                id={product.product_id || product.id}
+                name={product.name}
+                price={product.price}
+                priceNum={product.price_num}
+                discount_price={product.discount_price}
+                discount_percent={product.discount_percent}
+                is_deal={product.is_deal === 1}
+                rating={product.rating || 0}
+                image_url={product.image_url}
+              />
+            ))
+          )}
         </div>
       </section>
       
@@ -49,13 +101,33 @@ function HomePage() {
         direction="left"
       />
       
-      {/* New Arrivals Section */}
+      {/* Deals Section - Only 4 products with View All button */}
       <section className="products-section">
-        <SectionHeading title="New Arrivals" subtitle="Fresh from our atelier" />
+        <div className="section-header-with-link">
+          <SectionHeading title="Hot Deals " subtitle="Limited time offers" />
+          <Link to="/deals" className="view-all-btn">
+            View All →
+          </Link>
+        </div>
         <div className="products-grid">
-          {newArrivals.map(product => (
-            <ProductCard key={product.id} {...product} />
-          ))}
+          {displayDeals.length === 0 ? (
+            <div className="no-products">No active deals at the moment. Check back soon!</div>
+          ) : (
+            displayDeals.map(product => (
+              <ProductCard 
+                key={product.product_id || product.id}
+                id={product.product_id || product.id}
+                name={product.name}
+                price={product.price}
+                priceNum={product.price_num}
+                discount_price={product.discount_price}
+                discount_percent={product.discount_percent}
+                is_deal={true}
+                rating={product.rating || 0}
+                image_url={product.image_url}
+              />
+            ))
+          )}
         </div>
       </section>
       
@@ -68,7 +140,7 @@ function HomePage() {
         <TestimonialSlider />
       </section>
       
-      {/* Contact Section - Using ContactPage component */}
+      {/* Contact Section */}
       <ContactPage />
       
       <Newsletter />

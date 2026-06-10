@@ -2,32 +2,57 @@ import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 
-const allProducts = [
-  { id: 1, name: "Black & Silver Platinum", price: "Rs. 2,100", priceNum: 2100, rating: 1330, category: "Premium", gender: "Male", notes: ["Oud", "Amber"] },
-  { id: 2, name: "Ameer Al Oud", price: "Rs. 1,800", priceNum: 1800, rating: 890, category: "Eastern", gender: "Male", notes: ["Oud", "Musk"] },
-  { id: 3, name: "Oud Al Aswad", price: "Rs. 3,200", priceNum: 3200, rating: 650, category: "Premium", gender: "Male", notes: ["Oud"] },
-  { id: 4, name: "Sultan E Ameer", price: "Rs. 4,500", priceNum: 4500, rating: 420, category: "Premium", gender: "Male", notes: ["Oud", "Amber", "Musk"] },
-  { id: 5, name: "Winter Collection 2024", price: "Rs. 2,500", priceNum: 2500, rating: 120, category: "Western", gender: "Unisex", notes: ["Amber"] },
-  { id: 6, name: "Oudh Al Ward", price: "Rs. 3,800", priceNum: 3800, rating: 95, category: "Eastern", gender: "Unisex", notes: ["Oud", "Rose"] },
-  { id: 7, name: "Silver & White", price: "Rs. 1,950", priceNum: 1950, rating: 78, category: "Premium", gender: "Male", notes: ["Musk"] },
-  { id: 8, name: "Musk Al Mahal", price: "Rs. 5,200", priceNum: 5200, rating: 156, category: "Premium", gender: "Unisex", notes: ["Musk", "Amber"] },
-  { id: 9, name: "Royal Oud", price: "Rs. 6,500", priceNum: 6500, rating: 245, category: "Premium", gender: "Female", notes: ["Oud", "Rose"] },
-  { id: 10, name: "Amber Rose", price: "Rs. 1,500", priceNum: 1500, rating: 89, category: "Western", gender: "Female", notes: ["Amber", "Rose"] },
-  { id: 11, name: "Rose Princess", price: "Rs. 2,800", priceNum: 2800, rating: 200, category: "Premium", gender: "Female", notes: ["Rose"] },
-  { id: 12, name: "Floral Dream", price: "Rs. 1,200", priceNum: 1200, rating: 150, category: "Western", gender: "Female", notes: ["Rose"] },
-  { id: 13, name: "Royal Musk", price: "Rs. 3,500", priceNum: 3500, rating: 300, category: "Premium", gender: "Male", notes: ["Musk", "Amber"] },
-  { id: 14, name: "Eastern Oud", price: "Rs. 2,200", priceNum: 2200, rating: 180, category: "Eastern", gender: "Male", notes: ["Oud"] },
-]
-
 function ShopPage() {
   const location = useLocation()
   const navigate = useNavigate()
+  
+  const [allProducts, setAllProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [selectedGender, setSelectedGender] = useState("All")
   const [priceRange, setPriceRange] = useState(10000)
   const [selectedNotes, setSelectedNotes] = useState([])
   const [searchQuery, setSearchQuery] = useState("")
   
+  const [categories, setCategories] = useState(["All"])
+  const [genders, setGenders] = useState(["All", "Male", "Female", "Unisex"])
+  const [fragranceNotes, setFragranceNotes] = useState(["Oud", "Amber", "Musk", "Rose"])
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+
+  // Fetch all products from database
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${API_BASE_URL}/products`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch products')
+      }
+      
+      const data = await response.json()
+      console.log('Products from DB:', data)
+      
+      setAllProducts(data)
+      
+      // Extract unique categories from products
+      const uniqueCategories = ["All", ...new Set(data.map(p => p.category).filter(Boolean))]
+      setCategories(uniqueCategories)
+      
+    } catch (err) {
+      setError(err.message)
+      console.error('Error fetching products:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Get category or gender from URL params
   useEffect(() => {
     const params = new URLSearchParams(location.search)
@@ -35,7 +60,6 @@ function ShopPage() {
     const genderParam = params.get('gender')
     
     if (categoryParam) {
-      // Check if categoryParam is a gender
       if (categoryParam === 'Male' || categoryParam === 'Female' || categoryParam === 'Unisex') {
         setSelectedGender(categoryParam)
         setSelectedCategory("All")
@@ -54,10 +78,6 @@ function ShopPage() {
     }
   }, [location.search])
   
-  const categories = ["All", "Premium", "Western", "Eastern", "Black & Silver Platinum", "Royal Oud", "Musk Al Mahal", "Sultan E Ameer", "Oud Al Aswad", "Winter Collection 2024", "Amber Rose", "Silver & White", "Floral Dream", "Ameer Al Oud", "Oudh Al Ward", "Eastern Oud"]
-  const genders = ["All", "Male", "Female", "Unisex"]
-  const fragranceNotes = ["Oud", "Amber", "Musk", "Rose"]
-  
   const handleNoteChange = (note) => {
     setSelectedNotes(prev =>
       prev.includes(note) ? prev.filter(n => n !== note) : [...prev, note]
@@ -67,7 +87,6 @@ function ShopPage() {
   const handleGenderClick = (gender) => {
     setSelectedGender(gender)
     setSelectedCategory("All")
-    // Update URL
     if (gender === 'All') {
       navigate('/shop')
     } else {
@@ -78,7 +97,6 @@ function ShopPage() {
   const handleCategoryClick = (category) => {
     setSelectedCategory(category)
     setSelectedGender("All")
-    // Update URL
     if (category === 'All') {
       navigate('/shop')
     } else {
@@ -86,10 +104,16 @@ function ShopPage() {
     }
   }
   
+  // Parse notes string to array (e.g., "Oud,Amber" -> ["Oud", "Amber"])
+  const parseNotes = (notesStr) => {
+    if (!notesStr) return []
+    return notesStr.split(',').map(n => n.trim())
+  }
+  
   // Filter products
   const filteredProducts = allProducts.filter(product => {
     // Category filter
-    if (selectedCategory !== "All" && product.category !== selectedCategory && product.name !== selectedCategory) {
+    if (selectedCategory !== "All" && product.category !== selectedCategory) {
       return false
     }
     
@@ -97,11 +121,13 @@ function ShopPage() {
     if (selectedGender !== "All" && product.gender !== selectedGender) return false
     
     // Price filter
-    if (product.priceNum > priceRange) return false
+    const productPrice = product.price_num || 0
+    if (productPrice > priceRange) return false
     
     // Fragrance notes filter
     if (selectedNotes.length > 0) {
-      const hasNote = selectedNotes.some(note => product.notes.includes(note))
+      const productNotes = parseNotes(product.notes)
+      const hasNote = selectedNotes.some(note => productNotes.includes(note))
       if (!hasNote) return false
     }
     
@@ -112,6 +138,38 @@ function ShopPage() {
     
     return true
   })
+  
+  // Loading state
+  if (loading) {
+    return (
+      <div className="shop-page">
+        <div className="shop-header">
+          <h1>Our Collection</h1>
+          <p>Discover our premium range of attars</p>
+        </div>
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Loading products...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Error state
+  if (error) {
+    return (
+      <div className="shop-page">
+        <div className="shop-header">
+          <h1>Our Collection</h1>
+          <p>Discover our premium range of attars</p>
+        </div>
+        <div className="error-container">
+          <p>⚠️ Error: {error}</p>
+          <button onClick={fetchProducts}>Try Again</button>
+        </div>
+      </div>
+    )
+  }
   
   return (
     <div className="shop-page">
@@ -139,7 +197,7 @@ function ShopPage() {
           <div className="sidebar-section">
             <h4>Categories</h4>
             <ul>
-              {categories.slice(0, 8).map(cat => (
+              {categories.map(cat => (
                 <li key={cat}>
                   <a 
                     href="#" 
@@ -235,7 +293,22 @@ function ShopPage() {
           ) : (
             <div className="products-grid">
               {filteredProducts.map(product => (
-                <ProductCard key={product.id} {...product} />
+                <ProductCard 
+                  key={product.product_id || product.id}
+                  id={product.product_id || product.id}
+                  name={product.name}
+                  price={product.price}
+                  priceNum={product.price_num}
+                  discount_price={product.discount_price}
+                  discount_percent={product.discount_percent}
+                  is_deal={product.is_deal === 1}
+                  rating={product.rating || 0}
+                  category={product.category}
+                  gender={product.gender}
+                  notes={product.notes}
+                  image_url={product.image_url}
+                  description={product.description}
+                />
               ))}
             </div>
           )}
