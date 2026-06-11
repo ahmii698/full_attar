@@ -1,33 +1,34 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { getProducts, createProduct, updateProduct } from '../services/adminApi'
+import { getProduct, createProduct, updateProduct } from '../services/adminApi'
 import '../styles/ProductForm.css'
 
 function ProductForm() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [isDuplicateMode, setIsDuplicateMode] = useState(false)
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     price: '',
     price_num: '',
-    rating: 0,
-    category: 'Premium',
-    gender: 'Male',
-    notes: '',
-    stock_quantity: 10,
-    is_top_seller: 0,
-    is_new_arrival: 0,
-    is_deal: 0,
     discount_price: '',
     discount_percent: '',
-    description: ''
+    is_deal: false,
+    rating: '',
+    category: '',
+    gender: '',
+    notes: '',
+    image_url: '',
+    stock_quantity: 10,
+    is_top_seller: false,
+    is_new_arrival: false
   })
-  const [image, setImage] = useState(null)
-  const [preview, setPreview] = useState('')
   const [isEdit, setIsEdit] = useState(false)
-  const [originalImageUrl, setOriginalImageUrl] = useState('')
+
+  const APP_URL = 'http://localhost:8000'
+  const FRONTEND_URL = 'http://localhost:5173'
 
   useEffect(() => {
     if (id) {
@@ -39,27 +40,35 @@ function ProductForm() {
   const fetchProduct = async () => {
     try {
       setLoading(true)
-      const res = await getProducts()
-      const product = res.data.find(p => p.product_id === parseInt(id))
-      if (product) {
-        setFormData({
-          name: product.name || '',
-          price: product.price || '',
-          price_num: product.price_num || '',
-          rating: product.rating || 0,
-          category: product.category || 'Premium',
-          gender: product.gender || 'Male',
-          notes: product.notes || '',
-          stock_quantity: product.stock_quantity || 10,
-          is_top_seller: product.is_top_seller || 0,
-          is_new_arrival: product.is_new_arrival || 0,
-          is_deal: product.is_deal || 0,
-          discount_price: product.discount_price || '',
-          discount_percent: product.discount_percent || '',
-          description: product.description || ''
-        })
-        setPreview(product.image_url)
-        setOriginalImageUrl(product.image_url)
+      const res = await getProduct(id)
+      const product = res.data
+      setFormData({
+        name: product.name || '',
+        price: product.price || '',
+        price_num: product.price_num || '',
+        discount_price: product.discount_price || '',
+        discount_percent: product.discount_percent || '',
+        is_deal: product.is_deal === 1,
+        rating: product.rating || '',
+        category: product.category || '',
+        gender: product.gender || '',
+        notes: product.notes || '',
+        image_url: product.image_url || '',
+        stock_quantity: product.stock_quantity || 10,
+        is_top_seller: product.is_top_seller === 1,
+        is_new_arrival: product.is_new_arrival === 1
+      })
+      
+      if (product.image_url) {
+        if (product.image_url.startsWith('/images/')) {
+          setImagePreview(`${APP_URL}${product.image_url}`)
+        } else if (product.image_url.startsWith('/assets/')) {
+          setImagePreview(`${FRONTEND_URL}${product.image_url}`)
+        } else if (product.image_url.startsWith('/storage/')) {
+          setImagePreview(`${APP_URL}${product.image_url}`)
+        } else {
+          setImagePreview(product.image_url)
+        }
       }
     } catch (error) {
       console.error('Error fetching product:', error)
@@ -68,105 +77,79 @@ function ProductForm() {
     }
   }
 
-  const handleDuplicate = () => {
-    setIsDuplicateMode(true)
-    setIsEdit(false)
-    // Add " (Copy)" to the product name
-    setFormData(prev => ({
-      ...prev,
-      name: prev.name + ' (Copy)'
-    }))
-    // Keep the original image URL for preview
-  }
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (checked ? 1 : 0) : value
+      [name]: type === 'checkbox' ? checked : value
     }))
   }
 
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     if (file) {
-      setImage(file)
-      setPreview(URL.createObjectURL(file))
+      setImageFile(file)
+      setImagePreview(URL.createObjectURL(file))
+      setFormData(prev => ({ ...prev, image_url: '' }))
     }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-
-    const data = new FormData()
-    Object.keys(formData).forEach(key => {
-      data.append(key, formData[key])
-    })
     
-    // Image handling - priority: new uploaded image > original image URL
-    if (image) {
-      // User uploaded a new image
-      data.append('image', image)
-    } else if (isDuplicateMode && originalImageUrl) {
-      // Duplicate mode: use the same image URL from original product
-      data.append('image_url', originalImageUrl)
-    }
-
     try {
-      if (isEdit && !isDuplicateMode) {
-        await updateProduct(id, data)
+      const submitData = new FormData()
+      
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== undefined && formData[key] !== '') {
+          if (key === 'is_deal' || key === 'is_top_seller' || key === 'is_new_arrival') {
+            submitData.append(key, formData[key] ? 1 : 0)
+          } else {
+            submitData.append(key, formData[key])
+          }
+        }
+      })
+      
+      if (imageFile) {
+        submitData.append('image', imageFile)
+      }
+
+      if (isEdit) {
+        await updateProduct(id, submitData)
       } else {
-        await createProduct(data)
+        await createProduct(submitData)
       }
       navigate('/admin/products')
     } catch (error) {
       console.error('Error saving product:', error)
-      alert('Error saving product: ' + (error.response?.data?.error || error.message))
+      alert('Error saving product. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleCancelDuplicate = () => {
-    setIsDuplicateMode(false)
-    setIsEdit(true)
-    fetchProduct()
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return ''
+    if (imagePath.startsWith('http')) return imagePath
+    if (imagePath.startsWith('/images/')) return `${APP_URL}${imagePath}`
+    if (imagePath.startsWith('/storage/')) return `${APP_URL}${imagePath}`
+    if (imagePath.startsWith('/assets/')) return `${FRONTEND_URL}${imagePath}`
+    return imagePath
   }
 
-  if (loading && isEdit && !isDuplicateMode) return <div className="loading">Loading product...</div>
+  if (loading && isEdit) return <div className="admin-loading">Loading product...</div>
 
   return (
     <div className="product-form">
       <div className="form-header">
-        <div>
-          <h2>
-            {isDuplicateMode 
-              ? 'Duplicate Product' 
-              : (isEdit ? 'Edit Product' : 'Add New Product')}
-          </h2>
-          {isEdit && !isDuplicateMode && (
-            <p className="duplicate-hint">You can duplicate this product to create a similar one</p>
-          )}
-        </div>
-        <div className="header-buttons">
-          {isEdit && !isDuplicateMode && (
-            <button type="button" onClick={handleDuplicate} className="btn-duplicate">
-              Duplicate Product
-            </button>
-          )}
-          {isDuplicateMode && (
-            <button type="button" onClick={handleCancelDuplicate} className="btn-cancel-duplicate">
-              Cancel Duplicate
-            </button>
-          )}
-          <Link to="/admin/products" className="btn-secondary">Back to Products</Link>
-        </div>
+        <h2>{isEdit ? 'Edit Product' : 'Add New Product'}</h2>
+        <Link to="/admin/products" className="btn-secondary">Back to Products</Link>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="form-grid">
-          <div className="form-group">
+          <div className="form-group full-width">
             <label>Product Name *</label>
             <input
               type="text"
@@ -174,24 +157,6 @@ function ProductForm() {
               value={formData.name}
               onChange={handleChange}
               className="form-control"
-              required
-            />
-            {isDuplicateMode && (
-              <small className="form-text text-info">
-                Product name has been modified. You can change it as needed.
-              </small>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Price (e.g., Rs. 2,100) *</label>
-            <input
-              type="text"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="form-control"
-              placeholder="Rs. 2,100"
               required
             />
           </div>
@@ -204,21 +169,42 @@ function ProductForm() {
               value={formData.price_num}
               onChange={handleChange}
               className="form-control"
-              placeholder="2100"
               required
             />
           </div>
 
           <div className="form-group">
-            <label>Rating (0-5)</label>
+            <label>Price Display (Rs. X,XXX)</label>
             <input
-              type="number"
-              name="rating"
-              value={formData.rating}
+              type="text"
+              name="price"
+              value={formData.price}
               onChange={handleChange}
               className="form-control"
-              min="0"
-              max="5"
+              placeholder="Rs. 2,100"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Discount Price</label>
+            <input
+              type="number"
+              name="discount_price"
+              value={formData.discount_price}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Discount Percent</label>
+            <input
+              type="number"
+              name="discount_percent"
+              value={formData.discount_percent}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="e.g., 30"
             />
           </div>
 
@@ -231,6 +217,7 @@ function ProductForm() {
               className="form-control"
               required
             >
+              <option value="">Select Category</option>
               <option value="Premium">Premium</option>
               <option value="Western">Western</option>
               <option value="Eastern">Eastern</option>
@@ -246,6 +233,7 @@ function ProductForm() {
               className="form-control"
               required
             >
+              <option value="">Select Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Unisex">Unisex</option>
@@ -260,7 +248,21 @@ function ProductForm() {
               value={formData.notes}
               onChange={handleChange}
               className="form-control"
-              placeholder="Oud, Amber, Musk, Rose"
+              placeholder="Oud, Amber, Musk"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Rating (0-5)</label>
+            <input
+              type="number"
+              name="rating"
+              value={formData.rating}
+              onChange={handleChange}
+              className="form-control"
+              step="0.1"
+              min="0"
+              max="5"
             />
           </div>
 
@@ -272,115 +274,119 @@ function ProductForm() {
               value={formData.stock_quantity}
               onChange={handleChange}
               className="form-control"
-              min="0"
             />
           </div>
 
-          <div className="form-group">
+          {/* Image Upload Section */}
+          <div className="form-group full-width">
             <label>Product Image</label>
-            <input
-              type="file"
-              name="image"
-              onChange={handleImageChange}
-              className="form-control"
-              accept="image/*"
-            />
-            {preview && (
-              <div className="image-preview">
-                <img src={preview} alt="Preview" />
-                {isDuplicateMode && !image && (
-                  <small className="form-text text-info">
-                    Same image will be used from original product
-                  </small>
-                )}
+            <div className="image-upload-area">
+              <input
+                type="file"
+                id="product-image"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+              />
+              <button 
+                type="button" 
+                className="upload-image-btn"
+                onClick={() => document.getElementById('product-image').click()}
+              >
+                📁 Choose Image from Computer
+              </button>
+              
+              {imagePreview && (
+                <div className="image-preview-container">
+                  <img src={imagePreview} alt="Preview" className="image-preview" />
+                  <button 
+                    type="button" 
+                    className="remove-image-btn"
+                    onClick={() => {
+                      setImageFile(null)
+                      setImagePreview('')
+                      setFormData(prev => ({ ...prev, image_url: '' }))
+                    }}
+                  >
+                    ✕ Remove
+                  </button>
+                </div>
+              )}
+              
+              {!imagePreview && formData.image_url && (
+                <div className="image-preview-container">
+                  <img src={getImageUrl(formData.image_url)} alt="Current" className="image-preview" />
+                  <p className="current-image-text">Current image</p>
+                </div>
+              )}
+              
+              <div className="image-url-alternative">
+                <label className="alt-label">OR Enter Image URL:</label>
+                <input
+                  type="text"
+                  name="image_url"
+                  value={formData.image_url}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="/assets/at1.jpg or /images/products/123.jpg"
+                />
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Deal Fields */}
-          <div className="form-group checkbox-group">
+          {/* Checkboxes */}
+          <div className="form-group">
             <label className="checkbox-label">
               <input
                 type="checkbox"
                 name="is_deal"
-                checked={formData.is_deal === 1}
+                checked={formData.is_deal}
                 onChange={handleChange}
               />
               Hot Deal
             </label>
           </div>
 
-          {formData.is_deal === 1 && (
-            <>
-              <div className="form-group">
-                <label>Discount Price (Rs.)</label>
-                <input
-                  type="number"
-                  name="discount_price"
-                  value={formData.discount_price}
-                  onChange={handleChange}
-                  className="form-control"
-                  placeholder="e.g., 2100"
-                />
-                <small className="form-text">Price after discount</small>
-              </div>
-
-              <div className="form-group">
-                <label>Discount Percentage (%)</label>
-                <input
-                  type="number"
-                  name="discount_percent"
-                  value={formData.discount_percent}
-                  onChange={handleChange}
-                  className="form-control"
-                  placeholder="e.g., 40"
-                />
-                <small className="form-text">e.g., 40 for 40% off</small>
-              </div>
-            </>
-          )}
-
-          <div className="form-group checkbox-group">
+          <div className="form-group">
             <label className="checkbox-label">
               <input
                 type="checkbox"
                 name="is_top_seller"
-                checked={formData.is_top_seller === 1}
+                checked={formData.is_top_seller}
                 onChange={handleChange}
               />
               Top Seller
             </label>
           </div>
 
-          <div className="form-group checkbox-group">
+          <div className="form-group">
             <label className="checkbox-label">
               <input
                 type="checkbox"
                 name="is_new_arrival"
-                checked={formData.is_new_arrival === 1}
+                checked={formData.is_new_arrival}
                 onChange={handleChange}
               />
               New Arrival
             </label>
           </div>
-        </div>
 
-        <div className="form-group full-width">
-          <label>Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="form-control"
-            rows="5"
-          />
+          <div className="form-group full-width">
+            <label>Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="form-control"
+              rows="4"
+              placeholder="Product description..."
+            />
+          </div>
         </div>
 
         <div className="form-actions">
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Saving...' : 
-              (isDuplicateMode ? 'Create Duplicate Product' : 
-                (isEdit ? 'Update Product' : 'Create Product'))}
+            {loading ? 'Saving...' : (isEdit ? 'Update Product' : 'Create Product')}
           </button>
           <Link to="/admin/products" className="btn-secondary">Cancel</Link>
         </div>

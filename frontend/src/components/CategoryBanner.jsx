@@ -1,4 +1,4 @@
-function CategoryBanner({ title, subtitle, description, image, direction }) {
+function CategoryBanner({ title, subtitle, description, image, direction, buttonText, buttonLink }) {
   return (
     <div 
       className={`category-banner-full ${direction === 'right' ? 'text-right' : 'text-left'}`}
@@ -6,10 +6,10 @@ function CategoryBanner({ title, subtitle, description, image, direction }) {
     >
       <div className="banner-overlay-full"></div>
       <div className="banner-content-full">
-        <span className="banner-tag-full">✨ Premium Collection</span>
+        <span className="banner-tag-full">Premium Collection</span>
         <h2>{title} <span className="gold">{subtitle}</span></h2>
         <p>{description}</p>
-        <button className="banner-btn-full">View all →</button>
+        <a href={buttonLink || '/shop'} className="banner-btn-full">{buttonText || 'View All'} →</a>
       </div>
     </div>
   )

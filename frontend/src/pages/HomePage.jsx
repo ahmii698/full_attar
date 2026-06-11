@@ -9,16 +9,14 @@ import TestimonialSlider from '../components/TestimonialSlider'
 import ContactPage from './ContactPage'
 import Newsletter from '../components/Newsletter'
 
-// Import your images
-import westernAttarImg from '../assets/western-attar.jpg'
-import easternAttarImg from '../assets/eastern-attar.jpg'
-
 function HomePage() {
   const [topSellers, setTopSellers] = useState([])
   const [deals, setDeals] = useState([])
+  const [banners, setBanners] = useState([])
   const [loading, setLoading] = useState(true)
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+  const APP_URL = 'http://127.0.0.1:8000'
 
   useEffect(() => {
     fetchData()
@@ -28,21 +26,29 @@ function HomePage() {
     try {
       setLoading(true)
       
-      // Fetch top sellers from API (is_top_seller = 1)
       const topRes = await fetch(`${API_BASE_URL}/top-sellers`)
       const topData = await topRes.json()
       setTopSellers(topData)
       
-      // Fetch deals from API (is_deal = 1)
       const dealsRes = await fetch(`${API_BASE_URL}/deals`)
       const dealsData = await dealsRes.json()
       setDeals(dealsData)
+      
+      const bannersRes = await fetch(`${API_BASE_URL}/banners`)
+      const bannersData = await bannersRes.json()
+      setBanners(bannersData)
       
     } catch (err) {
       console.error('Error fetching data:', err)
     } finally {
       setLoading(false)
     }
+  }
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null
+    if (imagePath.startsWith('http')) return imagePath
+    return `${APP_URL}${imagePath}`
   }
 
   if (loading) {
@@ -54,7 +60,6 @@ function HomePage() {
     )
   }
 
-  // Get only first 4 products
   const displayTopSellers = topSellers.slice(0, 4)
   const displayDeals = deals.slice(0, 4)
 
@@ -62,14 +67,9 @@ function HomePage() {
     <div className="homepage">
       <Hero />
       
-      {/* Top Sellers Section - Only 4 products with View All button */}
+      {/* Top Sellers Section */}
       <section className="products-section">
-        <div className="section-header-with-link">
-          <SectionHeading title="Top Sellers" subtitle="Our most loved fragrances" />
-          <Link to="/top-sellers" className="view-all-btn">
-            View All →
-          </Link>
-        </div>
+        <SectionHeading title="Best Sellers" subtitle="Our most loved fragrances" />
         <div className="products-grid">
           {displayTopSellers.length === 0 ? (
             <div className="no-products">No top sellers found.</div>
@@ -90,25 +90,28 @@ function HomePage() {
             ))
           )}
         </div>
+        <div className="view-all-wrapper">
+          <Link to="/best-sellers" className="view-all-btn">View All →</Link>
+        </div>
       </section>
       
-      {/* Banner 1 - Western Attars */}
-      <CategoryBanner 
-        title="Western" 
-        subtitle="Attars"
-        description="Experience the blend of modern luxury with traditional craftsmanship. Perfect for everyday elegance."
-        image={westernAttarImg}
-        direction="left"
-      />
+      {/* Dynamic Banners - Directly from Database */}
+      {banners.map((banner, index) => (
+        <CategoryBanner 
+          key={banner.banner_id || index}
+          title={banner.title}
+          subtitle={banner.subtitle}
+          description={banner.description}
+          image={getImageUrl(banner.image_url)}
+          direction={banner.direction || (index % 2 === 0 ? 'left' : 'right')}
+          buttonText={banner.button_text}
+          buttonLink={banner.button_link}
+        />
+      ))}
       
-      {/* Deals Section - Only 4 products with View All button */}
+      {/* Deals Section */}
       <section className="products-section">
-        <div className="section-header-with-link">
-          <SectionHeading title="Hot Deals " subtitle="Limited time offers" />
-          <Link to="/deals" className="view-all-btn">
-            View All →
-          </Link>
-        </div>
+        <SectionHeading title="Hot Deals" subtitle="Limited time offers" />
         <div className="products-grid">
           {displayDeals.length === 0 ? (
             <div className="no-products">No active deals at the moment. Check back soon!</div>
@@ -129,6 +132,9 @@ function HomePage() {
             ))
           )}
         </div>
+        <div className="view-all-wrapper">
+          <Link to="/deals" className="view-all-btn">View All →</Link>
+        </div>
       </section>
       
       {/* FAQ Section */}
@@ -144,6 +150,38 @@ function HomePage() {
       <ContactPage />
       
       <Newsletter />
+
+      <style>{`
+        .view-all-wrapper {
+          text-align: center;
+          margin-top: 40px;
+        }
+        
+        .view-all-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 12px 28px;
+          background: linear-gradient(135deg, #d4af37, #b8960c);
+          color: #000000;
+          border: none;
+          border-radius: 40px;
+          font-weight: 700;
+          font-size: 0.9rem;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+        
+        .view-all-btn:hover {
+          background: linear-gradient(135deg, #c4a030, #a08010);
+          transform: translateX(6px);
+          gap: 14px;
+          box-shadow: 0 6px 18px rgba(212, 175, 55, 0.4);
+        }
+      `}</style>
     </div>
   )
 }

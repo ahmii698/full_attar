@@ -5,37 +5,58 @@ use App\Http\Controllers\Controller;
 use App\Models\HeroSlider;
 use App\Models\HeroStat;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class HeroController extends Controller
 {
+    // ========== HERO SLIDERS ==========
     public function index()
     {
-        $sliders = HeroSlider::all();
+        $sliders = HeroSlider::orderBy('display_order')->get();
         return response()->json($sliders);
     }
 
-    public function statsIndex()
+    public function show($id)
     {
-        $stats = HeroStat::all();
-        return response()->json($stats);
+        $slider = HeroSlider::findOrFail($id);
+        return response()->json($slider);
     }
 
     public function store(Request $request)
     {
         try {
-            $data = $request->all();
-            
-            // Handle image upload
+            $slider = new HeroSlider();
+            $slider->title = $request->title;
+            $slider->subtitle = $request->subtitle;
+            $slider->description = $request->description;
+            $slider->badge_text = $request->badge_text;
+            $slider->button_text = $request->button_text;
+            $slider->button_link = $request->button_link;
+            $slider->stats = $request->stats;
+            $slider->is_active = $request->is_active ?? 1;
+            $slider->display_order = $request->display_order ?? 0;
+
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $filename = time() . '_hero.' . $image->getClientOriginalExtension();
-                $path = $image->storeAs('hero', $filename, 'public');
-                $data['image_url'] = '/storage/' . $path;
+                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
+                
+                $destinationPath = public_path('images/hero');
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+                
+                $image->move($destinationPath, $filename);
+                $slider->image_url = '/images/hero/' . $filename;
+            } else if ($request->image_url) {
+                $slider->image_url = $request->image_url;
             }
-            
-            $slider = HeroSlider::create($data);
-            return response()->json($slider, 201);
+
+            $slider->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => $slider
+            ], 201);
+
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -44,38 +65,48 @@ class HeroController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $slider = HeroSlider::findOrFail($id);
+            $slider = HeroSlider::find($id);
             
-            // Handle image upload
-            if ($request->hasFile('image')) {
-                // Delete old image if exists
-                if ($slider->image_url && strpos($slider->image_url, '/storage/') === 0) {
-                    $oldPath = str_replace('/storage/', '', $slider->image_url);
-                    Storage::disk('public')->delete($oldPath);
-                }
-                
-                $image = $request->file('image');
-                $filename = time() . '_hero.' . $image->getClientOriginalExtension();
-                $path = $image->storeAs('hero', $filename, 'public');
-                $slider->image_url = '/storage/' . $path;
-            }
-            // If image_url is provided directly (not from file upload)
-            else if ($request->has('image_url')) {
-                $slider->image_url = $request->image_url;
+            if (!$slider) {
+                return response()->json(['error' => 'Hero slider not found'], 404);
             }
             
-            // Update other fields
-            $slider->badge_text = $request->badge_text;
             $slider->title = $request->title;
             $slider->subtitle = $request->subtitle;
             $slider->description = $request->description;
+            $slider->badge_text = $request->badge_text;
             $slider->button_text = $request->button_text;
-            $slider->button_link = $request->button_link ?? '/shop';
+            $slider->button_link = $request->button_link;
+            $slider->stats = $request->stats;
             $slider->is_active = $request->is_active ?? 1;
+            $slider->display_order = $request->display_order ?? 0;
+
+            if ($request->hasFile('image')) {
+                if ($slider->image_url && file_exists(public_path($slider->image_url))) {
+                    unlink(public_path($slider->image_url));
+                }
+                
+                $image = $request->file('image');
+                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
+                
+                $destinationPath = public_path('images/hero');
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+                
+                $image->move($destinationPath, $filename);
+                $slider->image_url = '/images/hero/' . $filename;
+            } else if ($request->image_url) {
+                $slider->image_url = $request->image_url;
+            }
             
             $slider->save();
             
-            return response()->json($slider);
+            return response()->json([
+                'success' => true,
+                'data' => $slider
+            ]);
+            
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -84,38 +115,96 @@ class HeroController extends Controller
     public function destroy($id)
     {
         try {
-            $slider = HeroSlider::findOrFail($id);
-            
-            // Delete image if exists
-            if ($slider->image_url && strpos($slider->image_url, '/storage/') === 0) {
-                $oldPath = str_replace('/storage/', '', $slider->image_url);
-                Storage::disk('public')->delete($oldPath);
+            $slider = HeroSlider::find($id);
+            if ($slider) {
+                if ($slider->image_url && file_exists(public_path($slider->image_url))) {
+                    unlink(public_path($slider->image_url));
+                }
+                $slider->delete();
             }
-            
-            $slider->delete();
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
+    // ========== HERO STATS ==========
+    public function statsIndex()
+    {
+        try {
+            $stats = HeroStat::orderBy('display_order')->get();
+            
+            if ($stats->isEmpty()) {
+                $stats = collect([
+                    (object)['stat_id' => 1, 'stat_value' => '100%', 'stat_label' => 'Natural Ingredients', 'display_order' => 1, 'is_active' => 1],
+                    (object)['stat_id' => 2, 'stat_value' => '24+', 'stat_label' => 'Hours Longevity', 'display_order' => 2, 'is_active' => 1],
+                    (object)['stat_id' => 3, 'stat_value' => '50+', 'stat_label' => 'Premium Blends', 'display_order' => 3, 'is_active' => 1],
+                ]);
+            }
+            
+            return response()->json($stats);
+        } catch (\Exception $e) {
+            $stats = [
+                ['stat_id' => 1, 'stat_value' => '100%', 'stat_label' => 'Natural Ingredients', 'display_order' => 1, 'is_active' => 1],
+                ['stat_id' => 2, 'stat_value' => '24+', 'stat_label' => 'Hours Longevity', 'display_order' => 2, 'is_active' => 1],
+                ['stat_id' => 3, 'stat_value' => '50+', 'stat_label' => 'Premium Blends', 'display_order' => 3, 'is_active' => 1],
+            ];
+            return response()->json($stats);
+        }
+    }
+
     public function statsStore(Request $request)
     {
         try {
-            $stat = HeroStat::create($request->all());
+            $stat = HeroStat::create([
+                'stat_value' => $request->stat_value,
+                'stat_label' => $request->stat_label,
+                'display_order' => $request->display_order ?? 0,
+                'is_active' => $request->is_active ?? 1
+            ]);
+            
             return response()->json($stat, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
+    // ✅ FINAL FIXED: statsUpdate method
     public function statsUpdate(Request $request, $id)
     {
         try {
-            $stat = HeroStat::findOrFail($id);
-            $stat->update($request->all());
-            return response()->json($stat);
+            // Find or create stat
+            $stat = HeroStat::find($id);
+            if (!$stat) {
+                $stat = new HeroStat();
+                $stat->stat_id = $id;
+            }
+            
+            // Get request data
+            $data = $request->all();
+            
+            // Update fields if present
+            if (isset($data['stat_value'])) {
+                $stat->stat_value = $data['stat_value'];
+            }
+            if (isset($data['stat_label'])) {
+                $stat->stat_label = $data['stat_label'];
+            }
+            if (isset($data['display_order'])) {
+                $stat->display_order = $data['display_order'];
+            }
+            if (isset($data['is_active'])) {
+                $stat->is_active = $data['is_active'];
+            }
+            
+            $stat->save();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $stat
+            ]);
         } catch (\Exception $e) {
+            \Log::error('Stats Update Error: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -123,7 +212,10 @@ class HeroController extends Controller
     public function statsDestroy($id)
     {
         try {
-            HeroStat::destroy($id);
+            $stat = HeroStat::find($id);
+            if ($stat) {
+                $stat->delete();
+            }
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

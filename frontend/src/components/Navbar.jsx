@@ -15,12 +15,19 @@ function Navbar() {
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+  const [searchLoading, setSearchLoading] = useState(false)
   const timeoutRef = useRef(null)
+  const searchInputRef = useRef(null)
+  const searchContainerRef = useRef(null)
   
   const cartCount = getCartCount()
   const wishlistCount = wishlistItems.length
   
-  // Categories
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+  
   const categories = {
     premium: [
       { name: 'Black & Silver Platinum', filter: 'Black & Silver Platinum' },
@@ -47,11 +54,77 @@ function Navbar() {
     ]
   }
   
-  // Function to handle category click and navigate with filter
   const handleCategoryClick = (filterValue) => {
     closeMegaMenu()
-    navigate(`/shop?category=${encodeURIComponent(filterValue)}`)
+    const encodedFilter = encodeURIComponent(filterValue)
+    navigate(`/shop?category=${encodedFilter}`)
   }
+  
+  const handleSearch = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([])
+      return
+    }
+    
+    setSearchLoading(true)
+    try {
+      const response = await fetch(`${API_BASE_URL}/products`)
+      const products = await response.json()
+      
+      const searchTerm = query.toLowerCase().trim()
+      
+      const matched = products.filter(product => 
+        product.name.toLowerCase().includes(searchTerm)
+      )
+      
+      const uniqueResults = []
+      const seenIds = new Set()
+      
+      for (const product of matched) {
+        if (!seenIds.has(product.product_id)) {
+          seenIds.add(product.product_id)
+          uniqueResults.push(product)
+        }
+      }
+      
+      setSearchResults(uniqueResults.slice(0, 5))
+    } catch (error) {
+      console.error('Search error:', error)
+    } finally {
+      setSearchLoading(false)
+    }
+  }
+  
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchQuery) {
+        handleSearch(searchQuery)
+      } else {
+        setSearchResults([])
+      }
+    }, 300)
+    
+    return () => clearTimeout(delayDebounce)
+  }, [searchQuery])
+  
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      setTimeout(() => searchInputRef.current.focus(), 100)
+    }
+  }, [isSearchOpen])
+  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target) && isSearchOpen) {
+        setIsSearchOpen(false)
+        setSearchQuery('')
+        setSearchResults([])
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isSearchOpen])
   
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
@@ -79,6 +152,13 @@ function Navbar() {
     logout()
     setIsUserMenuOpen(false)
     navigate('/')
+  }
+  
+  const handleResultClick = (productName) => {
+    setIsSearchOpen(false)
+    setSearchQuery('')
+    setSearchResults([])
+    navigate(`/shop?category=${encodeURIComponent(productName)}`)
   }
   
   useEffect(() => {
@@ -161,8 +241,8 @@ function Navbar() {
             )}
           </div>
           
-          {/* ✅ CHANGE: BEST SELLERS → TOP SELLERS */}
-          <NavLink to="/top-sellers" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>TOP SELLERS</NavLink>
+          {/* ✅ CHANGED: "TOP SELLERS" → "BEST SELLERS" */}
+          <NavLink to="/best-sellers" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>BEST SELLERS</NavLink>
           
           <NavLink to="/deals" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>DEALS</NavLink>
           <NavLink to="/outlets" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>OUR OUTLETS</NavLink>
@@ -171,7 +251,63 @@ function Navbar() {
         </div>
         
         <div className="nav-icons">
-          <button className="icon-btn"><FiSearch /></button>
+          <div className="search-wrapper" ref={searchContainerRef}>
+            <button className="icon-btn" onClick={() => setIsSearchOpen(!isSearchOpen)}>
+              <FiSearch />
+            </button>
+            
+            {isSearchOpen && (
+              <div className="search-dropdown">
+                <div className="search-dropdown-header">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-dropdown-input"
+                  />
+                  <button className="search-dropdown-close" onClick={() => {
+                    setIsSearchOpen(false)
+                    setSearchQuery('')
+                    setSearchResults([])
+                  }}>
+                    ✕
+                  </button>
+                </div>
+                
+                <div className="search-dropdown-results">
+                  {searchLoading ? (
+                    <div className="search-dropdown-loading">Searching...</div>
+                  ) : searchResults.length > 0 ? (
+                    <>
+                      <div className="search-dropdown-count">
+                        Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
+                      </div>
+                      {searchResults.map((product) => (
+                        <div
+                          key={product.product_id}
+                          className="search-dropdown-item"
+                          onClick={() => handleResultClick(product.name)}
+                        >
+                          <div className="search-dropdown-name">{product.name}</div>
+                          <div className="search-dropdown-price">{product.price}</div>
+                        </div>
+                      ))}
+                    </>
+                  ) : searchQuery ? (
+                    <div className="search-dropdown-empty">
+                      No products found for "{searchQuery}"
+                    </div>
+                  ) : (
+                    <div className="search-dropdown-empty">
+                      Type to search products
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
           
           <div className="user-menu-container">
             {user ? (
@@ -225,8 +361,8 @@ function Navbar() {
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>HOME</Link>
           <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)}>SHOP</Link>
           
-          {/* ✅ CHANGE: BEST SELLERS → TOP SELLERS (Mobile menu) */}
-          <Link to="/top-sellers" onClick={() => setIsMobileMenuOpen(false)}>TOP SELLERS</Link>
+          {/* ✅ CHANGED: "TOP SELLERS" → "BEST SELLERS" */}
+          <Link to="/best-sellers" onClick={() => setIsMobileMenuOpen(false)}>BEST SELLERS</Link>
           
           <Link to="/deals" onClick={() => setIsMobileMenuOpen(false)}>DEALS</Link>
           <Link to="/outlets" onClick={() => setIsMobileMenuOpen(false)}>OUR OUTLETS</Link>

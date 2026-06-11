@@ -1,44 +1,47 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaHeart, FaRegHeart, FaShoppingCart } from 'react-icons/fa'
 import { useCart } from '../contexts/CartContext'
-import at1 from '../assets/at1.jpg'
-import at2 from '../assets/at2.jpg'
-import at3 from '../assets/at3.jpg'
-import at4 from '../assets/at4.jpg'
-import at5 from '../assets/at5.jpg'
-import at6 from '../assets/at6.jpg'
-import at7 from '../assets/at7.jpg'
-import at8 from '../assets/at8.jpg'
-import at9 from '../assets/at9.jpg'
-import at10 from '../assets/at10.jpg'
 
 function ProductCard({ id, name, price, rating, priceNum, image_url, discount_price, discount_percent, is_deal }) {
   const { addToCart, addToWishlist, removeFromWishlist, wishlistItems } = useCart()
   
-  const [isWishlisted, setIsWishlisted] = useState(
-    wishlistItems.some(item => item.id === id)
-  )
-  
-  // Local images mapping (fallback)
+  const [isWishlisted, setIsWishlisted] = useState(false)
+
+  const APP_URL = 'http://127.0.0.1:8000'
+  const FRONTEND_URL = 'http://localhost:5173'
+
+  useEffect(() => {
+    setIsWishlisted(wishlistItems.some(item => item.id === id))
+  }, [wishlistItems, id])
+
+  // ✅ Get image URL from database
   const getImageUrl = () => {
-    // If image_url is provided from API, use it
-    if (image_url) {
+    if (!image_url) {
+      return 'https://via.placeholder.com/300x300/8B4513/white?text=No+Image'
+    }
+    
+    // If already full URL
+    if (image_url.startsWith('http://') || image_url.startsWith('https://')) {
       return image_url
     }
-    // Fallback to local images
-    const images = {
-      'Black & Silver Platinum': at1,
-      'Ameer Al Oud': at2,
-      'Oud Al Aswad': at3,
-      'Sultan E Ameer': at4,
-      'Winter Collection 2024': at5,
-      'Oudh Al Ward': at6,
-      'Silver & White': at7,
-      'Musk Al Mahal': at8,
-      'Royal Oud': at9,
-      'Amber Rose': at10,
+    
+    // Uploaded image from admin panel (public/images/products/)
+    if (image_url.startsWith('/images/')) {
+      return `${APP_URL}${image_url}`
     }
-    return images[name] || at1
+    
+    // Old storage images
+    if (image_url.startsWith('/storage/')) {
+      return `${APP_URL}${image_url}`
+    }
+    
+    // Local assets (frontend public folder)
+    if (image_url.startsWith('/assets/')) {
+      const filename = image_url.split('/').pop()
+      return `/assets/${filename}`
+    }
+    
+    return 'https://via.placeholder.com/300x300/8B4513/white?text=No+Image'
   }
   
   // Calculate discount percent if not provided
@@ -52,8 +55,8 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
     id,
     name,
     price: displayPrice,
-    priceNum: discount_price || priceNum || parseInt(price.replace(/[^0-9]/g, '')),
-    rating,
+    priceNum: discount_price || priceNum || 0,
+    rating: rating || 0,
     image: getImageUrl(),
     originalPrice: originalPrice
   }
@@ -61,12 +64,12 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   const handleWishlist = () => {
     if (isWishlisted) {
       removeFromWishlist(id)
-      setIsWishlisted(false)
     } else {
       addToWishlist(product)
-      setIsWishlisted(true)
     }
   }
+  
+  const finalImageUrl = getImageUrl()
   
   return (
     <div className={`product-card ${is_deal ? 'deal-card' : ''}`}>
@@ -76,7 +79,14 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
       )}
       
       <div className="product-image">
-        <img src={getImageUrl()} alt={name} />
+        <img 
+          src={finalImageUrl} 
+          alt={name}
+          onError={(e) => {
+            console.error('Image failed:', finalImageUrl)
+            e.target.src = 'https://via.placeholder.com/300x300/8B4513/white?text=No+Image'
+          }}
+        />
         <button className="wishlist-btn" onClick={handleWishlist}>
           {isWishlisted ? <FaHeart color="#d4af37" /> : <FaRegHeart />}
         </button>
@@ -94,7 +104,7 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
           )}
           <div className="product-rating">
             <span className="stars">★★★★★</span>
-            <span className="rating-count">({rating})</span>
+            <span className="rating-count">({rating || 0})</span>
           </div>
         </div>
         <button className="add-to-cart" onClick={() => addToCart(product)}>

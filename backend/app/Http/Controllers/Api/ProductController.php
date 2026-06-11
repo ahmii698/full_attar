@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    // Get all products with filters
     public function index(Request $request)
     {
         $query = Product::query();
@@ -33,38 +32,69 @@ class ProductController extends Controller
         }
         
         $products = $query->get();
+        
+        // ✅ Add full image URLs
+        foreach ($products as $product) {
+            if ($product->image_url) {
+                if (str_starts_with($product->image_url, '/images/')) {
+                    $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                }
+            }
+        }
+        
         return response()->json($products);
     }
     
-    // Get single product
     public function show($id)
     {
         $product = Product::findOrFail($id);
+        
+        if ($product->image_url && str_starts_with($product->image_url, '/images/')) {
+            $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+        }
+        
         return response()->json($product);
     }
     
-    // Get top sellers
     public function topSellers()
     {
         $products = Product::where('is_top_seller', 1)->get();
+        
+        foreach ($products as $product) {
+            if ($product->image_url && str_starts_with($product->image_url, '/images/')) {
+                $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+            }
+        }
+        
         return response()->json($products);
     }
     
-    // Get new arrivals
     public function newArrivals()
     {
         $products = Product::where('is_new_arrival', 1)->get();
+        
+        foreach ($products as $product) {
+            if ($product->image_url && str_starts_with($product->image_url, '/images/')) {
+                $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+            }
+        }
+        
         return response()->json($products);
     }
     
-    // Get deals - YEH METHOD ADD KARO
     public function deals()
     {
         $products = Product::where('is_deal', 1)->get();
+        
+        foreach ($products as $product) {
+            if ($product->image_url && str_starts_with($product->image_url, '/images/')) {
+                $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+            }
+        }
+        
         return response()->json($products);
     }
     
-    // Get categories
     public function categories()
     {
         $categories = ['Premium', 'Western', 'Eastern'];

@@ -1,165 +1,154 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import at1 from '../assets/at1.jpg'
-import at2 from '../assets/at2.jpg'
-import at3 from '../assets/at3.jpg'
-import at4 from '../assets/at4.jpg'
-import at5 from '../assets/at5.jpg'
-import at6 from '../assets/at6.jpg'
-
-const blogs = [
-  {
-    id: 1,
-    title: "The Art of Oud: A Journey Through Time",
-    excerpt: "Discover the rich history of oud, from ancient Arabian traditions to modern luxury perfumery. Learn how this precious ingredient is sourced and distilled.",
-    image: at1,
-    category: "Oud",
-    date: "March 15, 2024",
-    readTime: "5 min read",
-    author: "Ahmed Raza",
-    tags: ["Oud", "History", "Luxury"]
-  },
-  {
-    id: 2,
-    title: "How to Choose the Perfect Attar for Every Season",
-    excerpt: "Summer fresh? Winter warm? Learn which attars work best for different weather conditions and occasions.",
-    image: at2,
-    category: "Attar Guide",
-    date: "March 10, 2024",
-    readTime: "4 min read",
-    author: "Sarah Khan",
-    tags: ["Attar", "Seasonal", "Guide"]
-  },
-  {
-    id: 3,
-    title: "The Difference Between Oud and Attar",
-    excerpt: "Understanding the nuances between these two beloved fragrance forms. What makes each unique and special.",
-    image: at3,
-    category: "Oud",
-    date: "March 5, 2024",
-    readTime: "3 min read",
-    author: "Omar Farooq",
-    tags: ["Oud", "Attar", "Comparison"]
-  },
-  {
-    id: 4,
-    title: "Top 10 Best Selling Attars of 2024",
-    excerpt: "Check out our most popular fragrances loved by customers worldwide. Discover what makes them special.",
-    image: at4,
-    category: "Trending",
-    date: "February 28, 2024",
-    readTime: "6 min read",
-    author: "Fatima Al Mansouri",
-    tags: ["Best Sellers", "Popular", "2024"]
-  },
-  {
-    id: 5,
-    title: "How to Apply Attar for Long Lasting Effect",
-    excerpt: "Tips and tricks to make your fragrance stay all day long. Maximize your attar's longevity with these techniques.",
-    image: at5,
-    category: "Tips & Tricks",
-    date: "February 20, 2024",
-    readTime: "4 min read",
-    author: "Bilal Ahmed",
-    tags: ["Tips", "Application", "Longevity"]
-  },
-  {
-    id: 6,
-    title: "Behind the Scenes: How Our Attars Are Made",
-    excerpt: "Take a look at our traditional distillation process. From raw materials to the final bottle.",
-    image: at6,
-    category: "Craftsmanship",
-    date: "February 15, 2024",
-    readTime: "7 min read",
-    author: "Ahmed Raza",
-    tags: ["Process", "Traditional", "Craftsmanship"]
-  },
-  {
-    id: 7,
-    title: "Understanding Different Oud Grades",
-    excerpt: "From super king to cambodi, learn about various oud grades and their unique characteristics.",
-    image: at1,
-    category: "Oud",
-    date: "February 10, 2024",
-    readTime: "8 min read",
-    author: "Ahmed Raza",
-    tags: ["Oud", "Grades", "Education"]
-  },
-  {
-    id: 8,
-    title: "Attar vs Perfume: Which One Should You Choose?",
-    excerpt: "Compare traditional attars with modern perfumes. Find out which suits your lifestyle better.",
-    image: at2,
-    category: "Attar Guide",
-    date: "February 5, 2024",
-    readTime: "5 min read",
-    author: "Sarah Khan",
-    tags: ["Attar", "Perfume", "Comparison"]
-  },
-  {
-    id: 9,
-    title: "Seasonal Fragrance Guide: Spring Edition",
-    excerpt: "Discover the best floral and fresh attars to wear during spring season.",
-    image: at3,
-    category: "Seasonal Guide",
-    date: "January 28, 2024",
-    readTime: "4 min read",
-    author: "Omar Farooq",
-    tags: ["Spring", "Seasonal", "Floral"]
-  }
-]
-
-// Categories - Updated (Oud Education -> Oud)
-const categories = [
-  { name: "All Posts", slug: "all", count: blogs.length },
-  { name: "Oud", slug: "oud", count: blogs.filter(b => b.category === "Oud").length },
-  { name: "Attar Guide", slug: "attar-guide", count: blogs.filter(b => b.category === "Attar Guide").length },
-  { name: "Trending", slug: "trending", count: blogs.filter(b => b.category === "Trending").length },
-  { name: "Tips & Tricks", slug: "tips-tricks", count: blogs.filter(b => b.category === "Tips & Tricks").length },
-  { name: "Craftsmanship", slug: "craftsmanship", count: blogs.filter(b => b.category === "Craftsmanship").length },
-  { name: "Seasonal Guide", slug: "seasonal-guide", count: blogs.filter(b => b.category === "Seasonal Guide").length },
-]
-
-// Get unique tags
-const allTags = [...new Set(blogs.flatMap(b => b.tags))]
 
 function BlogsPage() {
   const navigate = useNavigate()
+  const [blogs, setBlogs] = useState([])
+  const [categories, setCategories] = useState([])
+  const [allTags, setAllTags] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [activeCategory, setActiveCategory] = useState("all")
   const [activeTag, setActiveTag] = useState(null)
-  
-  // Filter blogs by category and tag
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+  const APP_URL = 'http://127.0.0.1:8000'
+
+  useEffect(() => {
+    fetchBlogs()
+  }, [])
+
+  const fetchBlogs = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${API_BASE_URL}/blogs`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch blogs')
+      }
+      
+      const data = await response.json()
+      console.log('Blogs from DB:', data)
+      setBlogs(data)
+      
+      const uniqueCategories = [...new Set(data.map(blog => blog.category).filter(Boolean))]
+      const categoryList = [
+        { name: "All Posts", slug: "all", count: data.length },
+        ...uniqueCategories.map(cat => ({
+          name: cat,
+          slug: cat.toLowerCase().replace(/ /g, '-'),
+          count: data.filter(b => b.category === cat).length
+        }))
+      ]
+      setCategories(categoryList)
+      
+      const tagsSet = new Set()
+      data.forEach(blog => {
+        if (blog.tags) {
+          const tagsArray = blog.tags.split(',').map(t => t.trim())
+          tagsArray.forEach(tag => tagsSet.add(tag))
+        }
+      })
+      setAllTags([...tagsSet])
+      
+    } catch (err) {
+      setError(err.message)
+      console.error('Error fetching blogs:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // ✅ FINAL - Handle all image path types
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) {
+      return '/assets/at1.jpg'
+    }
+    
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath
+    }
+    
+    // ✅ New - Images from public/images/blogs folder
+    if (imagePath.startsWith('/images/')) {
+      return `${APP_URL}${imagePath}`
+    }
+    
+    // Old - Uploaded image from admin panel (starts with /storage/)
+    if (imagePath.startsWith('/storage/')) {
+      return `${APP_URL}${imagePath}`
+    }
+    
+    // Local asset (starts with /assets/)
+    if (imagePath.startsWith('/assets/')) {
+      const filename = imagePath.split('/').pop()
+      return `/assets/${filename}`
+    }
+    
+    return '/assets/at1.jpg'
+  }
+
+  const parseTags = (tagsStr) => {
+    if (!tagsStr) return []
+    return tagsStr.split(',').map(t => t.trim())
+  }
+
   const filteredBlogs = blogs.filter(blog => {
-    // Category filter
-    if (activeCategory !== "all" && blog.category.toLowerCase().replace(/ /g, '-') !== activeCategory) {
+    if (activeCategory !== "all" && blog.category?.toLowerCase().replace(/ /g, '-') !== activeCategory) {
       return false
     }
-    // Tag filter
-    if (activeTag && !blog.tags.includes(activeTag)) {
-      return false
+    if (activeTag) {
+      const blogTags = parseTags(blog.tags)
+      if (!blogTags.includes(activeTag)) {
+        return false
+      }
     }
     return true
   })
-  
+
   const handleCategoryClick = (slug) => {
     setActiveCategory(slug)
     setActiveTag(null)
   }
-  
+
   const handleTagClick = (tag) => {
     setActiveTag(tag)
     setActiveCategory("all")
   }
-  
+
   const handleRecentPostClick = (id) => {
     navigate(`/blog/${id}`)
   }
-  
+
   const clearFilters = () => {
     setActiveCategory("all")
     setActiveTag(null)
   }
-  
+
+  if (loading) {
+    return (
+      <div className="blogs-page">
+        <div className="shop-header">
+          <h1>Royal Attar Blogs</h1>
+          <p>Loading blogs...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="blogs-page">
+        <div className="shop-header">
+          <h1>Royal Attar Blogs</h1>
+          <p>Error loading blogs. Please try again later.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const recentPosts = [...blogs].reverse().slice(0, 5)
+
   return (
     <div className="blogs-page">
       <div className="shop-header">
@@ -168,9 +157,7 @@ function BlogsPage() {
       </div>
       
       <div className="blogs-layout">
-        {/* Sidebar */}
         <div className="blogs-sidebar">
-          {/* Categories */}
           <div className="sidebar-category">
             <h3>Categories</h3>
             <ul>
@@ -187,36 +174,35 @@ function BlogsPage() {
             </ul>
           </div>
           
-          {/* Recent Posts */}
           <div className="sidebar-recent">
             <h3>Recent Posts</h3>
             <ul>
-              {blogs.slice(0, 5).map(blog => (
-                <li key={blog.id}>
-                  <a onClick={() => handleRecentPostClick(blog.id)}>{blog.title}</a>
+              {recentPosts.map(blog => (
+                <li key={blog.blog_id}>
+                  <a onClick={() => handleRecentPostClick(blog.blog_id)}>{blog.title}</a>
                   <span className="recent-date">{blog.date}</span>
                 </li>
               ))}
             </ul>
           </div>
           
-          {/* Popular Tags */}
-          <div className="sidebar-tags">
-            <h3>Popular Tags</h3>
-            <div className="tags-cloud">
-              {allTags.map(tag => (
-                <span 
-                  key={tag} 
-                  className={`tag-item ${activeTag === tag ? 'active' : ''}`}
-                  onClick={() => handleTagClick(tag)}
-                >
-                  #{tag}
-                </span>
-              ))}
+          {allTags.length > 0 && (
+            <div className="sidebar-tags">
+              <h3>Popular Tags</h3>
+              <div className="tags-cloud">
+                {allTags.map(tag => (
+                  <span 
+                    key={tag} 
+                    className={`tag-item ${activeTag === tag ? 'active' : ''}`}
+                    onClick={() => handleTagClick(tag)}
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           
-          {/* Clear Filters Button */}
           {(activeCategory !== "all" || activeTag) && (
             <div className="sidebar-clear">
               <button className="clear-filters-btn" onClick={clearFilters}>
@@ -226,7 +212,6 @@ function BlogsPage() {
           )}
         </div>
         
-        {/* Main Content - Blogs Grid */}
         <div className="blogs-main">
           <div className="filter-info">
             {activeTag && <span className="active-filter">Tag: #{activeTag}</span>}
@@ -241,33 +226,46 @@ function BlogsPage() {
             </div>
           ) : (
             <div className="blogs-container">
-              {filteredBlogs.map(blog => (
-                <div key={blog.id} className="blog-card">
-                  <div className="blog-image">
-                    <img src={blog.image} alt={blog.title} />
-                    {/* CATEGORY TAG REMOVED - Sirf image */}
+              {filteredBlogs.map(blog => {
+                const blogTags = parseTags(blog.tags)
+                const imageUrl = getImageUrl(blog.image_url)
+                
+                return (
+                  <div key={blog.blog_id} className="blog-card">
+                    <div className="blog-image">
+                      <img 
+                        src={imageUrl} 
+                        alt={blog.title}
+                        onError={(e) => {
+                          console.error('Image failed:', imageUrl)
+                          e.target.src = '/assets/at1.jpg'
+                        }}
+                      />
+                    </div>
+                    <div className="blog-content">
+                      <div className="blog-meta">
+                        <span className="blog-date">📅 {blog.date}</span>
+                        <span className="blog-readtime">⏱️ {blog.read_time}</span>
+                      </div>
+                      <h3>{blog.title}</h3>
+                      <p>{blog.excerpt || (blog.content?.substring(0, 120) + '...')}</p>
+                      {blogTags.length > 0 && (
+                        <div className="blog-tags">
+                          {blogTags.map((tag, i) => (
+                            <span key={i} className="blog-tag" onClick={() => handleTagClick(tag)}>#{tag}</span>
+                          ))}
+                        </div>
+                      )}
+                      <div className="blog-author">
+                        <span>✍️ By {blog.author}</span>
+                      </div>
+                      <Link to={`/blog/${blog.blog_id}`} className="read-more-btn">
+                        Read More →
+                      </Link>
+                    </div>
                   </div>
-                  <div className="blog-content">
-                    <div className="blog-meta">
-                      <span className="blog-date">📅 {blog.date}</span>
-                      <span className="blog-readtime">⏱️ {blog.readTime}</span>
-                    </div>
-                    <h3>{blog.title}</h3>
-                    <p>{blog.excerpt}</p>
-                    <div className="blog-tags">
-                      {blog.tags.map((tag, i) => (
-                        <span key={i} className="blog-tag" onClick={() => handleTagClick(tag)}>#{tag}</span>
-                      ))}
-                    </div>
-                    <div className="blog-author">
-                      <span>✍️ By {blog.author}</span>
-                    </div>
-                    <Link to={`/blog/${blog.id}`} className="read-more-btn">
-                      Read More →
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>

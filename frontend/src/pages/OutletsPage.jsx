@@ -1,58 +1,94 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaStore, FaClock, FaPhone, FaMapMarkerAlt, FaDirections, FaStar } from 'react-icons/fa'
 
 function OutletsPage() {
-  const [selectedOutlet, setSelectedOutlet] = useState(1)
-  
-  const outlets = [
-    {
-      id: 1,
-      name: "Royal Attar - Dolmen Mall",
-      location: "Dolmen Mall, Clifton, Karachi",
-      address: "Tariq Road, Clifton, Karachi, Pakistan",
-      timings: "11:00 AM - 11:00 PM",
-      phone: "+92 21 1234567",
-      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d28958.64141174819!2d67.0011!3d24.8607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33e0666e6e6e7%3A0x1234567890abcdef!2sDolmen%20Mall%20Clifton!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s",
-      features: ["Premium Collection", "Testers Available", "Free Parking"]
-    },
-    {
-      id: 2,
-      name: "Royal Attar - Lucky One Mall",
-      location: "Lucky One Mall, Rashid Minhas Road, Karachi",
-      address: "Rashid Minhas Road, Gulshan-e-Iqbal, Karachi",
-      timings: "11:00 AM - 11:00 PM",
-      phone: "+92 21 1234568",
-      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d28958.64141174819!2d67.0011!3d24.8607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33e0666e6e6e7%3A0x1234567890abcdef!2sLucky%20One%20Mall!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s",
-      features: ["New Arrivals", "Best Sellers", "Gift Wrapping"]
-    },
-    {
-      id: 3,
-      name: "Royal Attar - Emporium Mall",
-      location: "Emporium Mall, Lahore",
-      address: "Abdul Haque Road, Johar Town, Lahore",
-      timings: "11:00 AM - 11:00 PM",
-      phone: "+92 42 1234567",
-      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d217159.123456789!2d74.0011!3d31.8607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3918e6e6e6e6e6e7%3A0x1234567890abcdef!2sEmporium%20Mall!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s",
-      features: ["Luxury Lounge", "Fragrance Bar", "VIP Area"]
-    },
-    {
-      id: 4,
-      name: "Royal Attar - Centaurus Mall",
-      location: "Centaurus Mall, Islamabad",
-      address: "Jinnah Avenue, F-8, Islamabad",
-      timings: "11:00 AM - 11:00 PM",
-      phone: "+92 51 1234567",
-      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d217159.123456789!2d73.0011!3d33.8607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfe6e6e6e6e6e7%3A0x1234567890abcdef!2sCentaurus%20Mall!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s",
-      features: ["Valet Parking", "Premium Testers", "Exclusive Offers"]
-    },
-  ]
-  
-  const currentOutlet = outlets.find(o => o.id === selectedOutlet) || outlets[0]
-  
+  const [selectedOutlet, setSelectedOutlet] = useState(null)
+  const [outlets, setOutlets] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+
+  useEffect(() => {
+    fetchOutlets()
+  }, [])
+
+  const fetchOutlets = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${API_BASE_URL}/outlets`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch outlets')
+      }
+      
+      const data = await response.json()
+      setOutlets(data)
+      if (data.length > 0) {
+        setSelectedOutlet(data[0].outlet_id)
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const parseFeatures = (features) => {
+    if (!features) return []
+    if (Array.isArray(features)) return features
+    try {
+      return JSON.parse(features)
+    } catch (e) {
+      return []
+    }
+  }
+
   const handleGetDirections = (address) => {
     window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')
   }
-  
+
+  const currentOutlet = outlets.find(o => o.outlet_id === selectedOutlet) || outlets[0]
+
+  if (loading) {
+    return (
+      <div className="outlets-page">
+        <div className="outlets-hero">
+          <div className="outlets-hero-content">
+            <h1>Our Outlets</h1>
+            <p>Loading stores...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="outlets-page">
+        <div className="outlets-hero">
+          <div className="outlets-hero-content">
+            <h1>Our Outlets</h1>
+            <p>Error loading stores. Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (outlets.length === 0) {
+    return (
+      <div className="outlets-page">
+        <div className="outlets-hero">
+          <div className="outlets-hero-content">
+            <h1>Our Outlets</h1>
+            <p>No stores found at the moment.</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="outlets-page">
       <div className="outlets-hero">
@@ -66,9 +102,9 @@ function OutletsPage() {
         <div className="outlets-grid">
           {outlets.map(outlet => (
             <div 
-              key={outlet.id} 
-              className={`outlet-card ${selectedOutlet === outlet.id ? 'selected' : ''}`} 
-              onClick={() => setSelectedOutlet(outlet.id)}
+              key={outlet.outlet_id} 
+              className={`outlet-card ${selectedOutlet === outlet.outlet_id ? 'selected' : ''}`} 
+              onClick={() => setSelectedOutlet(outlet.outlet_id)}
             >
               <div className="outlet-card-header">
                 <div className="outlet-icon">
@@ -82,7 +118,7 @@ function OutletsPage() {
                 <p><FaPhone /> {outlet.phone}</p>
               </div>
               <div className="outlet-features">
-                {outlet.features.map((feature, idx) => (
+                {parseFeatures(outlet.features).map((feature, idx) => (
                   <span key={idx} className="feature-tag">{feature}</span>
                 ))}
               </div>
@@ -95,11 +131,11 @@ function OutletsPage() {
       </div>
       
       <div className="outlets-map-section">
-        <h3>📍 {currentOutlet.name}</h3>
+        <h3>📍 {currentOutlet?.name}</h3>
         <p>Click on any outlet card to view location on map</p>
         <div className="outlets-map-container">
           <iframe 
-            src={currentOutlet.mapUrl}
+            src={currentOutlet?.map_url}
             width="100%" 
             height="400" 
             style={{ border: 0, borderRadius: '20px' }}
@@ -109,7 +145,7 @@ function OutletsPage() {
           ></iframe>
         </div>
         <div className="map-note">
-          <FaStar /> All outlets are open 7 days a week • {currentOutlet.timings}
+          <FaStar /> All outlets are open 7 days a week • {currentOutlet?.timings}
         </div>
       </div>
     </div>

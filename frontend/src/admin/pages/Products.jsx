@@ -6,6 +6,11 @@ import '../styles/Products.css'
 function Products() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 8
+
+  const APP_URL = 'http://localhost:8000'
+  const FRONTEND_URL = 'http://localhost:5173'
 
   useEffect(() => {
     fetchProducts()
@@ -29,13 +34,59 @@ function Products() {
     }
   }
 
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) {
+      return 'https://placehold.co/50x50/1a1a2a/d4af37?text=No+Image'
+    }
+    
+    if (imagePath.startsWith('http')) {
+      return imagePath
+    }
+    
+    if (imagePath.startsWith('/images/')) {
+      return `${APP_URL}${imagePath}`
+    }
+    
+    if (imagePath.startsWith('/storage/')) {
+      return `${APP_URL}${imagePath}`
+    }
+    
+    if (imagePath.startsWith('/assets/')) {
+      return `${FRONTEND_URL}${imagePath}`
+    }
+    
+    return 'https://placehold.co/50x50/1a1a2a/d4af37?text=No+Image'
+  }
+
+  // Pagination calculations
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(products.length / itemsPerPage)
+
+  const goToPage = (pageNumber) => {
+    setCurrentPage(pageNumber)
+  }
+
+  const goToPrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+
+  const goToNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+
   if (loading) return <div className="admin-loading">Loading products...</div>
 
   return (
     <div className="admin-products-page">
       <div className="admin-page-header">
         <h2>Products</h2>
-        <Link to="/admin/products/create" className="admin-btn-primary">Add New Product</Link>
+        <Link to="/admin/products/create" className="admin-btn-primary">+ Add New Product</Link>
       </div>
       <div className="admin-data-table-container">
         <table className="admin-data-table">
@@ -56,14 +107,15 @@ function Products() {
             </tr>
           </thead>
           <tbody>
-            {products.map(product => (
+            {currentProducts.map(product => (
               <tr key={product.product_id}>
                 <td>{product.product_id}</td>
                 <td>
                   <img 
-                    src={product.image_url} 
+                    src={getImageUrl(product.image_url)} 
                     alt={product.name} 
                     className="admin-product-image"
+                    style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
                     onError={(e) => {
                       e.target.src = 'https://placehold.co/50x50/1a1a2a/d4af37?text=No+Image'
                     }}
@@ -86,6 +138,43 @@ function Products() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination Section */}
+      {totalPages > 1 && (
+        <div className="pagination-container">
+          <button 
+            onClick={goToPrevious} 
+            disabled={currentPage === 1}
+            className="pagination-btn"
+          >
+            ← Previous
+          </button>
+          
+          <div className="pagination-pages">
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => goToPage(index + 1)}
+                className={`pagination-page ${currentPage === index + 1 ? 'active' : ''}`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+          
+          <button 
+            onClick={goToNext} 
+            disabled={currentPage === totalPages}
+            className="pagination-btn"
+          >
+            Next →
+          </button>
+        </div>
+      )}
+      
+      <div className="pagination-info">
+        Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, products.length)} of {products.length} products
       </div>
     </div>
   )

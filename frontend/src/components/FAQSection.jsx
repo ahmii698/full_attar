@@ -1,40 +1,68 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 
 function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null)
-  
-  const faqs = [
-    {
-      question: "How long does shipping take?",
-      answer: "Domestic shipping takes 3-5 business days. International shipping takes 7-14 business days depending on the destination. Tracking information will be provided once your order ships."
-    },
-    {
-      question: "Do you offer refunds?",
-      answer: "Yes, we offer 30-day returns on unopened products in original condition. Once we receive and inspect the returned item, we will process your refund within 5-7 business days."
-    },
-    {
-      question: "Is customer support available?",
-      answer: "Our customer support team is available 24/7 via email at support@royalattar.com and live chat during business hours (9 AM - 9 PM, Monday to Saturday)."
-    },
-    {
-      question: "Are your attars 100% natural?",
-      answer: "Yes! All our attars are 100% natural, free from synthetic additives, alcohol, and chemicals. We use traditional distillation methods passed down through generations."
-    },
-    {
-      question: "How to apply attar for best results?",
-      answer: "Apply on pulse points: wrists, behind ears, neck, and inner elbows. A little goes a long way. For longer lasting effect, apply on clothes or after moisturizing skin."
-    },
-    {
-      question: "Do you ship internationally?",
-      answer: "Yes, we ship worldwide! Shipping costs vary by location. Free international shipping on orders over Rs. 10,000."
+  const [faqs, setFaqs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+
+  useEffect(() => {
+    fetchFAQs()
+  }, [])
+
+  const fetchFAQs = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${API_BASE_URL}/faqs`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch FAQs')
+      }
+      
+      const data = await response.json()
+      
+      const activeFaqs = data.filter(faq => faq.is_active === true || faq.is_active === 1)
+      activeFaqs.sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+      
+      setFaqs(activeFaqs)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
-  ]
-  
+  }
+
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index)
   }
-  
+
+  if (loading) {
+    return (
+      <section className="faq-section">
+        <div className="faq-header">
+          <h2>Frequently Asked <span className="gold">Questions</span></h2>
+          <div className="heading-divider"></div>
+          <p>Loading FAQs...</p>
+        </div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="faq-section">
+        <div className="faq-header">
+          <h2>Frequently Asked <span className="gold">Questions</span></h2>
+          <div className="heading-divider"></div>
+          <p>Error loading FAQs: {error}</p>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="faq-section">
       <div className="faq-header">
@@ -44,21 +72,30 @@ function FAQSection() {
       </div>
       
       <div className="faq-container">
-        {faqs.map((faq, index) => (
-          <div key={index} className={`faq-item ${openIndex === index ? 'active' : ''}`}>
-            <div className="faq-question" onClick={() => toggleFAQ(index)}>
-              <h3>{faq.question}</h3>
-              <span className="faq-icon">
-                {openIndex === index ? <FaMinus /> : <FaPlus />}
-              </span>
-            </div>
-            {openIndex === index && (
-              <div className="faq-answer">
-                <p>{faq.answer}</p>
-              </div>
-            )}
+        {faqs.length === 0 ? (
+          <div className="no-faqs">
+            <p>No FAQs available at the moment.</p>
           </div>
-        ))}
+        ) : (
+          faqs.map((faq, index) => (
+            <div key={faq.faq_id} className={`faq-item ${openIndex === index ? 'active' : ''}`}>
+              <div className="faq-question" onClick={() => toggleFAQ(index)}>
+                <h3>{faq.question}</h3>
+                <span className="faq-icon">
+                  {openIndex === index ? <FaMinus /> : <FaPlus />}
+                </span>
+              </div>
+              {openIndex === index && (
+                <div className="faq-answer">
+                  <p>{faq.answer}</p>
+                  {faq.category && (
+                    <span className="faq-category-tag">{faq.category}</span>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
       
       <div className="faq-footer">

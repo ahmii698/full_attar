@@ -15,13 +15,13 @@ function DealsPage() {
   const [wishlistState, setWishlistState] = useState([])
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-  const STORAGE_URL = import.meta.env.VITE_STORAGE_URL || 'http://127.0.0.1:8000/storage'
+  const APP_URL = 'http://127.0.0.1:8000'
+  const FRONTEND_URL = 'http://localhost:5173'
 
   useEffect(() => {
     fetchDealsProducts()
   }, [])
 
-  // Sync wishlist state
   useEffect(() => {
     setWishlistState(wishlistItems.map(item => item.id))
   }, [wishlistItems])
@@ -29,12 +29,7 @@ function DealsPage() {
   const fetchDealsProducts = async () => {
     try {
       setLoading(true)
-      
-      // Option 1: If you have dedicated API endpoint
       const response = await fetch(`${API_BASE_URL}/deals`)
-      
-      // Option 2: If no dedicated endpoint, fetch all and filter (uncomment below)
-      // const response = await fetch(`${API_BASE_URL}/products`)
       
       if (!response.ok) {
         throw new Error('Failed to fetch deals')
@@ -42,10 +37,6 @@ function DealsPage() {
       
       let data = await response.json()
       console.log('Deals Products:', data)
-      
-      // If using /products endpoint, filter is_deal = 1
-      // data = data.filter(product => product.is_deal === 1)
-      
       setDealsProducts(data)
     } catch (err) {
       setError(err.message)
@@ -55,17 +46,37 @@ function DealsPage() {
     }
   }
 
-  // Function to get image URL
+  // ✅ Get image from database path
   const getImageUrl = (imagePath) => {
-    if (!imagePath) return null
-    if (imagePath.startsWith('http')) return imagePath
-    const cleanPath = imagePath.replace(/^\//, '')
-    return `${STORAGE_URL}/${cleanPath}`
+    if (!imagePath) {
+      return 'https://via.placeholder.com/300x300/8B4513/white?text=No+Image'
+    }
+    
+    if (imagePath.startsWith('http')) {
+      return imagePath
+    }
+    
+    // Uploaded image from admin panel (public/images/products/)
+    if (imagePath.startsWith('/images/')) {
+      return `${APP_URL}${imagePath}`
+    }
+    
+    // Old storage images
+    if (imagePath.startsWith('/storage/')) {
+      return `${APP_URL}${imagePath}`
+    }
+    
+    // Local assets (frontend public folder)
+    if (imagePath.startsWith('/assets/')) {
+      const filename = imagePath.split('/').pop()
+      return `/assets/${filename}`
+    }
+    
+    return 'https://via.placeholder.com/300x300/8B4513/white?text=No+Image'
   }
 
-  // Calculate discount percent
   const calculateDiscountPercent = (priceNum, discountPrice) => {
-    if (discountPrice && priceNum) {
+    if (discountPrice && priceNum && discountPrice < priceNum) {
       const discount = ((priceNum - discountPrice) / priceNum) * 100
       return Math.round(discount)
     }
@@ -78,13 +89,15 @@ function DealsPage() {
       return
     }
     
-    if (wishlistState.includes(product.id)) {
-      removeFromWishlist(product.id)
+    const productId = product.product_id || product.id
+    
+    if (wishlistState.includes(productId)) {
+      removeFromWishlist(productId)
     } else {
       addToWishlist({
-        id: product.id,
+        id: productId,
         name: product.name,
-        price: `Rs. ${product.discount_price || product.price_num}`,
+        price: product.discount_price ? `Rs. ${product.discount_price}` : product.price,
         priceNum: product.discount_price || product.price_num,
         rating: product.rating,
         image: getImageUrl(product.image_url)
@@ -98,10 +111,12 @@ function DealsPage() {
       return
     }
     
+    const productId = product.product_id || product.id
+    
     addToCart({
-      id: product.id,
+      id: productId,
       name: product.name,
-      price: `Rs. ${product.discount_price || product.price_num}`,
+      price: product.discount_price ? `Rs. ${product.discount_price}` : product.price,
       priceNum: product.discount_price || product.price_num,
       rating: product.rating,
       image: getImageUrl(product.image_url)
@@ -110,7 +125,6 @@ function DealsPage() {
   
   const isInWishlist = (productId) => wishlistState.includes(productId)
 
-  // Loading state
   if (loading) {
     return (
       <div className="shop-page">
@@ -126,7 +140,6 @@ function DealsPage() {
     )
   }
 
-  // Error state
   if (error) {
     return (
       <div className="shop-page">
@@ -145,7 +158,7 @@ function DealsPage() {
   return (
     <div className="shop-page">
       <div className="shop-header">
-        <h1>Hot Deals 🔥</h1>
+        <h1>Hot Deals </h1>
         <p>Limited time offers. Up to 40% off on selected attars!</p>
       </div>
       
@@ -157,6 +170,7 @@ function DealsPage() {
         ) : (
           <div className="products-grid">
             {dealsProducts.map(product => {
+              const productId = product.product_id || product.id
               const discountPercent = calculateDiscountPercent(
                 product.price_num, 
                 product.discount_price
@@ -167,25 +181,28 @@ function DealsPage() {
               const originalPrice = product.discount_price 
                 ? `Rs. ${product.price_num.toLocaleString()}`
                 : null
+              const imageUrl = getImageUrl(product.image_url)
               
               return (
-                <div key={product.product_id || product.id} className="product-card deal-card">
+                <div key={productId} className="product-card deal-card">
                   {discountPercent > 0 && (
                     <div className="discount-tag">{discountPercent}% OFF</div>
                   )}
                   <div className="product-image">
                     <img 
-                      src={getImageUrl(product.image_url)} 
+                      src={imageUrl} 
                       alt={product.name}
+                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/300x300?text=No+Image'
+                        console.error('Image failed:', imageUrl)
+                        e.target.src = 'https://via.placeholder.com/300x300/8B4513/white?text=No+Image'
                       }}
                     />
                     <button 
                       className="wishlist-btn" 
                       onClick={() => handleWishlist(product)}
                     >
-                      {isInWishlist(product.product_id || product.id) ? (
+                      {isInWishlist(productId) ? (
                         <FaHeart color="#d4af37" />
                       ) : (
                         <FaRegHeart />

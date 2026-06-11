@@ -22,27 +22,23 @@ function TestimonialSlider() {
       }
       
       const data = await response.json()
-      console.log('Testimonials:', data)
       
-      // Filter only approved testimonials (is_approved = 1)
       const approvedTestimonials = data.filter(t => t.is_approved === 1)
       setTestimonials(approvedTestimonials)
       
     } catch (err) {
       setError(err.message)
-      console.error('Error fetching testimonials:', err)
     } finally {
       setLoading(false)
     }
   }
 
-  // Auto-slide effect
   useEffect(() => {
     if (testimonials.length === 0) return
     
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length)
-    }, 7000) // 7 seconds
+    }, 7000)
     
     return () => clearInterval(interval)
   }, [testimonials.length])
@@ -59,7 +55,6 @@ function TestimonialSlider() {
     setCurrentIndex(index)
   }
 
-  // Loading state
   if (loading) {
     return (
       <div className="testimonial-slider">
@@ -71,7 +66,6 @@ function TestimonialSlider() {
     )
   }
 
-  // Error state
   if (error) {
     return (
       <div className="testimonial-slider">
@@ -83,7 +77,6 @@ function TestimonialSlider() {
     )
   }
 
-  // No testimonials
   if (testimonials.length === 0) {
     return (
       <div className="testimonial-slider">
@@ -111,13 +104,11 @@ function TestimonialSlider() {
         )}
       </div>
       
-      {/* Navigation Buttons */}
       {testimonials.length > 1 && (
         <>
           <button className="slider-nav prev" onClick={goToPrevious}>‹</button>
           <button className="slider-nav next" onClick={goToNext}>›</button>
           
-          {/* Dots Indicator */}
           <div className="slider-dots">
             {testimonials.map((_, index) => (
               <button

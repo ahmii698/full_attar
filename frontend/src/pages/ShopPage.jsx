@@ -22,7 +22,6 @@ function ShopPage() {
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
-  // Fetch all products from database
   useEffect(() => {
     fetchProducts()
   }, [])
@@ -41,7 +40,6 @@ function ShopPage() {
       
       setAllProducts(data)
       
-      // Extract unique categories from products
       const uniqueCategories = ["All", ...new Set(data.map(p => p.category).filter(Boolean))]
       setCategories(uniqueCategories)
       
@@ -53,30 +51,116 @@ function ShopPage() {
     }
   }
 
-  // Get category or gender from URL params
+  // ✅ Smart search function - finds products with similar names
+  const findSimilarProducts = (searchTerm, products) => {
+    if (!searchTerm || searchTerm === 'All') return []
+    
+    const searchLower = searchTerm.toLowerCase()
+    
+    // First try exact match
+    let exactMatches = products.filter(p => 
+      p.name.toLowerCase() === searchLower
+    )
+    
+    if (exactMatches.length > 0) {
+      return exactMatches
+    }
+    
+    // Then try contains match
+    let containsMatches = products.filter(p => 
+      p.name.toLowerCase().includes(searchLower)
+    )
+    
+    if (containsMatches.length > 0) {
+      return containsMatches
+    }
+    
+    // Then try word-by-word match (for "Royal Oud" vs "Royal Oudf")
+    const searchWords = searchLower.split(' ')
+    let wordMatches = products.filter(p => {
+      const productLower = p.name.toLowerCase()
+      // Check if at least 2 words match or 70% of search term matches
+      let matchCount = 0
+      searchWords.forEach(word => {
+        if (word.length > 2 && productLower.includes(word)) {
+          matchCount++
+        }
+      })
+      // Return true if at least 50% of words match
+      return matchCount >= Math.ceil(searchWords.length / 2)
+    })
+    
+    if (wordMatches.length > 0) {
+      return wordMatches
+    }
+    
+    // Finally, try partial word match (first 3-4 characters)
+    const firstFewChars = searchLower.substring(0, 4)
+    if (firstFewChars.length >= 3) {
+      let partialMatches = products.filter(p => 
+        p.name.toLowerCase().includes(firstFewChars)
+      )
+      if (partialMatches.length > 0) {
+        return partialMatches
+      }
+    }
+    
+    return []
+  }
+
+  // ✅ Handle URL params with smart matching
   useEffect(() => {
     const params = new URLSearchParams(location.search)
-    const categoryParam = params.get('category')
+    let categoryParam = params.get('category')
     const genderParam = params.get('gender')
     
+    console.log('Raw category param:', categoryParam)
+    
     if (categoryParam) {
+      categoryParam = decodeURIComponent(categoryParam)
+      console.log('Decoded category param:', categoryParam)
+      
+      // First check if it's a gender
       if (categoryParam === 'Male' || categoryParam === 'Female' || categoryParam === 'Unisex') {
         setSelectedGender(categoryParam)
         setSelectedCategory("All")
-      } else {
+        setSearchQuery("")
+      } 
+      // Check if it's a category
+      else if (categories.includes(categoryParam)) {
         setSelectedCategory(categoryParam)
         setSelectedGender("All")
+        setSearchQuery("")
       }
+      // Otherwise treat as product name search with smart matching
+      else {
+        // Find similar products
+        const similarProducts = findSimilarProducts(categoryParam, allProducts)
+        
+        if (similarProducts.length > 0) {
+          // If we found similar products, set search query
+          setSearchQuery(categoryParam)
+          setSelectedCategory("All")
+          setSelectedGender("All")
+          console.log('Found similar products:', similarProducts.map(p => p.name))
+        } else {
+          // No matches found, set as category
+          setSelectedCategory(categoryParam)
+          setSelectedGender("All")
+          setSearchQuery("")
+        }
+      }
+      
       setSelectedNotes([])
       setPriceRange(10000)
-      setSearchQuery("")
     }
     
     if (genderParam) {
       setSelectedGender(genderParam)
       setSelectedCategory("All")
+      setSearchQuery("")
     }
-  }, [location.search])
+  }, [location.search, allProducts, categories])
   
   const handleNoteChange = (note) => {
     setSelectedNotes(prev =>
@@ -87,6 +171,7 @@ function ShopPage() {
   const handleGenderClick = (gender) => {
     setSelectedGender(gender)
     setSelectedCategory("All")
+    setSearchQuery("")
     if (gender === 'All') {
       navigate('/shop')
     } else {
@@ -97,20 +182,20 @@ function ShopPage() {
   const handleCategoryClick = (category) => {
     setSelectedCategory(category)
     setSelectedGender("All")
+    setSearchQuery("")
     if (category === 'All') {
       navigate('/shop')
     } else {
-      navigate(`/shop?category=${category}`)
+      navigate(`/shop?category=${encodeURIComponent(category)}`)
     }
   }
   
-  // Parse notes string to array (e.g., "Oud,Amber" -> ["Oud", "Amber"])
   const parseNotes = (notesStr) => {
     if (!notesStr) return []
     return notesStr.split(',').map(n => n.trim())
   }
   
-  // Filter products
+  // ✅ Smart filter products
   const filteredProducts = allProducts.filter(product => {
     // Category filter
     if (selectedCategory !== "All" && product.category !== selectedCategory) {
@@ -119,6 +204,12 @@ function ShopPage() {
     
     // Gender filter
     if (selectedGender !== "All" && product.gender !== selectedGender) return false
+    
+    // Smart search filter
+    if (searchQuery) {
+      const similarProducts = findSimilarProducts(searchQuery, [product])
+      if (similarProducts.length === 0) return false
+    }
     
     // Price filter
     const productPrice = product.price_num || 0
@@ -131,15 +222,9 @@ function ShopPage() {
       if (!hasNote) return false
     }
     
-    // Search query filter
-    if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false
-    }
-    
     return true
   })
   
-  // Loading state
   if (loading) {
     return (
       <div className="shop-page">
@@ -155,7 +240,6 @@ function ShopPage() {
     )
   }
   
-  // Error state
   if (error) {
     return (
       <div className="shop-page">
@@ -179,21 +263,26 @@ function ShopPage() {
       </div>
       
       <div className="shop-container">
-        {/* Sidebar */}
         <div className="shop-sidebar">
-          {/* Search Bar */}
           <div className="sidebar-section">
             <h4>Search</h4>
             <input 
               type="text" 
               placeholder="Search products..." 
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                // Update URL when searching
+                if (e.target.value) {
+                  navigate(`/shop?category=${encodeURIComponent(e.target.value)}`)
+                } else {
+                  navigate('/shop')
+                }
+              }}
               className="search-input"
             />
           </div>
           
-          {/* Categories */}
           <div className="sidebar-section">
             <h4>Categories</h4>
             <ul>
@@ -211,7 +300,6 @@ function ShopPage() {
             </ul>
           </div>
           
-          {/* Gender */}
           <div className="sidebar-section">
             <h4>Gender</h4>
             <ul>
@@ -229,7 +317,6 @@ function ShopPage() {
             </ul>
           </div>
           
-          {/* Price Range */}
           <div className="sidebar-section">
             <h4>Price Range</h4>
             <input 
@@ -247,7 +334,6 @@ function ShopPage() {
             </div>
           </div>
           
-          {/* Fragrance Notes */}
           <div className="sidebar-section">
             <h4>Fragrance Notes</h4>
             {fragranceNotes.map(note => (
@@ -261,7 +347,6 @@ function ShopPage() {
             ))}
           </div>
           
-          {/* Reset Filters */}
           {(selectedCategory !== "All" || selectedGender !== "All" || priceRange < 10000 || selectedNotes.length > 0 || searchQuery) && (
             <div className="sidebar-section">
               <button 
@@ -281,7 +366,6 @@ function ShopPage() {
           )}
         </div>
         
-        {/* Products Grid */}
         <div className="shop-products">
           <div className="products-count">
             Showing {filteredProducts.length} products

@@ -8,7 +8,7 @@ function Hero() {
   const [error, setError] = useState(null)
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-  const STORAGE_URL = import.meta.env.VITE_STORAGE_URL || 'http://127.0.0.1:8000/storage'
+  const APP_URL = 'http://127.0.0.1:8000'
 
   useEffect(() => {
     fetchHeroData()
@@ -24,7 +24,6 @@ function Hero() {
       }
       
       const data = await response.json()
-      console.log('Hero data:', data)
       
       let activeSlider = null
       
@@ -34,11 +33,9 @@ function Hero() {
         activeSlider = data
       }
       
-      console.log('Image URL from DB:', activeSlider?.image_url)
       setHeroData(activeSlider)
     } catch (err) {
       setError(err.message)
-      console.error('Error fetching hero:', err)
     }
   }
 
@@ -51,7 +48,6 @@ function Hero() {
       }
       
       const data = await response.json()
-      console.log('Stats data:', data)
       
       if (Array.isArray(data)) {
         setStats(data)
@@ -65,30 +61,31 @@ function Hero() {
         setStats([])
       }
     } catch (err) {
-      console.error('Error fetching stats:', err)
       setStats([])
     } finally {
       setLoading(false)
     }
   }
 
-  // ✅ Function to get correct image URL
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null
     
-    // If already has http/https, return as is
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return imagePath
     }
     
-    // Remove leading slash if exists
-    const cleanPath = imagePath.replace(/^\//, '')
+    if (imagePath.startsWith('/images/')) {
+      return `${APP_URL}${imagePath}`
+    }
     
-    // Construct full URL
-    return `${STORAGE_URL}/${cleanPath}`
+    if (imagePath.startsWith('/storage/')) {
+      return `${APP_URL}${imagePath}`
+    }
+    
+    const cleanPath = imagePath.replace(/^\//, '')
+    return `${APP_URL}/${cleanPath}`
   }
 
-  // Loading state
   if (loading) {
     return (
       <div className="hero-wrapper">
@@ -102,7 +99,6 @@ function Hero() {
     )
   }
 
-  // Error state
   if (error || !heroData) {
     return (
       <div className="hero-wrapper">
@@ -121,13 +117,11 @@ function Hero() {
   }
 
   const imageUrl = getImageUrl(heroData.image_url)
-  console.log('Final image URL:', imageUrl)
 
   return (
     <div className="hero-wrapper">
       <div className="main-content">
         <div className="left-content">
-          {/* Badge */}
           {heroData.badge_text && (
             <div className="badge">
               <span className="badge-dot"></span>
@@ -135,7 +129,6 @@ function Hero() {
             </div>
           )}
 
-          {/* Title */}
           <h1 className="main-title">
             {heroData.title && heroData.title.includes('\n') 
               ? heroData.title.split('\n').map((line, i) => (
@@ -148,7 +141,6 @@ function Hero() {
             }
           </h1>
 
-          {/* Description */}
           {heroData.description && (
             <div className="description-wrapper">
               {heroData.description.split('\n').map((para, idx) => (
@@ -157,7 +149,6 @@ function Hero() {
             </div>
           )}
 
-          {/* Stats */}
           {stats.length > 0 && (
             <div className="stats">
               {stats.map((stat, index) => (
@@ -169,7 +160,6 @@ function Hero() {
             </div>
           )}
 
-          {/* Button */}
           <div className="button-group">
             <button 
               className="explore-btn"
@@ -186,23 +176,21 @@ function Hero() {
 
         <div className="right-content">
           <div className="bottle-wrapper">
-            {/* ✅ Show image if exists, otherwise show BottleImage component */}
             {imageUrl ? (
               <img 
                 src={imageUrl} 
                 alt={heroData.title || 'Hero Image'}
-                className="hero-image"
+                className="bottle-img"
                 onError={(e) => {
-                  console.error('Image failed to load:', imageUrl)
+                  console.error('Image failed:', imageUrl)
                   e.target.style.display = 'none'
-                  // Show fallback
-                  e.target.nextSibling.style.display = 'flex'
+                  if (e.target.nextSibling) {
+                    e.target.nextSibling.style.display = 'flex'
+                  }
                 }}
-                onLoad={() => console.log('Image loaded successfully:', imageUrl)}
               />
             ) : null}
             
-            {/* Fallback component when no image or image fails */}
             <div style={{ display: imageUrl ? 'none' : 'flex' }}>
               <BottleImage />
             </div>

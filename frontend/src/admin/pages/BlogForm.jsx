@@ -7,6 +7,8 @@ function BlogForm() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState('')
   const [formData, setFormData] = useState({
     title: '',
     category: 'Oud',
@@ -19,6 +21,9 @@ function BlogForm() {
     read_time: '5 min read'
   })
   const [isEdit, setIsEdit] = useState(false)
+
+  const APP_URL = 'http://localhost:8000'
+  const FRONTEND_URL = 'http://localhost:5173'
 
   useEffect(() => {
     if (id) {
@@ -44,30 +49,20 @@ function BlogForm() {
           date: blog.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
           read_time: blog.read_time || '5 min read'
         })
+        
+        // ✅ FIXED: Image preview for both asset types
+        if (blog.image_url) {
+          if (blog.image_url.startsWith('/storage/')) {
+            setImagePreview(`${APP_URL}${blog.image_url}`)
+          } else if (blog.image_url.startsWith('/assets/')) {
+            setImagePreview(`${FRONTEND_URL}${blog.image_url}`)
+          } else {
+            setImagePreview(blog.image_url)
+          }
+        }
       }
     } catch (error) {
       console.error('Error fetching blog:', error)
-      // Fallback dummy data
-      const dummyBlog = {
-        title: 'The Art of Oud: A Journey Through Time',
-        category: 'Oud',
-        excerpt: 'Discover the rich history of oud from ancient Arabian traditions to modern luxury perfumery.',
-        content: '<p>Oud, also known as agarwood, is one of the most precious and expensive natural fragrance ingredients in the world...</p>',
-        author: 'Ahmed Raza',
-        tags: 'Oud,History,Luxury',
-        image_url: '/assets/at1.jpg'
-      }
-      setFormData({
-        title: dummyBlog.title,
-        category: dummyBlog.category,
-        excerpt: dummyBlog.excerpt,
-        content: dummyBlog.content,
-        author: dummyBlog.author,
-        tags: dummyBlog.tags,
-        image_url: dummyBlog.image_url,
-        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-        read_time: '5 min read'
-      })
     } finally {
       setLoading(false)
     }
@@ -78,20 +73,41 @@ function BlogForm() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setImageFile(file)
+      setImagePreview(URL.createObjectURL(file))
+      setFormData(prev => ({ ...prev, image_url: '' }))
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     
     try {
+      const submitData = new FormData()
+      
+      Object.keys(formData).forEach(key => {
+        if (formData[key]) {
+          submitData.append(key, formData[key])
+        }
+      })
+      
+      if (imageFile) {
+        submitData.append('image', imageFile)
+      }
+
       if (isEdit) {
-        await updateBlog(id, formData)
+        await updateBlog(id, submitData)
       } else {
-        await createBlog(formData)
+        await createBlog(submitData)
       }
       navigate('/admin/blogs')
     } catch (error) {
       console.error('Error saving blog:', error)
-      alert('Error saving blog')
+      alert('Error saving blog. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -106,7 +122,7 @@ function BlogForm() {
         <Link to="/admin/blogs" className="btn-secondary">Back to Blogs</Link>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="form-grid">
           <div className="form-group full-width">
             <label>Blog Title *</label>
@@ -185,16 +201,54 @@ function BlogForm() {
             />
           </div>
 
+          {/* Image Upload Section */}
           <div className="form-group">
-            <label>Image URL</label>
-            <input
-              type="text"
-              name="image_url"
-              value={formData.image_url}
-              onChange={handleChange}
-              className="form-control"
-              placeholder="/assets/blog-image.jpg"
-            />
+            <label>Blog Image</label>
+            <div className="image-upload-area">
+              <input
+                type="file"
+                id="blog-image"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+              />
+              <button 
+                type="button" 
+                className="upload-image-btn"
+                onClick={() => document.getElementById('blog-image').click()}
+              >
+                📁 Choose Image from Computer
+              </button>
+              
+              {imagePreview && (
+                <div className="image-preview-container">
+                  <img src={imagePreview} alt="Preview" className="image-preview" />
+                  <button 
+                    type="button" 
+                    className="remove-image-btn"
+                    onClick={() => {
+                      setImageFile(null)
+                      setImagePreview('')
+                      setFormData(prev => ({ ...prev, image_url: '' }))
+                    }}
+                  >
+                    ✕ Remove
+                  </button>
+                </div>
+              )}
+              
+              <div className="image-url-alternative">
+                <label className="alt-label">OR Enter Image URL:</label>
+                <input
+                  type="text"
+                  name="image_url"
+                  value={formData.image_url}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="/assets/blog-image.jpg or /storage/blogs/image.jpg"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="form-group full-width">
@@ -217,7 +271,7 @@ function BlogForm() {
               onChange={handleChange}
               className="form-control content-editor"
               rows="15"
-              placeholder="Write your blog content here... You can use HTML tags like &lt;p&gt;, &lt;h2&gt;, &lt;strong&gt;, etc."
+              placeholder="Write your blog content here... You can use HTML tags like <p>, <h2>, <strong>, etc."
             />
             <small className="form-text">
               You can use HTML tags: &lt;p&gt;, &lt;h1&gt;-&lt;h6&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;li&gt;, etc.

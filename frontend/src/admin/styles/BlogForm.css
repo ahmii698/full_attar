@@ -65,7 +65,7 @@ textarea.form-control {
   min-height: 100px;
 }
 
-/* ========== CONTENT EDITOR STYLES (ADD THIS) ========== */
+/* ========== CONTENT EDITOR STYLES ========== */
 .content-editor {
   font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
   font-size: 13px;
@@ -115,6 +115,103 @@ textarea.form-control {
   margin-top: 20px;
 }
 
+/* ========== IMAGE UPLOAD STYLES ========== */
+.image-upload-area {
+  border: 2px dashed rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
+}
+
+.image-upload-area:hover {
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.upload-image-btn {
+  background: linear-gradient(135deg, #d4af37, #b8960c);
+  color: #000000;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-image-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+.image-preview-container {
+  margin-top: 20px;
+  position: relative;
+  display: inline-block;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1a1a1a;
+  padding: 10px;
+}
+
+.image-preview {
+  max-width: 200px;
+  max-height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  z-index: 10;
+}
+
+.remove-image-btn:hover {
+  background: #cc0000;
+  transform: scale(1.1);
+}
+
+.current-image-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 8px;
+  text-align: center;
+}
+
+.image-url-alternative {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.alt-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========== BUTTON STYLES ========== */
 .btn-primary {
   background: linear-gradient(135deg, #d4af37, #b8960c);
   color: #000000;
@@ -148,6 +245,8 @@ textarea.form-control {
   font-size: 13px;
   font-weight: 600;
   transition: all 0.3s;
+  display: inline-block;
+  text-align: center;
 }
 
 .btn-secondary:hover {
@@ -166,15 +265,28 @@ textarea.form-control {
   color: rgba(255, 255, 255, 0.5);
 }
 
+/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
   }
+  
   .full-width {
     grid-column: span 1;
   }
+  
   .content-editor {
     min-height: 250px;
     font-size: 12px;
+  }
+  
+  .image-preview {
+    max-width: 150px;
+    max-height: 120px;
+  }
+  
+  .upload-image-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
