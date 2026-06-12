@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TestimonialController extends Controller
 {
@@ -21,27 +22,31 @@ class TestimonialController extends Controller
 
     public function approve($id)
     {
-        $testimonial = Testimonial::findOrFail($id);
-        $testimonial->is_approved = !$testimonial->is_approved;
-        $testimonial->save();
-        return response()->json($testimonial);
+        try {
+            $testimonial = Testimonial::findOrFail($id);
+            $testimonial->is_approved = 1;
+            $testimonial->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Testimonial approved successfully',
+                'data' => $testimonial
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function update(Request $request, $id)
     {
         try {
-            $testimonial = Testimonial::find($id);
+            $testimonial = Testimonial::findOrFail($id);
             
-            if (!$testimonial) {
-                return response()->json(['error' => 'Testimonial not found'], 404);
-            }
-            
-            // Direct update
             $testimonial->user_name = $request->user_name;
             $testimonial->user_location = $request->user_location;
             $testimonial->rating = $request->rating;
             $testimonial->review = $request->review;
-            $testimonial->date = $request->date;
+            $testimonial->is_approved = $request->is_approved ?? $testimonial->is_approved;
             
             $testimonial->save();
             
@@ -50,18 +55,19 @@ class TestimonialController extends Controller
                 'message' => 'Updated successfully',
                 'data' => $testimonial
             ]);
-            
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'line' => $e->getLine()
-            ], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     public function destroy($id)
     {
-        Testimonial::destroy($id);
-        return response()->json(['success' => true]);
+        try {
+            $testimonial = Testimonial::findOrFail($id);
+            $testimonial->delete();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

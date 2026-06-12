@@ -9,16 +9,16 @@ use App\Http\Controllers\Api\SiteSettingController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\OutletController;
 use App\Http\Controllers\Api\NewsletterController;
-use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\TestimonialController;
-use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
+use App\Http\Controllers\Admin\ContactController; 
 use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\HeroController as AdminHeroController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
@@ -57,7 +57,10 @@ Route::get('/blog-categories', [BlogController::class, 'categories']);
 // Contact & Newsletter
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/newsletter', [NewsletterController::class, 'subscribe']);
-Route::get('/testimonials', [OrderController::class, 'testimonials']);
+
+// Testimonials - Public API
+Route::get('/testimonials', [TestimonialController::class, 'index']);
+Route::post('/testimonials', [TestimonialController::class, 'store']);
 
 // ========== HERO SECTION APIs ==========
 Route::get('/hero', [HeroController::class, 'index']);
@@ -91,7 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
     
-    // ✅ Profile Update Routes
+    // Profile Update Routes
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
     
@@ -149,17 +152,18 @@ Route::prefix('admin')->group(function () {
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
     
     // ========== TESTIMONIALS MANAGEMENT ==========
-    Route::get('/testimonials', [TestimonialController::class, 'index']);
-    Route::get('/testimonials/{id}', [TestimonialController::class, 'show']);
-    Route::put('/testimonials/{id}', [TestimonialController::class, 'update']);
-    Route::put('/testimonials/{id}/approve', [TestimonialController::class, 'approve']);
-    Route::delete('/testimonials/{id}', [TestimonialController::class, 'destroy']);
+    Route::put('/testimonials/{id}/approve', [AdminTestimonialController::class, 'approve']);
+    Route::get('/testimonials', [AdminTestimonialController::class, 'index']);
+    Route::get('/testimonials/{id}', [AdminTestimonialController::class, 'show']);
+    Route::put('/testimonials/{id}', [AdminTestimonialController::class, 'update']);
+    Route::delete('/testimonials/{id}', [AdminTestimonialController::class, 'destroy']);
     
-    // Contact Queries Management
-    Route::get('/contacts', [AdminContactController::class, 'index']);
-    Route::get('/contacts/{id}', [AdminContactController::class, 'show']);
-    Route::put('/contacts/{id}/read', [AdminContactController::class, 'markAsRead']);
-    Route::delete('/contacts/{id}', [AdminContactController::class, 'destroy']);
+    // ========== CONTACT QUERIES MANAGEMENT ==========
+    Route::get('/contacts', [ContactController::class, 'index']);
+    Route::get('/contacts/{id}', [ContactController::class, 'show']);
+    Route::put('/contacts/{id}/read', [ContactController::class, 'markAsRead']);
+    Route::post('/contacts/{id}/reply', [ContactController::class, 'reply']);  // ✅ reply route
+    Route::delete('/contacts/{id}', [ContactController::class, 'destroy']);
     
     // Newsletter Subscribers
     Route::get('/subscribers', [SubscriberController::class, 'index']);

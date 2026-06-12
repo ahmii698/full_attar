@@ -10,8 +10,7 @@ function Testimonials() {
     user_name: '',
     user_location: '',
     rating: 5,
-    review: '',
-    date: ''
+    review: ''
   })
 
   useEffect(() => {
@@ -30,13 +29,27 @@ function Testimonials() {
     }
   }
 
-  const toggleApprove = async (id) => {
-    try {
-      await approveTestimonial(id)
-      fetchTestimonials()
-    } catch (error) {
-      console.error('Error updating testimonial:', error)
-      alert('Failed to update status')
+  const toggleApprove = async (id, currentStatus) => {
+    if (currentStatus === 1) {
+      if (window.confirm('This testimonial will become pending. Continue?')) {
+        try {
+          await updateTestimonial(id, { is_approved: 0 })
+          fetchTestimonials()
+          alert('Testimonial moved to pending')
+        } catch (error) {
+          console.error('Error updating testimonial:', error)
+          alert('Failed to update status')
+        }
+      }
+    } else {
+      try {
+        await approveTestimonial(id)
+        fetchTestimonials()
+        alert('Testimonial approved successfully!')
+      } catch (error) {
+        console.error('Error approving testimonial:', error)
+        alert('Failed to approve testimonial')
+      }
     }
   }
 
@@ -58,8 +71,7 @@ function Testimonials() {
       user_name: testimonial.user_name,
       user_location: testimonial.user_location || '',
       rating: testimonial.rating,
-      review: testimonial.review,
-      date: testimonial.date || new Date().toLocaleDateString()
+      review: testimonial.review
     })
   }
 
@@ -124,7 +136,7 @@ function Testimonials() {
                   </td>
                   <td>
                     <button 
-                      onClick={() => toggleApprove(t.testimonial_id)}
+                      onClick={() => toggleApprove(t.testimonial_id, t.is_approved)}
                       className={`status-btn ${t.is_approved ? 'approved' : 'pending'}`}
                     >
                       {t.is_approved ? 'Approved' : 'Pending'}
@@ -141,7 +153,7 @@ function Testimonials() {
         </div>
       )}
 
-      {/* Edit Modal */}
+      {/* Edit Modal - Without Date Field */}
       {editingId && (
         <div className="edit-modal" onClick={() => setEditingId(null)}>
           <div className="edit-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -189,16 +201,6 @@ function Testimonials() {
                   className="form-control"
                   rows="4"
                   required
-                />
-              </div>
-              <div className="form-group">
-                <label>Date</label>
-                <input
-                  type="text"
-                  value={editForm.date}
-                  onChange={(e) => setEditForm({...editForm, date: e.target.value})}
-                  className="form-control"
-                  placeholder="March 15, 2024"
                 />
               </div>
               <div className="form-actions">

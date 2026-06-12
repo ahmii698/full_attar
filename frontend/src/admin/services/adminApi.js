@@ -89,6 +89,9 @@ export const getContact = (id) => API.get(`/contacts/${id}`)
 export const markContactAsRead = (id) => API.put(`/contacts/${id}/read`)
 export const deleteContact = (id) => API.delete(`/contacts/${id}`)
 
+// ✅ ADD THIS - Reply to contact
+export const replyToContact = (id, message) => API.post(`/contacts/${id}/reply`, { message })
+
 // ========== SUBSCRIBERS ==========
 export const getSubscribers = () => API.get('/subscribers')
 export const getSubscriber = (id) => API.get(`/subscribers/${id}`)
