@@ -1,10 +1,19 @@
 import { Link } from 'react-router-dom'
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa'
 import { useCart } from '../contexts/CartContext'
+import { useAuth } from '../contexts/AuthContext'
+import LoginPage from './LoginPage'
 
 function CartPage() {
+  const { user } = useAuth()
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useCart()
   
+  // If user is not logged in, show LoginPage
+  if (!user) {
+    return <LoginPage redirectTo="/cart" />
+  }
+  
+  // If cart is empty
   if (cartItems.length === 0) {
     return (
       <div className="cart-page">

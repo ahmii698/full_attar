@@ -1,9 +1,17 @@
 import { Link } from 'react-router-dom'
 import { FaTrash, FaShoppingCart } from 'react-icons/fa'
 import { useCart } from '../contexts/CartContext'
+import { useAuth } from '../contexts/AuthContext'
+import LoginPage from './LoginPage'
 
 function WishlistPage() {
+  const { user } = useAuth()
   const { wishlistItems, removeFromWishlist, moveToCart } = useCart()
+  
+  // If user is not logged in, show LoginPage
+  if (!user) {
+    return <LoginPage redirectTo="/wishlist" />
+  }
   
   if (wishlistItems.length === 0) {
     return (

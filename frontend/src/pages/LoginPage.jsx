@@ -1,15 +1,19 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa'
 
-function LoginPage() {
+function LoginPage({ redirectTo }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login, signup } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  
+  // Get redirect path from props or location state
+  const from = redirectTo || location.state?.from?.pathname || '/'
   
   const [formData, setFormData] = useState({
     name: '',
@@ -30,10 +34,11 @@ function LoginPage() {
     try {
       if (isLogin) {
         await login(formData.email, formData.password)
-        navigate('/')
+        navigate(from, { replace: true })
       } else {
-        await signup(formData.email, formData.password, formData.name)
-        navigate('/')
+        // ✅ FIXED: signup(name, email, password) - order changed
+        await signup(formData.name, formData.email, formData.password)
+        navigate(from, { replace: true })
       }
     } catch (err) {
       setError(err.message)
@@ -98,12 +103,6 @@ function LoginPage() {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            
-            {isLogin && (
-              <div className="forgot-password">
-                <Link to="/forgot-password">Forgot Password?</Link>
-              </div>
-            )}
             
             <button type="submit" className="auth-btn" disabled={loading}>
               {loading ? 'Please wait...' : (isLogin ? 'Login' : 'Sign Up')}

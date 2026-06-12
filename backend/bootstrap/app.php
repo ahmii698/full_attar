@@ -20,6 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
         
         // Add CORS handling
         $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
+        
+        // ✅ EXEMPT CSRF FOR API ROUTES
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -11,6 +11,7 @@ import TestersPage from './pages/TestersPage'
 import OutletsPage from './pages/OutletsPage'
 import BlogsPage from './pages/BlogsPage'
 import BlogDetailPage from './pages/BlogDetailPage'
+import ProductDetailPage from './pages/ProductDetailPage'  // ✅ ADD THIS
 import CartPage from './pages/CartPage'
 import WishlistPage from './pages/WishlistPage'
 import CheckoutPage from './pages/CheckoutPage'
@@ -64,6 +65,9 @@ function App() {
               <Route path="/outlets" element={<OutletsPage />} />
               <Route path="/blogs" element={<BlogsPage />} />
               <Route path="/blog/:id" element={<BlogDetailPage />} />
+              
+              {/* ✅ Product Detail Page */}
+              <Route path="/product/:id" element={<ProductDetailPage />} />
               
               {/* Cart & Checkout */}
               <Route path="/cart" element={<CartPage />} />

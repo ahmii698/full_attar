@@ -8,14 +8,17 @@ use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\SiteSettingController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\OutletController;
-use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Api\NewsletterController;
+use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TestimonialController;
-use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\HeroController as AdminHeroController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
@@ -34,6 +37,10 @@ use Illuminate\Support\Facades\Route;
 // PUBLIC APIs (No authentication required)
 // =====================================================
 
+// ========== AUTH APIs (Public) ==========
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
 // Products
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
@@ -48,8 +55,8 @@ Route::get('/blogs/{id}', [BlogController::class, 'show']);
 Route::get('/blog-categories', [BlogController::class, 'categories']);
 
 // Contact & Newsletter
-Route::post('/contact', [OrderController::class, 'contact']);
-Route::post('/newsletter', [OrderController::class, 'newsletter']);
+Route::post('/contact', [ContactController::class, 'store']);
+Route::post('/newsletter', [NewsletterController::class, 'subscribe']);
 Route::get('/testimonials', [OrderController::class, 'testimonials']);
 
 // ========== HERO SECTION APIs ==========
@@ -67,10 +74,27 @@ Route::get('/faq-categories', [FaqController::class, 'categories']);
 Route::get('/outlets', [OutletController::class, 'index']);
 Route::get('/outlets/{id}', [OutletController::class, 'show']);
 
+// ========== ASSETS ROUTE FOR IMAGES ==========
+Route::get('/assets/{filename}', function ($filename) {
+    $path = public_path('assets/' . $filename);
+    if (file_exists($path)) {
+        return response()->file($path);
+    }
+    return response()->json(['error' => 'Image not found'], 404);
+});
+
 // =====================================================
 // PROTECTED APIs (Authentication required - Sanctum)
 // =====================================================
 Route::middleware('auth:sanctum')->group(function () {
+    // Auth Logout & User Info
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'user']);
+    
+    // ✅ Profile Update Routes
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
+    
     // Cart
     Route::get('/cart', [OrderController::class, 'getCart']);
     Route::post('/cart/add', [OrderController::class, 'addToCart']);
@@ -85,7 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/order', [OrderController::class, 'placeOrder']);
     Route::get('/orders', [OrderController::class, 'myOrders']);
     
-    // Profile
+    // Profile (OrderController ka - optional)
     Route::get('/profile', [OrderController::class, 'profile']);
     Route::put('/profile', [OrderController::class, 'updateProfile']);
 });
@@ -95,8 +119,8 @@ Route::middleware('auth:sanctum')->group(function () {
 // =====================================================
 Route::prefix('admin')->group(function () {
     // Admin Auth
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/login', [AdminAuthController::class, 'login']);
+    Route::post('/logout', [AdminAuthController::class, 'logout']);
     
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -124,17 +148,18 @@ Route::prefix('admin')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
     
-    // ========== TESTIMONIALS MANAGEMENT (FIXED - UPDATE ROUTE ADDED) ==========
+    // ========== TESTIMONIALS MANAGEMENT ==========
     Route::get('/testimonials', [TestimonialController::class, 'index']);
     Route::get('/testimonials/{id}', [TestimonialController::class, 'show']);
-    Route::put('/testimonials/{id}', [TestimonialController::class, 'update']);        // ← ADDED
+    Route::put('/testimonials/{id}', [TestimonialController::class, 'update']);
     Route::put('/testimonials/{id}/approve', [TestimonialController::class, 'approve']);
     Route::delete('/testimonials/{id}', [TestimonialController::class, 'destroy']);
     
-    // Contact Queries
-    Route::get('/contacts', [ContactController::class, 'index']);
-    Route::put('/contacts/{id}/read', [ContactController::class, 'markAsRead']);
-    Route::delete('/contacts/{id}', [ContactController::class, 'destroy']);
+    // Contact Queries Management
+    Route::get('/contacts', [AdminContactController::class, 'index']);
+    Route::get('/contacts/{id}', [AdminContactController::class, 'show']);
+    Route::put('/contacts/{id}/read', [AdminContactController::class, 'markAsRead']);
+    Route::delete('/contacts/{id}', [AdminContactController::class, 'destroy']);
     
     // Newsletter Subscribers
     Route::get('/subscribers', [SubscriberController::class, 'index']);

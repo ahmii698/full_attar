@@ -28,9 +28,9 @@ export function CartProvider({ children }) {
       setWishlistItems([])
       setIsLoaded(false)
     }
-  }, [user?.id]) // Only when user ID changes
-  
-  // Save cart to user - using ref to prevent infinite loop
+  }, [user?.user_id, user?.id]) // Fixed: use correct user id field
+
+  // Save cart to user
   const cartString = JSON.stringify(cartItems)
   const wishlistString = JSON.stringify(wishlistItems)
   

@@ -8,9 +8,22 @@ class ContactQuery extends Model
 {
     use HasFactory;
     
-    protected $table = 'contact_queries';    // YEH ADD KARO
-    protected $primaryKey = 'query_id';      // YEH ADD KARO
-    protected $fillable = ['full_name', 'email', 'phone', 'query_date', 'message', 'is_read'];
+    protected $table = 'contact_queries';
+    protected $primaryKey = 'query_id';
+    protected $fillable = [
+        'full_name',
+        'email',
+        'phone',
+        'query_date',
+        'message',
+        'is_read'
+    ];
     
-    public $timestamps = true;               // YEH ADD KARO
+    protected $casts = [
+        'is_read' => 'boolean',
+        'query_date' => 'date'
+    ];
+    
+    // Disable automatic timestamps
+    public $timestamps = false;
 }
