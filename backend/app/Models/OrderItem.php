@@ -8,9 +8,28 @@ class OrderItem extends Model
 {
     use HasFactory;
     
-    protected $table = 'order_items';        // YEH ADD KARO
-    protected $primaryKey = 'order_item_id'; // YEH ADD KARO
-    protected $fillable = ['order_id', 'product_id', 'product_name', 'quantity', 'price'];
+    protected $table = 'order_items';
+    protected $primaryKey = 'order_item_id';
+    public $timestamps = false;
     
-    public $timestamps = false;              // YEH ADD KARO (agar timestamp column nahi hai)
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'product_name',
+        'quantity',
+        'ml',
+        'price'
+    ];
+    
+    // Relationship with Order
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id', 'order_id');
+    }
+    
+    // Relationship with Product
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
 }

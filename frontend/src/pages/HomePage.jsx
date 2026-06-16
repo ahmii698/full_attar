@@ -13,7 +13,7 @@ function HomePage() {
   const [topSellers, setTopSellers] = useState([])
   const [deals, setDeals] = useState([])
   const [banners, setBanners] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [dataLoaded, setDataLoaded] = useState(false)
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
   const APP_URL = 'http://127.0.0.1:8000'
@@ -24,24 +24,24 @@ function HomePage() {
 
   const fetchData = async () => {
     try {
-      setLoading(true)
+      const [topRes, dealsRes, bannersRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/top-sellers`),
+        fetch(`${API_BASE_URL}/deals`),
+        fetch(`${API_BASE_URL}/banners`)
+      ])
       
-      const topRes = await fetch(`${API_BASE_URL}/top-sellers`)
       const topData = await topRes.json()
-      setTopSellers(topData)
-      
-      const dealsRes = await fetch(`${API_BASE_URL}/deals`)
       const dealsData = await dealsRes.json()
-      setDeals(dealsData)
-      
-      const bannersRes = await fetch(`${API_BASE_URL}/banners`)
       const bannersData = await bannersRes.json()
+      
+      setTopSellers(topData)
+      setDeals(dealsData)
       setBanners(bannersData)
+      setDataLoaded(true)
       
     } catch (err) {
       console.error('Error fetching data:', err)
-    } finally {
-      setLoading(false)
+      setDataLoaded(true) // ✅ Error ke baad bhi dataLoaded true karo
     }
   }
 
@@ -51,15 +51,6 @@ function HomePage() {
     return `${APP_URL}${imagePath}`
   }
 
-  if (loading) {
-    return (
-      <div className="homepage">
-        <Hero />
-        <div className="loading-container">Loading products...</div>
-      </div>
-    )
-  }
-
   const displayTopSellers = topSellers.slice(0, 4)
   const displayDeals = deals.slice(0, 4)
 
@@ -67,11 +58,11 @@ function HomePage() {
     <div className="homepage">
       <Hero />
       
-      {/* Top Sellers Section */}
+      {/* Best Sellers Section */}
       <section className="products-section">
         <SectionHeading title="Best Sellers" subtitle="Our most loved fragrances" />
         <div className="products-grid">
-          {displayTopSellers.length === 0 ? (
+          {dataLoaded && displayTopSellers.length === 0 ? (
             <div className="no-products">No top sellers found.</div>
           ) : (
             displayTopSellers.map(product => (
@@ -86,6 +77,7 @@ function HomePage() {
                 is_deal={product.is_deal === 1}
                 rating={product.rating || 0}
                 image_url={product.image_url}
+                ml_prices={product.ml_prices}
               />
             ))
           )}
@@ -95,8 +87,8 @@ function HomePage() {
         </div>
       </section>
       
-      {/* Dynamic Banners - Directly from Database */}
-      {banners.map((banner, index) => (
+      {/* Banners */}
+      {dataLoaded && banners.length > 0 && banners.map((banner, index) => (
         <CategoryBanner 
           key={banner.banner_id || index}
           title={banner.title}
@@ -113,7 +105,7 @@ function HomePage() {
       <section className="products-section">
         <SectionHeading title="Hot Deals" subtitle="Limited time offers" />
         <div className="products-grid">
-          {displayDeals.length === 0 ? (
+          {dataLoaded && displayDeals.length === 0 ? (
             <div className="no-products">No active deals at the moment. Check back soon!</div>
           ) : (
             displayDeals.map(product => (
@@ -128,6 +120,7 @@ function HomePage() {
                 is_deal={true}
                 rating={product.rating || 0}
                 image_url={product.image_url}
+                ml_prices={product.ml_prices}
               />
             ))
           )}
@@ -137,18 +130,14 @@ function HomePage() {
         </div>
       </section>
       
-      {/* FAQ Section */}
       <FAQSection />
       
-      {/* Testimonials Slider */}
       <section className="testimonials-section">
         <SectionHeading title="What Our Customers Say" subtitle="Trusted by thousands" />
         <TestimonialSlider />
       </section>
       
-      {/* Contact Section */}
       <ContactPage />
-      
       <Newsletter />
 
       <style>{`
@@ -180,6 +169,14 @@ function HomePage() {
           transform: translateX(6px);
           gap: 14px;
           box-shadow: 0 6px 18px rgba(212, 175, 55, 0.4);
+        }
+
+        .no-products {
+          grid-column: 1 / -1;
+          text-align: center;
+          padding: 40px;
+          color: rgba(255,255,255,0.4);
+          font-size: 16px;
         }
       `}</style>
     </div>

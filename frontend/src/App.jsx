@@ -11,7 +11,7 @@ import TestersPage from './pages/TestersPage'
 import OutletsPage from './pages/OutletsPage'
 import BlogsPage from './pages/BlogsPage'
 import BlogDetailPage from './pages/BlogDetailPage'
-import ProductDetailPage from './pages/ProductDetailPage'  // ✅ ADD THIS
+import ProductDetailPage from './pages/ProductDetailPage'
 import CartPage from './pages/CartPage'
 import WishlistPage from './pages/WishlistPage'
 import CheckoutPage from './pages/CheckoutPage'
@@ -66,15 +66,18 @@ function App() {
               <Route path="/blogs" element={<BlogsPage />} />
               <Route path="/blog/:id" element={<BlogDetailPage />} />
               
-              {/* ✅ Product Detail Page */}
+              {/* Product Detail Page */}
               <Route path="/product/:id" element={<ProductDetailPage />} />
               
               {/* Cart & Checkout */}
               <Route path="/cart" element={<CartPage />} />
               <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/payment" element={<PaymentPage />} />
-              <Route path="/upload-proof" element={<UploadProofPage />} />
+              
+              {/* ✅ Payment Routes with Order ID */}
+              <Route path="/payment/:id" element={<PaymentPage />} />
+              <Route path="/payment-confirmation/:id" element={<UploadProofPage />} />
+              
               <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
               <Route path="/track-order" element={<TrackOrderPage />} />
               

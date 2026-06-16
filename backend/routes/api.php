@@ -11,7 +11,8 @@ use App\Http\Controllers\Api\OutletController;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TestimonialController;
-use App\Http\Controllers\Api\CartController;  // ✅ ADDED - API Cart Controller
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\PaymentConfirmationController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -26,7 +27,8 @@ use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use App\Http\Controllers\Admin\SiteSettingController as AdminSiteSettingController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\OutletController as AdminOutletController;
-use App\Http\Controllers\Admin\CartController as AdminCartController;  // ✅ ADDED - Admin Cart Controller
+use App\Http\Controllers\Admin\CartController as AdminCartController;
+use App\Http\Controllers\Admin\PaymentConfirmationController as AdminPaymentConfirmationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -100,27 +102,37 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
     
-    // ========== CART API ROUTES ✅ ==========
-    Route::get('/cart', [CartController::class, 'index']);           // Get cart items
-    Route::post('/cart', [CartController::class, 'store']);          // Add to cart
-    Route::put('/cart/{id}', [CartController::class, 'update']);     // Update quantity
-    Route::put('/cart/{id}/ml', [CartController::class, 'updateMl']); // ✅ Update ML
-    Route::delete('/cart/{id}', [CartController::class, 'destroy']);  // Remove item
-    Route::delete('/cart/clear', [CartController::class, 'clear']);   // Clear cart
+    // ========== CART API ROUTES ==========
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::put('/cart/{id}', [CartController::class, 'update']);
+    Route::put('/cart/{id}/ml', [CartController::class, 'updateMl']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+    Route::delete('/cart/clear', [CartController::class, 'clear']);
     
-    // Wishlist (Old OrderController se hata kar yahan rakh sakte hain)
+    // Wishlist
     Route::get('/wishlist', [OrderController::class, 'getWishlist']);
     Route::post('/wishlist/add', [OrderController::class, 'addToWishlist']);
     Route::delete('/wishlist/remove/{id}', [OrderController::class, 'removeFromWishlist']);
     
-    // Orders
-    Route::post('/order', [OrderController::class, 'placeOrder']);
-    Route::get('/orders', [OrderController::class, 'myOrders']);
+    // ========== ORDER ROUTES ==========
+    Route::post('/orders', [OrderController::class, 'store']);                          // Create order
+    Route::get('/orders', [OrderController::class, 'index']);                           // Get user orders
+    Route::get('/orders/{id}', [OrderController::class, 'show']);                       // Get single order
+    Route::post('/orders/{id}/payment-confirmation', [OrderController::class, 'uploadPaymentProof']); // Upload payment proof
+    Route::get('/orders/{id}/payment-confirmation', [OrderController::class, 'getPaymentConfirmation']); // Get payment confirmation
     
     // Profile
     Route::get('/profile', [OrderController::class, 'profile']);
     Route::put('/profile', [OrderController::class, 'updateProfile']);
 });
+
+// =====================================================
+// PUBLIC TRACK ORDER API (No authentication required)
+// =====================================================
+
+// ========== TRACK ORDER ==========
+Route::get('/orders/track/{orderNumber}', [OrderController::class, 'trackByOrderNumber']);
 
 // =====================================================
 // ADMIN APIs
@@ -151,6 +163,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/orders', [AdminOrderController::class, 'index']);
     Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
     Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
+    Route::put('/orders/{id}/payment-status', [AdminOrderController::class, 'updatePaymentStatus']); // ✅ ADD THIS
+    Route::get('/orders/{id}/payment-proof', [AdminOrderController::class, 'getPaymentProof']);       // ✅ GET Payment Proof
     
     // Users Management
     Route::get('/users', [UserController::class, 'index']);
@@ -219,11 +233,18 @@ Route::prefix('admin')->group(function () {
     Route::delete('/outlets/{id}', [AdminOutletController::class, 'destroy']);
     Route::post('/outlets/reorder', [AdminOutletController::class, 'updateOrder']);
     
-    // ========== ADMIN CART MANAGEMENT ✅ ==========
-    Route::get('/carts', [AdminCartController::class, 'index']);              // All carts
-    Route::get('/carts/{id}', [AdminCartController::class, 'show']);          // Single cart
-    Route::put('/carts/{id}', [AdminCartController::class, 'update']);        // Update cart item
-    Route::delete('/carts/{id}', [AdminCartController::class, 'destroy']);    // Delete cart item
-    Route::delete('/carts/user/{userId}', [AdminCartController::class, 'clearUserCart']); // Clear user cart
-    Route::get('/carts/stats', [AdminCartController::class, 'stats']);        // Cart statistics
+    // Cart Management
+    Route::get('/carts', [AdminCartController::class, 'index']);
+    Route::get('/carts/{id}', [AdminCartController::class, 'show']);
+    Route::put('/carts/{id}', [AdminCartController::class, 'update']);
+    Route::delete('/carts/{id}', [AdminCartController::class, 'destroy']);
+    Route::delete('/carts/user/{userId}', [AdminCartController::class, 'clearUserCart']);
+    Route::get('/carts/stats', [AdminCartController::class, 'stats']);
+    
+    // ========== PAYMENT CONFIRMATIONS MANAGEMENT ==========
+    Route::get('/payment-confirmations', [AdminPaymentConfirmationController::class, 'index']);
+    Route::get('/payment-confirmations/{id}', [AdminPaymentConfirmationController::class, 'show']);
+    Route::put('/payment-confirmations/{id}/approve', [AdminPaymentConfirmationController::class, 'approve']);
+    Route::put('/payment-confirmations/{id}/reject', [AdminPaymentConfirmationController::class, 'reject']);
+    Route::delete('/payment-confirmations/{id}', [AdminPaymentConfirmationController::class, 'destroy']);
 });

@@ -1,26 +1,34 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { 
   FaUpload, FaFileImage, FaTrash, FaArrowRight, FaShieldAlt, 
-  FaRegIdCard, FaInfoCircle, FaQuestionCircle, FaSpinner 
+  FaRegIdCard, FaInfoCircle, FaQuestionCircle, FaSpinner, FaCheck
 } from 'react-icons/fa'
 
 function UploadProofPage() {
+  const { id } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
+  
   const [order, setOrder] = useState(null)
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [dragActive, setDragActive] = useState(false)
+  const [uploaded, setUploaded] = useState(false)
   
   useEffect(() => {
-    const savedOrder = localStorage.getItem('pendingOrder')
-    if (savedOrder) {
-      setOrder(JSON.parse(savedOrder))
+    // ✅ Get order data from location state
+    if (location.state) {
+      setOrder({
+        orderId: location.state.orderId,
+        orderNumber: location.state.orderNumber,
+        total: location.state.total
+      })
     } else {
       navigate('/cart')
     }
-  }, [navigate])
+  }, [location.state, navigate])
   
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
@@ -57,26 +65,80 @@ function UploadProofPage() {
     setPreview(null)
   }
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!file) return
     
     setUploading(true)
-    setTimeout(() => {
-      const confirmedOrders = JSON.parse(localStorage.getItem('confirmedOrders') || '[]')
-      confirmedOrders.push({ 
-        ...order, 
-        proofSubmitted: true, 
-        proofFileName: file.name,
-        timestamp: new Date().toISOString() 
+    
+    const formData = new FormData()
+    formData.append('screenshot', file)
+    formData.append('transaction_id', `TXN${Date.now()}`)
+    
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+      const token = localStorage.getItem('token')
+      
+      const response = await fetch(`${API_URL}/orders/${id}/payment-confirmation`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: formData
       })
-      localStorage.setItem('confirmedOrders', JSON.stringify(confirmedOrders))
-      localStorage.removeItem('pendingOrder')
-      navigate('/order-confirmation')
-    }, 1500)
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setUploaded(true)
+        setTimeout(() => {
+          navigate('/order-confirmation', {
+            state: {
+              orderNumber: order?.orderNumber,
+              total: order?.total,
+              success: true
+            }
+          })
+        }, 1500)
+      } else {
+        alert(data.error || data.message || 'Failed to upload payment proof. Please try again.')
+        setUploading(false)
+      }
+    } catch (error) {
+      console.error('Error uploading:', error)
+      alert('Network error. Please check your connection and try again.')
+      setUploading(false)
+    }
   }
   
-  if (!order) return null
+  if (!order) {
+    return (
+      <div className="upload-proof-page">
+        <div className="upload-proof-container">
+          <div className="loading-text">Loading order details...</div>
+        </div>
+      </div>
+    )
+  }
+  
+  if (uploaded) {
+    return (
+      <div className="upload-proof-page">
+        <div className="upload-proof-container">
+          <div className="success-container">
+            <div className="success-icon">✅</div>
+            <h2>Payment Confirmation Submitted!</h2>
+            <p>Your payment confirmation has been uploaded successfully.</p>
+            <p className="order-ref">Order Reference: <strong>{order?.orderNumber}</strong></p>
+            <p>We will verify your payment and update you shortly.</p>
+            <button onClick={() => navigate('/orders')} className="view-orders-btn">
+              View My Orders
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
   
   return (
     <div className="upload-proof-page">
@@ -93,10 +155,10 @@ function UploadProofPage() {
         {/* Order Reference */}
         <div className="order-ref-card">
           <div className="ref-header">
-            <FaRegIdCard className="ref-icon" />
-            <span className="ref-label">ORDER REFERENCE</span>
+          
+            <span className="ref-label">ORDER ID</span>
           </div>
-          <div className="ref-value">{order.orderId}</div>
+          <div className="ref-value">{order.orderNumber}</div>
           <p className="ref-note">Use this Order ID to track your order</p>
         </div>
         
@@ -110,7 +172,7 @@ function UploadProofPage() {
             <li>Upload clear screenshot of payment confirmation</li>
             <li>Screenshot should show transaction ID and amount</li>
             <li>File format: JPG, PNG Max 5MB</li>
-            <li>Make sure the amount matches Rs. {order.total}</li>
+            <li>Make sure the amount matches Rs. {order.total?.toLocaleString()}</li>
           </ul>
         </div>
         
@@ -145,7 +207,7 @@ function UploadProofPage() {
             <input 
               type="file" 
               id="fileInput" 
-              accept="image/*" 
+              accept="image/jpeg,image/png,image/jpg" 
               onChange={handleFileChange} 
               style={{ display: 'none' }} 
             />
@@ -171,7 +233,7 @@ function UploadProofPage() {
                 <>Submit Proof <FaArrowRight /></>
               )}
             </button>
-            <button type="button" className="skip-btn" onClick={() => navigate('/order-confirmation')}>
+            <button type="button" className="skip-btn" onClick={() => navigate(`/orders`)}>
               Skip for now? Track your order later
             </button>
           </div>

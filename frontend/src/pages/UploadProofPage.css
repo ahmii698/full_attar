@@ -1,11 +1,19 @@
+/* =========================
+   UPLOAD PROOF PAGE - COMPLETE
+========================= */
+
 .upload-proof-page {
   min-height: 100vh;
   padding: 40px 60px;
   background: linear-gradient(135deg, #0a0a0a, #000000);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .upload-proof-container {
   max-width: 650px;
+  width: 100%;
   margin: 0 auto;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(212,175,55,0.1);
@@ -13,13 +21,16 @@
   padding: 40px;
 }
 
-/* Header */
+/* =========================
+   HEADER
+========================= */
+
 .upload-header {
   text-align: center;
   margin-bottom: 30px;
 }
 
-.header-icon svg {
+.header-icon {
   font-size: 48px;
   margin-bottom: 15px;
   color: #d4af37;
@@ -39,11 +50,14 @@
   font-size: 14px;
 }
 
-/* Order Reference Card */
+/* =========================
+   ORDER REFERENCE CARD
+========================= */
+
 .order-ref-card {
   text-align: center;
   padding: 25px;
-  background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.03));
+  background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
   border: 1px solid rgba(212,175,55,0.15);
   border-radius: 20px;
   margin: 20px 0;
@@ -66,6 +80,7 @@
   font-size: 11px;
   color: rgba(212,175,55,0.7);
   letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 .ref-value {
@@ -74,6 +89,7 @@
   color: #d4af37;
   margin: 10px 0;
   letter-spacing: 1px;
+  font-family: monospace;
 }
 
 .ref-note {
@@ -81,12 +97,16 @@
   color: rgba(255,255,255,0.4);
 }
 
-/* Instructions Box */
+/* =========================
+   INSTRUCTIONS BOX
+========================= */
+
 .instructions-box {
   background: rgba(212,175,55,0.03);
   border-radius: 16px;
   padding: 20px;
   margin: 20px 0;
+  border-left: 3px solid #d4af37;
 }
 
 .instructions-header {
@@ -104,20 +124,26 @@
 .instructions-header h4 {
   font-size: 15px;
   color: #d4af37;
+  margin: 0;
 }
 
 .instructions-box ul {
   margin-left: 20px;
+  padding-left: 0;
 }
 
 .instructions-box li {
-  font-size: 12px;
+  font-size: 13px;
   color: rgba(255,255,255,0.6);
   margin-bottom: 8px;
   line-height: 1.5;
+  list-style-type: disc;
 }
 
-/* Upload Form */
+/* =========================
+   UPLOAD FORM
+========================= */
+
 .upload-form {
   margin-top: 20px;
 }
@@ -130,7 +156,10 @@
   color: rgba(255,255,255,0.8);
 }
 
-/* Upload Area */
+/* =========================
+   UPLOAD AREA
+========================= */
+
 .upload-area {
   border: 2px dashed rgba(212,175,55,0.3);
   border-radius: 20px;
@@ -139,6 +168,11 @@
   cursor: pointer;
   transition: all 0.3s;
   background: rgba(255,255,255,0.02);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .upload-area:hover {
@@ -149,15 +183,17 @@
 .upload-area.drag-active {
   border-color: #d4af37;
   background: rgba(212,175,55,0.1);
+  transform: scale(1.02);
 }
 
 .upload-area.has-preview {
   padding: 0;
   border: none;
   background: transparent;
+  min-height: auto;
 }
 
-.upload-icon svg {
+.upload-icon {
   font-size: 56px;
   margin-bottom: 15px;
   color: rgba(212,175,55,0.5);
@@ -174,7 +210,10 @@
   color: rgba(255,255,255,0.4);
 }
 
-/* Preview */
+/* =========================
+   PREVIEW
+========================= */
+
 .preview-container {
   position: relative;
   display: inline-block;
@@ -207,10 +246,13 @@
 }
 
 .remove-file-btn:hover {
-  background: rgba(255,0,0,0.8);
+  background: rgba(255, 0, 0, 0.8);
 }
 
-/* File Info */
+/* =========================
+   FILE INFO
+========================= */
+
 .file-info {
   display: flex;
   align-items: center;
@@ -231,19 +273,22 @@
   font-size: 11px;
 }
 
-/* Upload Actions */
+/* =========================
+   UPLOAD ACTIONS
+========================= */
+
 .upload-actions {
   margin-top: 25px;
 }
 
 .upload-btn {
   width: 100%;
-  background: linear-gradient(135deg, #d4af37, #ffd700);
+  background: linear-gradient(135deg, #d4af37, #b8960c);
   border: none;
   padding: 16px;
   border-radius: 50px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #000;
   cursor: pointer;
   transition: 0.3s;
@@ -251,6 +296,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+  font-family: inherit;
 }
 
 .upload-btn:hover:not(.disabled) {
@@ -264,6 +310,7 @@
 }
 
 .spinner {
+  display: inline-block;
   width: 18px;
   height: 18px;
   border: 2px solid rgba(0,0,0,0.2);
@@ -282,18 +329,22 @@
   background: transparent;
   border: none;
   padding: 12px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.4);
   cursor: pointer;
   font-size: 13px;
   transition: 0.3s;
   margin-top: 10px;
+  font-family: inherit;
 }
 
 .skip-btn:hover {
   color: #d4af37;
 }
 
-/* Help Section */
+/* =========================
+   HELP SECTION
+========================= */
+
 .help-section {
   text-align: center;
   margin-top: 25px;
@@ -306,13 +357,13 @@
 }
 
 .help-section svg {
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.3);
   font-size: 14px;
 }
 
 .help-section p {
   font-size: 13px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.4);
 }
 
 .help-section a {
@@ -324,7 +375,79 @@
   text-decoration: underline;
 }
 
-/* Responsive */
+/* =========================
+   LOADING TEXT
+========================= */
+
+.loading-text {
+  text-align: center;
+  color: rgba(255,255,255,0.5);
+  padding: 40px 0;
+  font-size: 16px;
+}
+
+/* =========================
+   SUCCESS CONTAINER
+========================= */
+
+.success-container {
+  text-align: center;
+  padding: 30px 0;
+}
+
+.success-icon {
+  font-size: 64px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.success-container h2 {
+  color: #4caf50;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.success-container p {
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.success-container .order-ref {
+  color: #d4af37;
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.success-container .order-ref strong {
+  color: #d4af37;
+  font-weight: 700;
+}
+
+.view-orders-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #d4af37, #b8960c);
+  color: #000;
+  border: none;
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.view-orders-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212,175,55,0.3);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
 @media (max-width: 768px) {
   .upload-proof-page {
     padding: 30px 20px;
@@ -344,9 +467,10 @@
   
   .upload-area {
     padding: 30px;
+    min-height: 140px;
   }
   
-  .upload-icon svg {
+  .upload-icon {
     font-size: 48px;
   }
   
@@ -358,11 +482,23 @@
     padding: 14px;
     font-size: 14px;
   }
+  
+  .success-container h2 {
+    font-size: 20px;
+  }
+  
+  .success-icon {
+    font-size: 48px;
+  }
 }
 
 @media (max-width: 480px) {
   .upload-proof-container {
     padding: 20px;
+  }
+  
+  .upload-proof-page {
+    padding: 20px 15px;
   }
   
   .order-ref-card {
@@ -373,11 +509,16 @@
     font-size: 18px;
   }
   
-  .upload-area {
-    padding: 20px;
+  .upload-header h2 {
+    font-size: 20px;
   }
   
-  .upload-icon svg {
+  .upload-area {
+    padding: 20px;
+    min-height: 120px;
+  }
+  
+  .upload-icon {
     font-size: 40px;
   }
   
@@ -392,5 +533,27 @@
   .remove-file-btn {
     padding: 4px 8px;
     font-size: 10px;
+  }
+  
+  .upload-btn {
+    font-size: 13px;
+    padding: 12px;
+  }
+  
+  .success-container h2 {
+    font-size: 18px;
+  }
+  
+  .success-icon {
+    font-size: 40px;
+  }
+  
+  .success-container .order-ref {
+    font-size: 14px;
+  }
+  
+  .help-section {
+    flex-direction: column;
+    gap: 4px;
   }
 }

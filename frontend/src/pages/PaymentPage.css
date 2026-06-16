@@ -1,11 +1,19 @@
+/* =========================
+   PAYMENT PAGE - COMPLETE
+========================= */
+
 .payment-page {
   min-height: 100vh;
   padding: 40px 60px;
   background: linear-gradient(135deg, #0a0a0a, #000000);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .payment-container {
   max-width: 650px;
+  width: 100%;
   margin: 0 auto;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(212,175,55,0.1);
@@ -32,7 +40,41 @@
   font-size: 14px;
 }
 
-/* Payment Tabs */
+/* =========================
+   ORDER REFERENCE BANNER
+========================= */
+
+.order-ref-banner {
+  background: rgba(212,175,55,0.08);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 12px;
+  padding: 12px 20px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.order-ref-banner .ref-label {
+  display: block;
+  color: rgba(255,255,255,0.4);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.order-ref-banner .ref-number {
+  display: block;
+  color: #d4af37;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 2px;
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+/* =========================
+   PAYMENT TABS
+========================= */
+
 .payment-tabs {
   display: flex;
   gap: 12px;
@@ -47,7 +89,7 @@
   border: 1px solid rgba(212,175,55,0.2);
   padding: 12px;
   border-radius: 50px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: rgba(255,255,255,0.6);
   cursor: pointer;
@@ -56,20 +98,29 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  font-family: inherit;
 }
 
 .tab-btn:hover {
   border-color: rgba(212,175,55,0.5);
   color: #d4af37;
+  background: rgba(212,175,55,0.05);
 }
 
 .tab-btn.active {
-  background: linear-gradient(135deg, #d4af37, #ffd700);
+  background: linear-gradient(135deg, #d4af37, #b8960c);
   color: #000;
   border-color: transparent;
 }
 
-/* Payment Method Content */
+.tab-btn svg {
+  font-size: 16px;
+}
+
+/* =========================
+   PAYMENT METHOD CONTENT
+========================= */
+
 .payment-method-content {
   animation: fadeIn 0.3s ease;
 }
@@ -79,9 +130,12 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Amount Card */
+/* =========================
+   AMOUNT CARD
+========================= */
+
 .amount-card {
-  background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.05));
+  background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.02));
   border: 1px solid rgba(212,175,55,0.2);
   border-radius: 16px;
   padding: 20px;
@@ -94,6 +148,8 @@
   font-size: 13px;
   color: rgba(255,255,255,0.5);
   margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .amount-value {
@@ -102,12 +158,16 @@
   color: #d4af37;
 }
 
-/* Bank Info Card */
+/* =========================
+   BANK INFO CARD
+========================= */
+
 .bank-info-card {
   background: rgba(255,255,255,0.02);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,0.03);
 }
 
 .bank-info-card h3 {
@@ -121,24 +181,28 @@
   align-items: center;
   margin-bottom: 12px;
   flex-wrap: wrap;
+  gap: 8px;
 }
 
 .bank-label {
   width: 120px;
   font-size: 13px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.4);
+  flex-shrink: 0;
 }
 
 .bank-value {
   flex: 1;
   font-size: 13px;
-  color: white;
+  color: rgba(255,255,255,0.8);
   font-family: monospace;
+  word-break: break-all;
 }
 
 .account-num {
   letter-spacing: 1px;
   font-weight: 600;
+  color: #d4af37 !important;
 }
 
 .copy-btn {
@@ -153,30 +217,36 @@
   cursor: pointer;
   color: #d4af37;
   transition: 0.3s;
+  flex-shrink: 0;
 }
 
 .copy-btn:hover {
   background: rgba(212,175,55,0.2);
+  transform: scale(1.05);
 }
 
-/* QR Section */
+/* =========================
+   QR SECTION
+========================= */
+
 .qr-section {
   text-align: center;
   margin-bottom: 25px;
 }
 
 .qr-card {
-  background: white;
+  background: #ffffff;
   padding: 20px;
   border-radius: 20px;
   display: inline-block;
   margin-bottom: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .qr-image-real {
   width: 200px;
   height: 200px;
+  object-fit: contain;
 }
 
 .qr-note {
@@ -190,10 +260,12 @@
   padding: 15px;
   border-radius: 12px;
   margin-top: 15px;
+  border: 1px solid rgba(212,175,55,0.1);
 }
 
 .upi-info p {
   font-size: 13px;
+  color: rgba(255,255,255,0.6);
   margin-bottom: 8px;
 }
 
@@ -204,7 +276,10 @@
   letter-spacing: 1px;
 }
 
-/* Mobile Apps */
+/* =========================
+   MOBILE APPS
+========================= */
+
 .mobile-apps {
   margin-bottom: 20px;
 }
@@ -216,25 +291,34 @@
   border-radius: 16px;
   padding: 15px;
   margin-bottom: 12px;
+  border: 1px solid rgba(255,255,255,0.03);
 }
 
 .app-icon {
   font-size: 32px;
+  flex-shrink: 0;
 }
 
 .app-details h4 {
   font-size: 15px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: #d4af37;
 }
 
 .app-details p {
   font-size: 12px;
-  color: rgba(255,255,255,0.6);
-  margin-bottom: 4px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 2px;
 }
 
-/* Instruction Card */
+.app-details strong {
+  color: rgba(255,255,255,0.8);
+}
+
+/* =========================
+   INSTRUCTION CARD
+========================= */
+
 .instruction-card {
   background: rgba(212,175,55,0.03);
   border-left: 3px solid #d4af37;
@@ -251,15 +335,20 @@
 
 .instruction-card ul {
   margin-left: 20px;
+  padding-left: 0;
 }
 
 .instruction-card li {
-  font-size: 12px;
+  font-size: 13px;
   color: rgba(255,255,255,0.6);
   margin-bottom: 6px;
+  list-style-type: disc;
 }
 
-/* Security Note */
+/* =========================
+   SECURITY NOTE
+========================= */
+
 .security-note {
   display: flex;
   align-items: center;
@@ -269,30 +358,36 @@
   background: rgba(212,175,55,0.03);
   border-radius: 50px;
   margin: 20px 0;
+  border: 1px solid rgba(212,175,55,0.05);
 }
 
 .security-note svg {
-  color: #d4af37;
+  color: #4caf50;
+  font-size: 18px;
 }
 
 .security-note span {
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
 }
 
-/* Have Paid Button */
+/* =========================
+   HAVE PAID BUTTON
+========================= */
+
 .have-paid-btn {
   width: 100%;
-  background: linear-gradient(135deg, #d4af37, #ffd700);
+  background: linear-gradient(135deg, #d4af37, #b8960c);
   border: none;
   padding: 16px;
   border-radius: 50px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #000;
   cursor: pointer;
   transition: 0.3s;
   margin-top: 10px;
+  font-family: inherit;
 }
 
 .have-paid-btn:hover {
@@ -300,7 +395,40 @@
   box-shadow: 0 10px 30px rgba(212,175,55,0.3);
 }
 
-/* Responsive */
+/* =========================
+   LOADING / ERROR
+========================= */
+
+.loading-text,
+.error-text {
+  text-align: center;
+  color: rgba(255,255,255,0.5);
+  padding: 40px 0;
+  font-size: 16px;
+}
+
+.back-to-cart-btn {
+  display: block;
+  margin: 15px auto 0;
+  padding: 12px 30px;
+  background: rgba(212,175,55,0.15);
+  color: #d4af37;
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  transition: 0.3s;
+}
+
+.back-to-cart-btn:hover {
+  background: rgba(212,175,55,0.25);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
 @media (max-width: 768px) {
   .payment-page {
     padding: 30px 20px;
@@ -321,6 +449,7 @@
   
   .tab-btn {
     padding: 10px;
+    font-size: 12px;
   }
   
   .amount-value {
@@ -330,7 +459,7 @@
   .bank-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 5px;
+    gap: 4px;
   }
   
   .bank-label {
@@ -346,11 +475,29 @@
     padding: 14px;
     font-size: 14px;
   }
+  
+  .order-ref-banner .ref-number {
+    font-size: 16px;
+  }
+  
+  .app-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
 }
 
 @media (max-width: 480px) {
+  .payment-page {
+    padding: 20px 15px;
+  }
+  
   .payment-container {
     padding: 20px;
+  }
+  
+  .payment-header h2 {
+    font-size: 20px;
   }
   
   .amount-value {
@@ -364,5 +511,17 @@
   
   .upi-number {
     font-size: 16px;
+  }
+  
+  .bank-value {
+    font-size: 12px;
+  }
+  
+  .instruction-card li {
+    font-size: 12px;
+  }
+  
+  .security-note span {
+    font-size: 11px;
   }
 }
