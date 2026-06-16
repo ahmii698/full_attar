@@ -8,9 +8,29 @@ class Cart extends Model
 {
     use HasFactory;
     
-    protected $table = 'cart';               // YEH ADD KARO
-    protected $primaryKey = 'cart_id';       // YEH ADD KARO
-    protected $fillable = ['user_id', 'product_id', 'quantity'];
+    protected $table = 'cart';
+    protected $primaryKey = 'cart_id';
+    protected $fillable = [
+        'user_id', 
+        'product_id', 
+        'quantity',
+        'ml'  // ✅ ADDED - ML column
+    ];
     
-    public $timestamps = true;               // YEH ADD KARO
+    // ✅ Timestamps - added_at column exists in database
+    public $timestamps = true;
+    const CREATED_AT = 'added_at';
+    const UPDATED_AT = null;  // No updated_at column in cart table
+    
+    // ✅ Relationship with Product
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
+    
+    // ✅ Relationship with User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

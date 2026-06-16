@@ -392,6 +392,7 @@ function ShopPage() {
                   notes={product.notes}
                   image_url={product.image_url}
                   description={product.description}
+                  ml_prices={product.ml_prices}  // ✅ ADD THIS LINE - IMPORTANT
                 />
               ))}
             </div>

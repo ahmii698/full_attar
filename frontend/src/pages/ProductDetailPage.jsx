@@ -15,6 +15,8 @@ function ProductDetailPage() {
   const [error, setError] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
+  const [selectedMl, setSelectedMl] = useState(50)
+  const [selectedPrice, setSelectedPrice] = useState(0)
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
   const APP_URL = 'http://127.0.0.1:8000'
@@ -29,6 +31,15 @@ function ProductDetailPage() {
       setIsWishlisted(wishlistItems.some(item => item.id === product.product_id))
     }
   }, [product, wishlistItems])
+
+  // ✅ Parse ml_prices and set default price
+  useEffect(() => {
+    if (product) {
+      const mlPrices = getMlPrices()
+      const defaultPrice = getPriceForMl(50)
+      setSelectedPrice(defaultPrice)
+    }
+  }, [product])
 
   const fetchProduct = async () => {
     try {
@@ -48,7 +59,44 @@ function ProductDetailPage() {
     }
   }
 
-  // ✅ FIXED: Same image logic as ProductCard
+  // ✅ Get ml_prices from product
+  const getMlPrices = () => {
+    if (!product) return {}
+    if (product.ml_prices && typeof product.ml_prices === 'object') {
+      return product.ml_prices
+    }
+    return {}
+  }
+
+  // ✅ Get price for specific ML
+  const getPriceForMl = (ml) => {
+    const mlPrices = getMlPrices()
+    if (mlPrices[ml]) {
+      return Number(mlPrices[ml])
+    }
+    return product?.price_num || 0
+  }
+
+  // ✅ Get display price for ML
+  const getDisplayPriceForMl = (ml) => {
+    const price = getPriceForMl(ml)
+    return `Rs. ${price.toLocaleString()}`
+  }
+
+  // ✅ Check if ML is available
+  const isMlAvailable = (ml) => {
+    if (ml === 50) return true
+    const mlPrices = getMlPrices()
+    return !!mlPrices[ml]
+  }
+
+  // ✅ Handle ML change
+  const handleMlChange = (ml) => {
+    setSelectedMl(ml)
+    const newPrice = getPriceForMl(ml)
+    setSelectedPrice(newPrice)
+  }
+
   const getImageUrl = (imagePath) => {
     if (!imagePath) {
       return 'https://via.placeholder.com/500x500/8B4513/white?text=No+Image'
@@ -58,17 +106,14 @@ function ProductDetailPage() {
       return imagePath
     }
     
-    // Uploaded image from admin panel (public/images/products/)
     if (imagePath.startsWith('/images/')) {
       return `${APP_URL}${imagePath}`
     }
     
-    // Old storage images
     if (imagePath.startsWith('/storage/')) {
       return `${APP_URL}${imagePath}`
     }
     
-    // Local assets (frontend public folder)
     if (imagePath.startsWith('/assets/')) {
       const filename = imagePath.split('/').pop()
       return `${FRONTEND_URL}/assets/${filename}`
@@ -118,17 +163,22 @@ function ProductDetailPage() {
     const productData = {
       id: product.product_id,
       name: product.name,
-      price: product.discount_price ? `Rs. ${product.discount_price}` : product.price,
-      priceNum: product.discount_price || product.price_num,
+      price: `Rs. ${selectedPrice.toLocaleString()}`,
+      priceNum: selectedPrice,
       rating: product.rating,
       image: getImageUrl(product.image_url),
-      quantity: quantity
+      quantity: quantity,
+      ml: selectedMl,
+      ml_prices: getMlPrices(),
+      product: {
+        ml_prices: getMlPrices()
+      }
     }
     
     for (let i = 0; i < quantity; i++) {
       addToCart(productData)
     }
-    alert(`Added ${quantity} x ${product.name} to cart!`)
+    alert(`Added ${quantity} x ${product.name} (${selectedMl}ml) to cart!`)
   }
 
   const handleWishlist = () => {
@@ -140,10 +190,11 @@ function ProductDetailPage() {
     const productData = {
       id: product.product_id,
       name: product.name,
-      price: product.discount_price ? `Rs. ${product.discount_price}` : product.price,
-      priceNum: product.discount_price || product.price_num,
+      price: `Rs. ${selectedPrice.toLocaleString()}`,
+      priceNum: selectedPrice,
       rating: product.rating,
-      image: getImageUrl(product.image_url)
+      image: getImageUrl(product.image_url),
+      ml_prices: getMlPrices()
     }
     
     if (isWishlisted) {
@@ -170,8 +221,10 @@ function ProductDetailPage() {
     )
   }
 
+  const mlOptions = [50, 60, 70, 80, 90, 100]
+  const mlPrices = getMlPrices()
   const discountPercent = product.discount_price ? Math.round(((product.price_num - product.discount_price) / product.price_num) * 100) : 0
-  const displayPrice = product.discount_price ? `Rs. ${product.discount_price.toLocaleString()}` : product.price
+  const displayPrice = `Rs. ${selectedPrice.toLocaleString()}`
   const originalPrice = product.discount_price ? `Rs. ${product.price_num.toLocaleString()}` : null
   const fragranceNotes = parseNotes(product.notes)
   const imageUrl = getImageUrl(product.image_url)
@@ -235,6 +288,26 @@ function ProductDetailPage() {
                 <span className="meta-value in-stock">In Stock</span>
               </div>
             </div>
+
+            {/* ✅ ML SELECTOR */}
+            <div className="ml-selector-section">
+              <span className="ml-label">Select Size:</span>
+              <div className="ml-options">
+                {mlOptions.map(ml => (
+                  <button
+                    key={ml}
+                    className={`ml-btn ${selectedMl === ml ? 'active' : ''} ${!isMlAvailable(ml) ? 'disabled' : ''}`}
+                    onClick={() => isMlAvailable(ml) && handleMlChange(ml)}
+                    disabled={!isMlAvailable(ml)}
+                  >
+                    {ml}ml
+                    <span className="ml-price">
+                      {getDisplayPriceForMl(ml)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
             
             <div className="quantity-section">
               <span className="quantity-label">Quantity:</span>
@@ -267,7 +340,7 @@ function ProductDetailPage() {
       </div>
 
       <style>{`
-        .product-detail-page { max-width: 1200px; margin: 0 auto; padding: 40px 20px; min-height: 60vh; }
+        .product-detail-page { max-width: 1200px; margin: 0 auto; padding: 40px 20px; min-height: 60vh; background: #0a0a0a; }
         .breadcrumb { margin-bottom: 30px; font-size: 14px; color: rgba(255,255,255,0.5); }
         .breadcrumb a { color: #d4af37; text-decoration: none; }
         .breadcrumb span { color: rgba(255,255,255,0.7); }
@@ -290,6 +363,18 @@ function ProductDetailPage() {
         .meta-label { width: 120px; color: #d4af37; font-weight: 500; }
         .meta-value { color: rgba(255,255,255,0.8); }
         .in-stock { color: #4caf50; font-weight: 500; }
+        
+        /* ✅ ML SELECTOR STYLES */
+        .ml-selector-section { margin-bottom: 25px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(212,175,55,0.1); }
+        .ml-label { display: block; color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 500; margin-bottom: 10px; }
+        .ml-options { display: flex; gap: 8px; flex-wrap: wrap; }
+        .ml-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 25px; padding: 6px 14px; font-size: 12px; color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 55px; }
+        .ml-btn:hover:not(.disabled):not(.active) { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: #fff; }
+        .ml-btn.active { background: linear-gradient(135deg, #d4af37, #b8960c); border-color: #d4af37; color: #000; font-weight: 600; }
+        .ml-btn.active .ml-price { opacity: 1; }
+        .ml-btn.disabled { opacity: 0.3; cursor: not-allowed; }
+        .ml-price { font-size: 10px; font-weight: 400; opacity: 0.6; }
+        
         .quantity-section { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
         .quantity-label { color: rgba(255,255,255,0.7); font-size: 14px; }
         .quantity-selector { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); border-radius: 30px; padding: 3px 10px; }
@@ -301,28 +386,9 @@ function ProductDetailPage() {
         .wishlist-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.3); color: #fff; padding: 12px 25px; border-radius: 40px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .wishlist-btn.active { background: rgba(212,175,55,0.2); color: #d4af37; }
         
-        .description-section {
-          background: rgba(255,255,255,0.02);
-          border-radius: 16px;
-          padding: 25px;
-          margin-top: 25px;
-          border: 1px solid rgba(212,175,55,0.1);
-        }
-        
-        .description-title {
-          color: #d4af37;
-          font-size: 18px;
-          font-weight: 600;
-          margin-bottom: 15px;
-          padding-bottom: 10px;
-          border-bottom: 1px solid rgba(212,175,55,0.2);
-        }
-        
-        .description-content p {
-          color: #ffffff;
-          line-height: 1.7;
-          font-size: 14px;
-        }
+        .description-section { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 25px; margin-top: 25px; border: 1px solid rgba(212,175,55,0.1); }
+        .description-title { color: #d4af37; font-size: 18px; font-weight: 600; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(212,175,55,0.2); }
+        .description-content p { color: #ffffff; line-height: 1.7; font-size: 14px; }
         
         .loading-container, .error-container { text-align: center; padding: 60px; }
         .back-to-shop { display: inline-block; margin-top: 15px; color: #d4af37; text-decoration: none; }
@@ -335,6 +401,7 @@ function ProductDetailPage() {
           .action-buttons { flex-direction: column; }
           .add-to-cart-btn, .wishlist-btn { width: 100%; justify-content: center; }
           .description-section { padding: 20px; }
+          .ml-options { justify-content: center; }
         }
         
         @media (max-width: 480px) {
@@ -342,6 +409,8 @@ function ProductDetailPage() {
           .meta-label { width: 90px; font-size: 12px; }
           .description-content p { font-size: 12px; }
           .description-section { padding: 15px; }
+          .ml-btn { padding: 4px 10px; font-size: 10px; min-width: 45px; }
+          .ml-price { font-size: 8px; }
         }
       `}</style>
     </div>

@@ -9,90 +9,165 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::query();
-        
-        if ($request->category && $request->category != 'All') {
-            $query->where('category', $request->category)->orWhere('name', $request->category);
-        }
-        
-        if ($request->gender && $request->gender != 'All') {
-            $query->where('gender', $request->gender);
-        }
-        
-        if ($request->search) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
-        
-        if ($request->min_price) {
-            $query->where('price_num', '>=', $request->min_price);
-        }
-        
-        if ($request->max_price) {
-            $query->where('price_num', '<=', $request->max_price);
-        }
-        
-        $products = $query->get();
-        
-        // ✅ Add full image URLs
-        foreach ($products as $product) {
-            if ($product->image_url) {
-                if (str_starts_with($product->image_url, '/images/')) {
-                    $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+        try {
+            $query = Product::query();
+            
+            if ($request->category && $request->category != 'All') {
+                $query->where('category', $request->category);
+            }
+            
+            if ($request->gender && $request->gender != 'All') {
+                $query->where('gender', $request->gender);
+            }
+            
+            if ($request->search) {
+                $query->where('name', 'like', '%' . $request->search . '%');
+            }
+            
+            if ($request->min_price) {
+                $query->where('price_num', '>=', $request->min_price);
+            }
+            
+            if ($request->max_price) {
+                $query->where('price_num', '<=', $request->max_price);
+            }
+            
+            $products = $query->get();
+            
+            foreach ($products as $product) {
+                // Image URL fix
+                if ($product->image_url) {
+                    if (strpos($product->image_url, '/images/') === 0) {
+                        $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                    }
+                }
+                
+                // ✅ FIX: Decode ml_prices if it's a string
+                if ($product->ml_prices && is_string($product->ml_prices)) {
+                    $product->ml_prices = json_decode($product->ml_prices, true);
+                }
+                
+                // ✅ If null, set as empty array
+                if ($product->ml_prices === null) {
+                    $product->ml_prices = [];
                 }
             }
+            
+            return response()->json($products);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ], 500);
         }
-        
-        return response()->json($products);
     }
     
     public function show($id)
     {
-        $product = Product::findOrFail($id);
-        
-        if ($product->image_url && str_starts_with($product->image_url, '/images/')) {
-            $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+        try {
+            $product = Product::findOrFail($id);
+            
+            if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
+                $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+            }
+            
+            // ✅ FIX: Decode ml_prices if it's a string
+            if ($product->ml_prices && is_string($product->ml_prices)) {
+                $product->ml_prices = json_decode($product->ml_prices, true);
+            }
+            
+            if ($product->ml_prices === null) {
+                $product->ml_prices = [];
+            }
+            
+            return response()->json($product);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        
-        return response()->json($product);
     }
     
     public function topSellers()
     {
-        $products = Product::where('is_top_seller', 1)->get();
-        
-        foreach ($products as $product) {
-            if ($product->image_url && str_starts_with($product->image_url, '/images/')) {
-                $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+        try {
+            $products = Product::where('is_top_seller', 1)->get();
+            
+            foreach ($products as $product) {
+                if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
+                    $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                }
+                
+                // ✅ FIX: Decode ml_prices if it's a string
+                if ($product->ml_prices && is_string($product->ml_prices)) {
+                    $product->ml_prices = json_decode($product->ml_prices, true);
+                }
+                
+                if ($product->ml_prices === null) {
+                    $product->ml_prices = [];
+                }
             }
+            
+            return response()->json($products);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        
-        return response()->json($products);
     }
     
     public function newArrivals()
     {
-        $products = Product::where('is_new_arrival', 1)->get();
-        
-        foreach ($products as $product) {
-            if ($product->image_url && str_starts_with($product->image_url, '/images/')) {
-                $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+        try {
+            $products = Product::where('is_new_arrival', 1)->get();
+            
+            foreach ($products as $product) {
+                if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
+                    $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                }
+                
+                // ✅ FIX: Decode ml_prices if it's a string
+                if ($product->ml_prices && is_string($product->ml_prices)) {
+                    $product->ml_prices = json_decode($product->ml_prices, true);
+                }
+                
+                if ($product->ml_prices === null) {
+                    $product->ml_prices = [];
+                }
             }
+            
+            return response()->json($products);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        
-        return response()->json($products);
     }
     
     public function deals()
     {
-        $products = Product::where('is_deal', 1)->get();
-        
-        foreach ($products as $product) {
-            if ($product->image_url && str_starts_with($product->image_url, '/images/')) {
-                $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+        try {
+            $products = Product::where('is_deal', 1)->get();
+            
+            foreach ($products as $product) {
+                if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
+                    $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                }
+                
+                // ✅ FIX: Decode ml_prices if it's a string
+                if ($product->ml_prices && is_string($product->ml_prices)) {
+                    $product->ml_prices = json_decode($product->ml_prices, true);
+                }
+                
+                if ($product->ml_prices === null) {
+                    $product->ml_prices = [];
+                }
             }
+            
+            return response()->json($products);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        
-        return response()->json($products);
     }
     
     public function categories()

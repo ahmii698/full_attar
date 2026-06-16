@@ -1,3 +1,7 @@
+/* =========================
+   PRODUCT FORM - COMPLETE
+========================= */
+
 .product-form {
   animation: fadeIn 0.3s ease;
 }
@@ -125,7 +129,10 @@ textarea.form-control {
   min-height: 100px;
 }
 
-/* Checkbox Group */
+/* =========================
+   CHECKBOX GROUP
+========================= */
+
 .checkbox-group {
   display: flex;
   align-items: center;
@@ -148,30 +155,169 @@ textarea.form-control {
   accent-color: #d4af37;
 }
 
-/* Image Preview */
-.image-preview {
-  margin-top: 10px;
-}
+/* =========================
+   ML PRICES SECTION
+========================= */
 
-.image-preview img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-}
-
-/* Form Text */
-.form-text {
-  display: block;
+.ml-prices-section {
+  background: rgba(212, 175, 55, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 12px;
+  padding: 20px;
   margin-top: 5px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
 }
 
-.text-info {
-  color: #17a2b8 !important;
+.ml-prices-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #d4af37;
+  display: block;
+  margin-bottom: 5px;
 }
+
+.helper-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.helper-text small {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.ml-prices-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.ml-price-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s;
+}
+
+.ml-price-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(212, 175, 55, 0.2);
+}
+
+.ml-price-item label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 4px;
+}
+
+.ml-price-item input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.ml-price-item input:focus {
+  border-color: #d4af37;
+}
+
+.ml-price-item input::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 11px;
+}
+
+/* =========================
+   IMAGE UPLOAD
+========================= */
+
+.image-upload-area {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.upload-image-btn {
+  background: rgba(212, 175, 55, 0.15);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.upload-image-btn:hover {
+  background: rgba(212, 175, 55, 0.25);
+  transform: translateY(-2px);
+}
+
+.image-preview-container {
+  margin-top: 15px;
+  display: inline-block;
+  position: relative;
+}
+
+.image-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid rgba(212, 175, 55, 0.3);
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.remove-image-btn:hover {
+  transform: scale(1.1);
+}
+
+.current-image-text {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+  margin-top: 5px;
+}
+
+.image-url-alternative {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.alt-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+/* =========================
+   FORM ACTIONS
+========================= */
 
 .full-width {
   grid-column: span 2;
@@ -187,7 +333,7 @@ textarea.form-control {
   background: linear-gradient(135deg, #d4af37, #b8960c);
   color: #000000;
   border: none;
-  padding: 10px 24px;
+  padding: 12px 28px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
@@ -195,9 +341,9 @@ textarea.form-control {
   transition: all 0.3s;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
 }
 
 .btn-primary:disabled {
@@ -207,28 +353,45 @@ textarea.form-control {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 12px 24px;
   border-radius: 8px;
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
   transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
 }
 
-.loading {
+/* =========================
+   LOADING
+========================= */
+
+.admin-loading {
   text-align: center;
   padding: 50px;
   color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
 }
 
-/* Responsive */
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+  .ml-prices-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .form-header {
     flex-direction: column;
@@ -254,9 +417,54 @@ textarea.form-control {
     flex-direction: column;
   }
   
-  .btn-primary, .btn-secondary {
+  .btn-primary, 
+  .btn-secondary {
     width: 100%;
     text-align: center;
     justify-content: center;
+  }
+  
+  .ml-prices-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .ml-prices-section {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-grid {
+    padding: 15px;
+    gap: 15px;
+  }
+  
+  .ml-prices-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ml-price-item {
+    padding: 8px 10px;
+  }
+  
+  .image-preview {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .form-header h2 {
+    font-size: 20px;
+  }
+  
+  .header-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-duplicate,
+  .btn-cancel-duplicate {
+    width: 100%;
+    text-align: center;
   }
 }

@@ -1,3 +1,7 @@
+/* =========================
+   PRODUCT CARD - COMPLETE
+========================= */
+
 /* Product Card Link Wrapper */
 .product-card-link {
   text-decoration: none;
@@ -43,7 +47,10 @@
   transform: scale(1.05);
 }
 
-/* Wishlist Button */
+/* =========================
+   WISHLIST BUTTON
+========================= */
+
 .wishlist-btn {
   position: absolute;
   top: 12px;
@@ -68,6 +75,10 @@
   background: rgba(0,0,0,0.7);
   transform: scale(1.1);
 }
+
+/* =========================
+   PRODUCT INFO
+========================= */
 
 .product-info {
   padding: 16px;
@@ -122,6 +133,70 @@
   font-size: 11px;
 }
 
+/* =========================
+   ML SELECTOR
+========================= */
+
+.ml-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 12px 0;
+  flex-wrap: wrap;
+}
+
+.ml-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+  margin-right: 2px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ml-options {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ml-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.ml-btn:hover:not(.disabled):not(.active) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.ml-btn.active {
+  background: linear-gradient(135deg, #d4af37, #b8960c);
+  border-color: #d4af37;
+  color: #000;
+  font-weight: 600;
+}
+
+.ml-btn.disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.03);
+}
+
+/* =========================
+   ADD TO CART BUTTON
+========================= */
+
 .add-to-cart {
   width: 100%;
   background: rgba(212,175,55,0.1);
@@ -139,6 +214,7 @@
   gap: 8px;
   z-index: 3;
   position: relative;
+  font-family: inherit;
 }
 
 .add-to-cart:hover {
@@ -147,7 +223,10 @@
   gap: 12px;
 }
 
-/* Discount Tag */
+/* =========================
+   DISCOUNT TAG
+========================= */
+
 .discount-tag {
   position: absolute;
   top: 12px;
@@ -166,7 +245,9 @@
   border-color: rgba(255,68,68,0.3);
 }
 
-/* ========== RESPONSIVE STYLES ========== */
+/* =========================
+   RESPONSIVE STYLES
+========================= */
 
 /* Tablet (768px - 1024px) */
 @media (max-width: 1024px) {
@@ -197,6 +278,11 @@
   .add-to-cart {
     padding: 8px;
     font-size: 12px;
+  }
+  
+  .ml-btn {
+    font-size: 9px;
+    padding: 2px 8px;
   }
 }
 
@@ -244,6 +330,20 @@
     top: 8px;
     right: 8px;
   }
+  
+  .ml-selector {
+    gap: 5px;
+    margin: 6px 0 10px 0;
+  }
+  
+  .ml-btn {
+    font-size: 9px;
+    padding: 2px 7px;
+  }
+  
+  .ml-label {
+    font-size: 10px;
+  }
 }
 
 /* Mobile Medium (480px - 600px) */
@@ -286,6 +386,15 @@
     height: 28px;
     font-size: 12px;
   }
+  
+  .ml-btn {
+    font-size: 8px;
+    padding: 2px 6px;
+  }
+  
+  .ml-label {
+    font-size: 9px;
+  }
 }
 
 /* Mobile Small (up to 480px) */
@@ -323,13 +432,32 @@
   .product-price-row {
     gap: 5px;
   }
+  
+  .ml-btn {
+    font-size: 8px;
+    padding: 2px 5px;
+  }
+  
+  .ml-selector {
+    gap: 4px;
+    margin: 4px 0 8px 0;
+  }
 }
 
-/* Grid View Adjustment - When in 2 column grid */
+/* =========================
+   GRID VIEW ADJUSTMENTS
+========================= */
+
+/* When in 2 column grid */
 @media (max-width: 768px) {
   .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 15px !important;
+  }
+  
+  .ml-btn {
+    font-size: 8px;
+    padding: 2px 6px;
   }
 }
 
@@ -339,5 +467,14 @@
     grid-template-columns: 1fr !important;
     max-width: 300px;
     margin: 0 auto;
+  }
+  
+  .ml-btn {
+    font-size: 10px;
+    padding: 3px 10px;
+  }
+  
+  .ml-selector {
+    justify-content: center;
   }
 }

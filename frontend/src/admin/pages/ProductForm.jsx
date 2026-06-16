@@ -23,7 +23,16 @@ function ProductForm() {
     image_url: '',
     stock_quantity: 10,
     is_top_seller: false,
-    is_new_arrival: false
+    is_new_arrival: false,
+    description: '',
+    ml_prices: {
+      '50': '',
+      '60': '',
+      '70': '',
+      '80': '',
+      '90': '',
+      '100': ''
+    }
   })
   const [isEdit, setIsEdit] = useState(false)
 
@@ -42,6 +51,16 @@ function ProductForm() {
       setLoading(true)
       const res = await getProduct(id)
       const product = res.data
+      
+      // Parse ml_prices if exists
+      let mlPrices = { '50': '', '60': '', '70': '', '80': '', '90': '', '100': '' }
+      if (product.ml_prices) {
+        const parsed = typeof product.ml_prices === 'string' 
+          ? JSON.parse(product.ml_prices) 
+          : product.ml_prices
+        mlPrices = { ...mlPrices, ...parsed }
+      }
+      
       setFormData({
         name: product.name || '',
         price: product.price || '',
@@ -56,7 +75,9 @@ function ProductForm() {
         image_url: product.image_url || '',
         stock_quantity: product.stock_quantity || 10,
         is_top_seller: product.is_top_seller === 1,
-        is_new_arrival: product.is_new_arrival === 1
+        is_new_arrival: product.is_new_arrival === 1,
+        description: product.description || '',
+        ml_prices: mlPrices
       })
       
       if (product.image_url) {
@@ -85,6 +106,16 @@ function ProductForm() {
     }))
   }
 
+  const handleMlPriceChange = (ml, value) => {
+    setFormData(prev => ({
+      ...prev,
+      ml_prices: {
+        ...prev.ml_prices,
+        [ml]: value
+      }
+    }))
+  }
+
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -102,7 +133,11 @@ function ProductForm() {
       const submitData = new FormData()
       
       Object.keys(formData).forEach(key => {
-        if (formData[key] !== undefined && formData[key] !== '') {
+        if (key === 'ml_prices') {
+          // Convert ml_prices to JSON string
+          const mlPricesJson = JSON.stringify(formData.ml_prices)
+          submitData.append('ml_prices', mlPricesJson)
+        } else if (formData[key] !== undefined && formData[key] !== '') {
           if (key === 'is_deal' || key === 'is_top_seller' || key === 'is_new_arrival') {
             submitData.append(key, formData[key] ? 1 : 0)
           } else {
@@ -277,6 +312,80 @@ function ProductForm() {
             />
           </div>
 
+          {/* ==================== ML PRICES SECTION ==================== */}
+          <div className="form-group full-width ml-prices-section">
+            <label className="ml-prices-label">
+              🧪 ML Prices (Different prices for different sizes)
+            </label>
+            <p className="helper-text">
+              Set prices for each ML size. Leave empty if not available.
+              <br />
+              <small>Default 50ml price will be used if no price is set.</small>
+            </p>
+            <div className="ml-prices-grid">
+              <div className="ml-price-item">
+                <label>50ml (Default)</label>
+                <input
+                  type="number"
+                  value={formData.ml_prices['50'] || ''}
+                  onChange={(e) => handleMlPriceChange('50', e.target.value)}
+                  className="form-control"
+                  placeholder="Base price"
+                />
+              </div>
+              <div className="ml-price-item">
+                <label>60ml</label>
+                <input
+                  type="number"
+                  value={formData.ml_prices['60'] || ''}
+                  onChange={(e) => handleMlPriceChange('60', e.target.value)}
+                  className="form-control"
+                  placeholder="Price for 60ml"
+                />
+              </div>
+              <div className="ml-price-item">
+                <label>70ml</label>
+                <input
+                  type="number"
+                  value={formData.ml_prices['70'] || ''}
+                  onChange={(e) => handleMlPriceChange('70', e.target.value)}
+                  className="form-control"
+                  placeholder="Price for 70ml"
+                />
+              </div>
+              <div className="ml-price-item">
+                <label>80ml</label>
+                <input
+                  type="number"
+                  value={formData.ml_prices['80'] || ''}
+                  onChange={(e) => handleMlPriceChange('80', e.target.value)}
+                  className="form-control"
+                  placeholder="Price for 80ml"
+                />
+              </div>
+              <div className="ml-price-item">
+                <label>90ml</label>
+                <input
+                  type="number"
+                  value={formData.ml_prices['90'] || ''}
+                  onChange={(e) => handleMlPriceChange('90', e.target.value)}
+                  className="form-control"
+                  placeholder="Price for 90ml"
+                />
+              </div>
+              <div className="ml-price-item">
+                <label>100ml</label>
+                <input
+                  type="number"
+                  value={formData.ml_prices['100'] || ''}
+                  onChange={(e) => handleMlPriceChange('100', e.target.value)}
+                  className="form-control"
+                  placeholder="Price for 100ml"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Image Upload Section */}
           <div className="form-group full-width">
             <label>Product Image</label>
@@ -375,7 +484,7 @@ function ProductForm() {
             <label>Description</label>
             <textarea
               name="description"
-              value={formData.description}
+              value={formData.description || ''}
               onChange={handleChange}
               className="form-control"
               rows="4"

@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\OutletController;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TestimonialController;
+use App\Http\Controllers\Api\CartController;  // ✅ ADDED - API Cart Controller
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use App\Http\Controllers\Admin\SiteSettingController as AdminSiteSettingController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\OutletController as AdminOutletController;
+use App\Http\Controllers\Admin\CartController as AdminCartController;  // ✅ ADDED - Admin Cart Controller
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -98,12 +100,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
     
-    // Cart
-    Route::get('/cart', [OrderController::class, 'getCart']);
-    Route::post('/cart/add', [OrderController::class, 'addToCart']);
-    Route::delete('/cart/remove/{id}', [OrderController::class, 'removeFromCart']);
+    // ========== CART API ROUTES ✅ ==========
+    Route::get('/cart', [CartController::class, 'index']);           // Get cart items
+    Route::post('/cart', [CartController::class, 'store']);          // Add to cart
+    Route::put('/cart/{id}', [CartController::class, 'update']);     // Update quantity
+    Route::put('/cart/{id}/ml', [CartController::class, 'updateMl']); // ✅ Update ML
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);  // Remove item
+    Route::delete('/cart/clear', [CartController::class, 'clear']);   // Clear cart
     
-    // Wishlist
+    // Wishlist (Old OrderController se hata kar yahan rakh sakte hain)
     Route::get('/wishlist', [OrderController::class, 'getWishlist']);
     Route::post('/wishlist/add', [OrderController::class, 'addToWishlist']);
     Route::delete('/wishlist/remove/{id}', [OrderController::class, 'removeFromWishlist']);
@@ -112,7 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/order', [OrderController::class, 'placeOrder']);
     Route::get('/orders', [OrderController::class, 'myOrders']);
     
-    // Profile (OrderController ka - optional)
+    // Profile
     Route::get('/profile', [OrderController::class, 'profile']);
     Route::put('/profile', [OrderController::class, 'updateProfile']);
 });
@@ -151,18 +156,18 @@ Route::prefix('admin')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
     
-    // ========== TESTIMONIALS MANAGEMENT ==========
+    // Testimonials Management
     Route::put('/testimonials/{id}/approve', [AdminTestimonialController::class, 'approve']);
     Route::get('/testimonials', [AdminTestimonialController::class, 'index']);
     Route::get('/testimonials/{id}', [AdminTestimonialController::class, 'show']);
     Route::put('/testimonials/{id}', [AdminTestimonialController::class, 'update']);
     Route::delete('/testimonials/{id}', [AdminTestimonialController::class, 'destroy']);
     
-    // ========== CONTACT QUERIES MANAGEMENT ==========
+    // Contact Queries Management
     Route::get('/contacts', [ContactController::class, 'index']);
     Route::get('/contacts/{id}', [ContactController::class, 'show']);
     Route::put('/contacts/{id}/read', [ContactController::class, 'markAsRead']);
-    Route::post('/contacts/{id}/reply', [ContactController::class, 'reply']);  // ✅ reply route
+    Route::post('/contacts/{id}/reply', [ContactController::class, 'reply']);
     Route::delete('/contacts/{id}', [ContactController::class, 'destroy']);
     
     // Newsletter Subscribers
@@ -171,7 +176,7 @@ Route::prefix('admin')->group(function () {
     Route::put('/subscribers/{id}/status', [SubscriberController::class, 'updateStatus']);
     Route::delete('/subscribers/{id}', [SubscriberController::class, 'destroy']);
     
-    // ========== HERO SECTION ADMIN APIs ==========
+    // Hero Section Admin APIs
     Route::get('/hero-sliders', [AdminHeroController::class, 'index']);
     Route::get('/hero-sliders/{id}', [AdminHeroController::class, 'show']);
     Route::post('/hero-sliders', [AdminHeroController::class, 'store']);
@@ -198,7 +203,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/social-links', [AdminSiteSettingController::class, 'socialLinksIndex']);
     Route::put('/social-links/{id}', [AdminSiteSettingController::class, 'socialLinksUpdate']);
     
-    // FAQ ADMIN APIs
+    // FAQ Admin APIs
     Route::get('/faqs', [AdminFaqController::class, 'index']);
     Route::get('/faqs/{id}', [AdminFaqController::class, 'show']);
     Route::post('/faqs', [AdminFaqController::class, 'store']);
@@ -206,11 +211,19 @@ Route::prefix('admin')->group(function () {
     Route::delete('/faqs/{id}', [AdminFaqController::class, 'destroy']);
     Route::post('/faqs/reorder', [AdminFaqController::class, 'updateOrder']);
     
-    // OUTLETS ADMIN APIs
+    // Outlets Admin APIs
     Route::get('/outlets', [AdminOutletController::class, 'index']);
     Route::get('/outlets/{id}', [AdminOutletController::class, 'show']);
     Route::post('/outlets', [AdminOutletController::class, 'store']);
     Route::put('/outlets/{id}', [AdminOutletController::class, 'update']);
     Route::delete('/outlets/{id}', [AdminOutletController::class, 'destroy']);
     Route::post('/outlets/reorder', [AdminOutletController::class, 'updateOrder']);
+    
+    // ========== ADMIN CART MANAGEMENT ✅ ==========
+    Route::get('/carts', [AdminCartController::class, 'index']);              // All carts
+    Route::get('/carts/{id}', [AdminCartController::class, 'show']);          // Single cart
+    Route::put('/carts/{id}', [AdminCartController::class, 'update']);        // Update cart item
+    Route::delete('/carts/{id}', [AdminCartController::class, 'destroy']);    // Delete cart item
+    Route::delete('/carts/user/{userId}', [AdminCartController::class, 'clearUserCart']); // Clear user cart
+    Route::get('/carts/stats', [AdminCartController::class, 'stats']);        // Cart statistics
 });

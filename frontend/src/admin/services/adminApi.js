@@ -23,11 +23,15 @@ export const adminLogin = (email, password) => API.post('/login', { email, passw
 // Dashboard
 export const getDashboard = () => API.get('/dashboard')
 
-// ========== PRODUCTS (With Image Upload Support) ==========
+// ========== PRODUCTS (With Image Upload & ML Prices Support) ==========
 export const getProducts = () => API.get('/products')
 export const getProduct = (id) => API.get(`/products/${id}`)
 
 export const createProduct = (data) => {
+  // If ml_prices is an object, convert to JSON string
+  if (data.has('ml_prices')) {
+    // Already handled in form, just send as is
+  }
   return API.post('/products', data, {
     headers: {
       'Content-Type': 'multipart/form-data'
@@ -88,8 +92,6 @@ export const getContacts = () => API.get('/contacts')
 export const getContact = (id) => API.get(`/contacts/${id}`)
 export const markContactAsRead = (id) => API.put(`/contacts/${id}/read`)
 export const deleteContact = (id) => API.delete(`/contacts/${id}`)
-
-// ✅ ADD THIS - Reply to contact
 export const replyToContact = (id, message) => API.post(`/contacts/${id}/reply`, { message })
 
 // ========== SUBSCRIBERS ==========

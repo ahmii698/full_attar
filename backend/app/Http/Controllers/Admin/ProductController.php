@@ -37,6 +37,16 @@ class ProductController extends Controller
             $product->is_top_seller = $request->is_top_seller ?? 0;
             $product->is_new_arrival = $request->is_new_arrival ?? 0;
 
+            // ✅ Handle ML Prices
+            if ($request->has('ml_prices')) {
+                $mlPrices = $request->ml_prices;
+                // If it's a JSON string, decode it
+                if (is_string($mlPrices)) {
+                    $mlPrices = json_decode($mlPrices, true);
+                }
+                $product->ml_prices = json_encode($mlPrices);
+            }
+
             // ✅ Handle image upload - direct public folder
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
@@ -87,6 +97,20 @@ class ProductController extends Controller
             $product->stock_quantity = $request->stock_quantity ?? 10;
             $product->is_top_seller = $request->is_top_seller ?? 0;
             $product->is_new_arrival = $request->is_new_arrival ?? 0;
+
+            // ✅ Handle ML Prices
+            if ($request->has('ml_prices')) {
+                $mlPrices = $request->ml_prices;
+                // If it's a JSON string, decode it
+                if (is_string($mlPrices)) {
+                    $mlPrices = json_decode($mlPrices, true);
+                }
+                $product->ml_prices = json_encode($mlPrices);
+            } else {
+                // If no ml_prices sent, keep existing or set null
+                // You can choose to keep existing or set null
+                // $product->ml_prices = null;
+            }
 
             // ✅ Handle image upload
             if ($request->hasFile('image')) {
