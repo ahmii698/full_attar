@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { Link } from 'react-router-dom'
 import { FaHeart, FaRegHeart, FaShoppingCart } from 'react-icons/fa'
 import { useCart } from '../contexts/CartContext'
@@ -13,13 +13,8 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   const APP_URL = 'http://127.0.0.1:8000'
   const FRONTEND_URL = 'http://localhost:5173'
 
-  // ✅ FORCE PARSE ml_prices - DIRECTLY USE WHAT'S PASSED
+  // ✅ Parse ml_prices
   const mlPrices = ml_prices && typeof ml_prices === 'object' ? ml_prices : {}
-  
-  // ✅ DEBUG: Check what's coming
-  console.log('🔍 Product ID:', id)
-  console.log('🔍 ml_prices prop:', ml_prices)
-  console.log('🔍 Parsed mlPrices:', mlPrices)
   
   const mlOptions = [50, 60, 70, 80, 90, 100]
 
@@ -79,7 +74,7 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   const displayPrice = discount_price ? `Rs. ${discount_price.toLocaleString()}` : getDisplayPriceForMl(selectedMl)
   const originalPrice = discount_price ? price : null
   
-  // ✅ CRITICAL FIX: Product object with ml_prices
+  // ✅ Product object with ml_prices
   const product = {
     id,
     name,
@@ -89,13 +84,11 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
     image: getImageUrl(),
     originalPrice: originalPrice,
     ml: selectedMl,
-    ml_prices: mlPrices,  // ✅ Database se aayi hui ml_prices
+    ml_prices: mlPrices,
     product: {
-      ml_prices: mlPrices  // ✅ Database se aayi hui ml_prices
+      ml_prices: mlPrices
     }
   }
-  
-  console.log('📦 Product being sent to cart:', product)
   
   const handleWishlist = (e) => {
     e.preventDefault()
@@ -111,7 +104,6 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   const handleAddToCart = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    console.log('🛒 Adding to cart with ml_prices:', mlPrices)
     addToCart(product)
   }
 
@@ -135,7 +127,6 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
             src={finalImageUrl} 
             alt={name}
             onError={(e) => {
-              console.error('Image failed:', finalImageUrl)
               e.target.src = 'https://via.placeholder.com/300x300/8B4513/white?text=No+Image'
             }}
           />
@@ -187,4 +178,5 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   )
 }
 
-export default ProductCard
+// ✅ Memoize to prevent unnecessary re-renders
+export default memo(ProductCard)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
 import SectionHeading from '../components/SectionHeading'
@@ -14,15 +14,30 @@ function HomePage() {
   const [deals, setDeals] = useState([])
   const [banners, setBanners] = useState([])
   const [dataLoaded, setDataLoaded] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
   const APP_URL = 'http://127.0.0.1:8000'
 
+  // ✅ Check if data is already in sessionStorage
   useEffect(() => {
-    fetchData()
+    const cachedData = sessionStorage.getItem('homepage_data')
+    if (cachedData) {
+      try {
+        const parsed = JSON.parse(cachedData)
+        setTopSellers(parsed.topSellers || [])
+        setDeals(parsed.deals || [])
+        setBanners(parsed.banners || [])
+        setDataLoaded(true)
+        setIsLoading(false)
+        console.log('✅ Homepage data loaded from cache')
+      } catch (e) {
+        console.error('Cache parse error:', e)
+      }
+    }
   }, [])
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [topRes, dealsRes, bannersRes] = await Promise.all([
         fetch(`${API_BASE_URL}/top-sellers`),
@@ -34,6 +49,18 @@ function HomePage() {
       const dealsData = await dealsRes.json()
       const bannersData = await bannersRes.json()
       
+      // ✅ Cache data in sessionStorage
+      try {
+        sessionStorage.setItem('homepage_data', JSON.stringify({
+          topSellers: topData,
+          deals: dealsData,
+          banners: bannersData
+        }))
+        console.log('✅ Homepage data cached')
+      } catch (e) {
+        console.error('Cache save error:', e)
+      }
+      
       setTopSellers(topData)
       setDeals(dealsData)
       setBanners(bannersData)
@@ -41,94 +68,123 @@ function HomePage() {
       
     } catch (err) {
       console.error('Error fetching data:', err)
-      setDataLoaded(true) // ✅ Error ke baad bhi dataLoaded true karo
+      setDataLoaded(true)
+    } finally {
+      setIsLoading(false)
     }
-  }
+  }, [API_BASE_URL])
 
-  const getImageUrl = (imagePath) => {
+  useEffect(() => {
+    // ✅ Only fetch if not already loaded from cache
+    if (!dataLoaded) {
+      fetchData()
+    }
+  }, [dataLoaded, fetchData])
+
+  const getImageUrl = useCallback((imagePath) => {
     if (!imagePath) return null
     if (imagePath.startsWith('http')) return imagePath
     return `${APP_URL}${imagePath}`
-  }
+  }, [APP_URL])
 
-  const displayTopSellers = topSellers.slice(0, 4)
-  const displayDeals = deals.slice(0, 4)
+  // ✅ Memoize products to prevent unnecessary re-renders
+  const displayTopSellers = useMemo(() => topSellers.slice(0, 4), [topSellers])
+  const displayDeals = useMemo(() => deals.slice(0, 4), [deals])
+
+  // ✅ Memoize components
+  const BestSellersSection = useMemo(() => (
+    <section className="products-section">
+      <SectionHeading title="Best Sellers" subtitle="Our most loved fragrances" />
+      <div className="products-grid">
+        {dataLoaded && displayTopSellers.length === 0 ? (
+          <div className="no-products">No top sellers found.</div>
+        ) : (
+          displayTopSellers.map(product => (
+            <ProductCard 
+              key={product.product_id || product.id}
+              id={product.product_id || product.id}
+              name={product.name}
+              price={product.price}
+              priceNum={product.price_num}
+              discount_price={product.discount_price}
+              discount_percent={product.discount_percent}
+              is_deal={product.is_deal === 1}
+              rating={product.rating || 0}
+              image_url={product.image_url}
+              ml_prices={product.ml_prices}
+            />
+          ))
+        )}
+      </div>
+      <div className="view-all-wrapper">
+        <Link to="/best-sellers" className="view-all-btn">View All →</Link>
+      </div>
+    </section>
+  ), [displayTopSellers, dataLoaded])
+
+  const DealsSection = useMemo(() => (
+    <section className="products-section">
+      <SectionHeading title="Hot Deals" subtitle="Limited time offers" />
+      <div className="products-grid">
+        {dataLoaded && displayDeals.length === 0 ? (
+          <div className="no-products">No active deals at the moment. Check back soon!</div>
+        ) : (
+          displayDeals.map(product => (
+            <ProductCard 
+              key={product.product_id || product.id}
+              id={product.product_id || product.id}
+              name={product.name}
+              price={product.price}
+              priceNum={product.price_num}
+              discount_price={product.discount_price}
+              discount_percent={product.discount_percent}
+              is_deal={true}
+              rating={product.rating || 0}
+              image_url={product.image_url}
+              ml_prices={product.ml_prices}
+            />
+          ))
+        )}
+      </div>
+      <div className="view-all-wrapper">
+        <Link to="/deals" className="view-all-btn">View All →</Link>
+      </div>
+    </section>
+  ), [displayDeals, dataLoaded])
+
+  const BannersSection = useMemo(() => (
+    dataLoaded && banners.length > 0 && banners.map((banner, index) => (
+      <CategoryBanner 
+        key={banner.banner_id || index}
+        title={banner.title}
+        subtitle={banner.subtitle}
+        description={banner.description}
+        image={getImageUrl(banner.image_url)}
+        direction={banner.direction || (index % 2 === 0 ? 'left' : 'right')}
+        buttonText={banner.button_text}
+        buttonLink={banner.button_link}
+      />
+    ))
+  ), [banners, dataLoaded, getImageUrl])
+
+  // ✅ If still loading and no cache, show minimal loading
+  if (isLoading && !dataLoaded) {
+    return (
+      <div className="homepage">
+        <Hero />
+      </div>
+    )
+  }
 
   return (
     <div className="homepage">
       <Hero />
       
-      {/* Best Sellers Section */}
-      <section className="products-section">
-        <SectionHeading title="Best Sellers" subtitle="Our most loved fragrances" />
-        <div className="products-grid">
-          {dataLoaded && displayTopSellers.length === 0 ? (
-            <div className="no-products">No top sellers found.</div>
-          ) : (
-            displayTopSellers.map(product => (
-              <ProductCard 
-                key={product.product_id || product.id}
-                id={product.product_id || product.id}
-                name={product.name}
-                price={product.price}
-                priceNum={product.price_num}
-                discount_price={product.discount_price}
-                discount_percent={product.discount_percent}
-                is_deal={product.is_deal === 1}
-                rating={product.rating || 0}
-                image_url={product.image_url}
-                ml_prices={product.ml_prices}
-              />
-            ))
-          )}
-        </div>
-        <div className="view-all-wrapper">
-          <Link to="/best-sellers" className="view-all-btn">View All →</Link>
-        </div>
-      </section>
+      {BestSellersSection}
       
-      {/* Banners */}
-      {dataLoaded && banners.length > 0 && banners.map((banner, index) => (
-        <CategoryBanner 
-          key={banner.banner_id || index}
-          title={banner.title}
-          subtitle={banner.subtitle}
-          description={banner.description}
-          image={getImageUrl(banner.image_url)}
-          direction={banner.direction || (index % 2 === 0 ? 'left' : 'right')}
-          buttonText={banner.button_text}
-          buttonLink={banner.button_link}
-        />
-      ))}
+      {BannersSection}
       
-      {/* Deals Section */}
-      <section className="products-section">
-        <SectionHeading title="Hot Deals" subtitle="Limited time offers" />
-        <div className="products-grid">
-          {dataLoaded && displayDeals.length === 0 ? (
-            <div className="no-products">No active deals at the moment. Check back soon!</div>
-          ) : (
-            displayDeals.map(product => (
-              <ProductCard 
-                key={product.product_id || product.id}
-                id={product.product_id || product.id}
-                name={product.name}
-                price={product.price}
-                priceNum={product.price_num}
-                discount_price={product.discount_price}
-                discount_percent={product.discount_percent}
-                is_deal={true}
-                rating={product.rating || 0}
-                image_url={product.image_url}
-                ml_prices={product.ml_prices}
-              />
-            ))
-          )}
-        </div>
-        <div className="view-all-wrapper">
-          <Link to="/deals" className="view-all-btn">View All →</Link>
-        </div>
-      </section>
+      {DealsSection}
       
       <FAQSection />
       

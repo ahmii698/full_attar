@@ -79,16 +79,26 @@ function Newsletter() {
 
         <div className="newsletter-right">
           <form onSubmit={handleSubmit} className="newsletter-form">
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-            />
-
-            <button type="submit" disabled={loading}>
-              {loading ? 'Subscribing...' : 'Subscribe'}
+            <div className="input-wrapper">
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+            <button type="submit" disabled={loading} className="subscribe-btn">
+              {loading ? (
+                'Subscribing...'
+              ) : (
+                <>
+                  <svg className="plane-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
+                  </svg>
+                  Subscribe
+                </>
+              )}
             </button>
           </form>
 

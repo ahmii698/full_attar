@@ -10,6 +10,7 @@ class ContactQuery extends Model
     
     protected $table = 'contact_queries';
     protected $primaryKey = 'query_id';
+    
     protected $fillable = [
         'full_name',
         'email',
@@ -24,6 +25,6 @@ class ContactQuery extends Model
         'query_date' => 'date'
     ];
     
-    // Disable automatic timestamps
+    // ✅ Disable timestamps
     public $timestamps = false;
 }

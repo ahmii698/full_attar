@@ -15,9 +15,21 @@ function ContactMapSection() {
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
   const handleChange = (e) => {
+    const { name, value } = e.target
+    
+    // ✅ Phone number - only numbers allowed
+    if (name === 'phone') {
+      const numbersOnly = value.replace(/\D/g, '')
+      setFormData({
+        ...formData,
+        [name]: numbersOnly
+      })
+      return
+    }
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     })
   }
 
@@ -39,8 +51,8 @@ function ContactMapSection() {
       return
     }
     
-    if (!formData.phone) {
-      setMessage('Please enter your phone number')
+    if (!formData.phone || formData.phone.length < 10) {
+      setMessage('Please enter a valid phone number (min 10 digits)')
       setIsSuccess(false)
       setTimeout(() => setMessage(''), 3000)
       return
@@ -57,6 +69,8 @@ function ContactMapSection() {
     setMessage('')
     
     try {
+      console.log('📤 Sending data:', formData)
+      
       const response = await fetch(`${API_BASE_URL}/contact`, {
         method: 'POST',
         headers: {
@@ -65,9 +79,22 @@ function ContactMapSection() {
         body: JSON.stringify(formData)
       })
       
-      const data = await response.json()
+      console.log('📥 Response status:', response.status)
       
-      if (response.ok) {
+      let data
+      try {
+        data = await response.json()
+      } catch (parseError) {
+        console.error('❌ Parse error:', parseError)
+        setMessage('Server error. Please try again.')
+        setIsSuccess(false)
+        setLoading(false)
+        return
+      }
+      
+      console.log('📥 Response data:', data)
+      
+      if (response.ok && data.success) {
         setMessage('Your message has been sent successfully! We will get back to you soon.')
         setIsSuccess(true)
         setFormData({
@@ -78,12 +105,12 @@ function ContactMapSection() {
           message: ''
         })
       } else {
-        setMessage(data.message || 'Something went wrong. Please try again.')
+        setMessage(data.message || data.error || 'Something went wrong. Please try again.')
         setIsSuccess(false)
       }
     } catch (error) {
-      console.error('Error:', error)
-      setMessage('Network error. Please try again.')
+      console.error('❌ Network error:', error)
+      setMessage('Network error. Please check your connection and try again.')
       setIsSuccess(false)
     } finally {
       setLoading(false)
@@ -94,7 +121,7 @@ function ContactMapSection() {
   return (
     <div className="contact-map-section">
       <div className="contact-map-container">
-        {/* Left Side - Map - Karachi Location */}
+        {/* Left Side - Map */}
         <div className="map-side">
           <iframe 
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d28958.64141174819!2d67.0011!3d24.8607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33e0666e6e6e7%3A0x1234567890abcdef!2sDolmen%20Mall%20Clifton!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s" 
@@ -146,11 +173,12 @@ function ContactMapSection() {
                 <input 
                   type="tel" 
                   name="phone"
-                  placeholder="+92 XXXXXXXXXX" 
+                  placeholder="03XXXXXXXXX" 
                   value={formData.phone}
                   onChange={handleChange}
                   disabled={loading}
                   required
+                  maxLength="15"
                 />
               </div>
               <div className="form-group">

@@ -8,16 +8,12 @@ use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
-    /**
-     * Store a new contact query
-     */
     public function store(Request $request)
     {
         try {
-            // Log incoming request for debugging
-            Log::info('Contact form submission received:', $request->all());
-            
-            // Validate request
+            Log::info('Contact form data:', $request->all());
+
+            // ✅ Simple validation
             $validated = $request->validate([
                 'full_name' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
@@ -26,124 +22,96 @@ class ContactController extends Controller
                 'message' => 'nullable|string'
             ]);
 
-            // Create contact query
-            $contact = ContactQuery::create([
-                'full_name' => $request->full_name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'query_date' => $request->query_date,
-                'message' => $request->message,
-                'is_read' => false
-            ]);
+            // ✅ Create contact
+            $contact = new ContactQuery();
+            $contact->full_name = $request->full_name;
+            $contact->email = $request->email;
+            $contact->phone = $request->phone;
+            $contact->query_date = $request->query_date;
+            $contact->message = $request->message ?? '';
+            $contact->is_read = 0;
+            $contact->save();
 
-            Log::info('Contact query saved successfully. ID: ' . $contact->query_id);
+            Log::info('Contact saved. ID: ' . $contact->query_id);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Your message has been sent successfully! We will get back to you soon.',
+                'message' => 'Your message has been sent successfully!',
                 'data' => $contact
-            ], 200);
+            ], 201);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::warning('Contact form validation failed:', $e->errors());
+            Log::error('Validation error:', $e->errors());
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
                 'errors' => $e->errors()
             ], 422);
-        } catch (\Illuminate\Database\QueryException $e) {
-            Log::error('Database error in contact form: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Database error. Please check your database connection.',
-                'error' => $e->getMessage()
-            ], 500);
+            
         } catch (\Exception $e) {
-            Log::error('Contact form error: ' . $e->getMessage());
+            Log::error('Contact error: ' . $e->getMessage());
+            Log::error('Line: ' . $e->getLine());
+            Log::error('File: ' . $e->getFile());
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Something went wrong. Please try again.',
-                'error' => $e->getMessage()
+                'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * Get all contact queries (for admin) - ORDER BY query_id instead of created_at
-     */
     public function index()
     {
         try {
-            // ✅ CHANGED: Use query_id instead of created_at since timestamps are disabled
             $queries = ContactQuery::orderBy('query_id', 'desc')->get();
             return response()->json($queries);
         } catch (\Exception $e) {
-            Log::error('Error fetching contact queries: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch queries'
-            ], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Get single contact query
-     */
     public function show($id)
     {
         try {
             $query = ContactQuery::findOrFail($id);
             return response()->json($query);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Query not found'
-            ], 404);
+            return response()->json(['error' => 'Query not found'], 404);
         }
     }
 
-    /**
-     * Mark query as read
-     */
     public function markAsRead($id)
     {
         try {
             $query = ContactQuery::findOrFail($id);
-            $query->is_read = true;
+            $query->is_read = 1;
             $query->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Query marked as read'
-            ]);
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            Log::error('Error marking query as read: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to mark as read'
-            ], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Delete contact query
-     */
     public function destroy($id)
     {
         try {
             $query = ContactQuery::findOrFail($id);
             $query->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Query deleted successfully'
-            ]);
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            Log::error('Error deleting query: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete query'
-            ], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function reply(Request $request, $id)
+    {
+        try {
+            $query = ContactQuery::findOrFail($id);
+            $query->is_read = 1;
+            $query->save();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

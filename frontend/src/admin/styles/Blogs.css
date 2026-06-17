@@ -1,5 +1,14 @@
+/* =========================
+   BLOGS ADMIN PAGE - COMPLETE
+========================= */
+
 .blogs-admin-page {
   animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .admin-page-header {
@@ -7,6 +16,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .admin-page-header h2 {
@@ -14,6 +25,10 @@
   font-weight: 600;
   color: #ffffff;
 }
+
+/* =========================
+   BUTTONS
+========================= */
 
 .admin-btn-primary {
   background: linear-gradient(135deg, #d4af37, #b8960c);
@@ -43,7 +58,9 @@
   text-decoration: none;
   font-size: 12px;
   margin-right: 8px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   transition: all 0.3s;
 }
 
@@ -60,6 +77,9 @@
   border-radius: 6px;
   font-size: 12px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   transition: all 0.3s;
 }
 
@@ -68,12 +88,9 @@
   color: #ffffff;
 }
 
-.admin-blog-image {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 8px;
-}
+/* =========================
+   TABLE
+========================= */
 
 .admin-data-table-container {
   background: rgba(255, 255, 255, 0.02);
@@ -85,6 +102,7 @@
 .admin-data-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 700px;
 }
 
 .admin-data-table th {
@@ -107,6 +125,17 @@
   background: rgba(212, 175, 55, 0.03);
 }
 
+.admin-blog-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* =========================
+   STATUS BADGE
+========================= */
+
 .status-badge {
   padding: 4px 12px;
   border-radius: 20px;
@@ -117,15 +146,283 @@
 .status-badge.active {
   background: rgba(40, 167, 69, 0.2);
   color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.2);
 }
 
 .status-badge.inactive {
   background: rgba(108, 117, 125, 0.2);
   color: #6c757d;
+  border: 1px solid rgba(108, 117, 125, 0.2);
 }
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.empty-state p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+}
+
+/* =========================
+   LOADING
+========================= */
 
 .admin-loading {
   text-align: center;
   padding: 50px;
   color: rgba(255, 255, 255, 0.5);
+}
+
+/* =========================
+   TOAST NOTIFICATION
+========================= */
+
+.toast-notification {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: #1a1a1a;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  min-width: 280px;
+  max-width: 450px;
+  animation: slideInRight 0.4s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast-notification .toast-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.toast-notification.success .toast-icon {
+  color: #4caf50;
+}
+
+.toast-notification.error .toast-icon {
+  color: #f44336;
+}
+
+.toast-notification .toast-message {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.toast-notification .toast-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: all 0.3s;
+}
+
+.toast-notification .toast-close:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.toast-notification.success {
+  border-color: rgba(76, 175, 80, 0.3);
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.toast-notification.error {
+  border-color: rgba(244, 67, 54, 0.3);
+  background: rgba(244, 67, 54, 0.05);
+}
+
+/* =========================
+   PAGINATION STYLES
+========================= */
+
+.pagination-container {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pagination-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: #d4af37;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #d4af37;
+  transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.page-number {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.page-number:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: #d4af37;
+  color: #d4af37;
+}
+
+.page-number.active {
+  background: linear-gradient(135deg, #d4af37, #b8960c);
+  border-color: #d4af37;
+  color: #000;
+  font-weight: 600;
+}
+
+.showing-info {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .admin-data-table th,
+  .admin-data-table td {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  
+  .admin-btn-warning,
+  .admin-btn-danger {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  
+  .admin-blog-image {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .pagination-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  
+  .page-number {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .showing-info {
+    font-size: 10px;
+  }
+  
+  .toast-notification {
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    min-width: auto;
+    padding: 14px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-data-table th,
+  .admin-data-table td {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+  
+  .admin-btn-primary {
+    font-size: 11px;
+    padding: 8px 14px;
+  }
+  
+  .admin-btn-warning,
+  .admin-btn-danger {
+    font-size: 9px;
+    padding: 3px 6px;
+    margin-right: 4px;
+  }
+  
+  .admin-blog-image {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .status-badge {
+    font-size: 9px;
+    padding: 2px 8px;
+  }
+  
+  .pagination {
+    flex-direction: column;
+  }
+  
+  .page-numbers {
+    order: -1;
+    margin-bottom: 10px;
+  }
 }

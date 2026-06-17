@@ -18,9 +18,9 @@ function AdminSidebar() {
         <NavLink to="/admin/orders" className="nav-item">
           <i className="fas fa-shopping-cart"></i> Orders
         </NavLink>
-        <NavLink to="/admin/users" className="nav-item">
+        {/* <NavLink to="/admin/users" className="nav-item">
           <i className="fas fa-users"></i> Users
-        </NavLink>
+        </NavLink> */}
         <NavLink to="/admin/testimonials" className="nav-item">
           <i className="fas fa-star"></i> Testimonials
         </NavLink>

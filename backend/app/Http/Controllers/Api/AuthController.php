@@ -3,10 +3,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserOtpMail;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -82,7 +86,6 @@ class AuthController extends Controller
         return response()->json($request->user());
     }
 
-    // ✅ UPDATED - Direct update without validation
     public function updateProfile(Request $request)
     {
         try {
@@ -102,7 +105,6 @@ class AuthController extends Controller
             Log::info('Current user ID: ' . $user->user_id);
             Log::info('Current user email: ' . $user->email);
             
-            // ✅ DIRECT UPDATE - NO VALIDATION
             $user->name = $request->name;
             $user->email = $request->email;
             $user->save();
@@ -181,5 +183,110 @@ class AuthController extends Controller
                 'message' => 'Failed to change password: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    // ✅ ========== USER FORGOT PASSWORD METHODS ==========
+
+    // Send OTP for User Password Reset
+    public function sendUserOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email'
+        ]);
+
+        $email = $request->email;
+        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $expiresAt = Carbon::now()->addMinutes(10);
+
+        PasswordReset::where('email', $email)->delete();
+
+        PasswordReset::create([
+            'email' => $email,
+            'otp' => $otp,
+            'expires_at' => $expiresAt
+        ]);
+
+        try {
+            Mail::to($email)->send(new UserOtpMail($otp, $email));
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to send OTP. Please try again.'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP sent to your email successfully'
+        ]);
+    }
+
+    // Verify User OTP
+    public function verifyUserOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|string|size:6'
+        ]);
+
+        $reset = PasswordReset::where('email', $request->email)
+            ->where('otp', $request->otp)
+            ->where('used', 0)
+            ->where('expires_at', '>', Carbon::now())
+            ->first();
+
+        if (!$reset) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Invalid or expired OTP'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP verified successfully'
+        ]);
+    }
+
+    // Reset User Password
+    public function resetUserPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|string|size:6',
+            'password' => 'required|string|min:6'
+        ]);
+
+        $reset = PasswordReset::where('email', $request->email)
+            ->where('otp', $request->otp)
+            ->where('used', 0)
+            ->where('expires_at', '>', Carbon::now())
+            ->first();
+
+        if (!$reset) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Invalid or expired OTP'
+            ], 400);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'error' => 'User not found'
+            ], 404);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        $reset->used = 1;
+        $reset->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password reset successfully'
+        ]);
     }
 }

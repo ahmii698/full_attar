@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { FaUpload, FaTimes, FaTag, FaBox, FaStar, FaCheck, FaImage, FaPlus, FaMinus, FaArrowLeft } from 'react-icons/fa'
 import { getProduct, createProduct, updateProduct } from '../services/adminApi'
 import '../styles/ProductForm.css'
 
@@ -52,7 +53,6 @@ function ProductForm() {
       const res = await getProduct(id)
       const product = res.data
       
-      // Parse ml_prices if exists
       let mlPrices = { '50': '', '60': '', '70': '', '80': '', '90': '', '100': '' }
       if (product.ml_prices) {
         const parsed = typeof product.ml_prices === 'string' 
@@ -134,7 +134,6 @@ function ProductForm() {
       
       Object.keys(formData).forEach(key => {
         if (key === 'ml_prices') {
-          // Convert ml_prices to JSON string
           const mlPricesJson = JSON.stringify(formData.ml_prices)
           submitData.append('ml_prices', mlPricesJson)
         } else if (formData[key] !== undefined && formData[key] !== '') {
@@ -179,7 +178,9 @@ function ProductForm() {
     <div className="product-form">
       <div className="form-header">
         <h2>{isEdit ? 'Edit Product' : 'Add New Product'}</h2>
-        <Link to="/admin/products" className="btn-secondary">Back to Products</Link>
+        <Link to="/admin/products" className="btn-secondary">
+          <FaArrowLeft /> Back to Products
+        </Link>
       </div>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
@@ -315,7 +316,7 @@ function ProductForm() {
           {/* ==================== ML PRICES SECTION ==================== */}
           <div className="form-group full-width ml-prices-section">
             <label className="ml-prices-label">
-              🧪 ML Prices (Different prices for different sizes)
+              <FaTag /> ML Prices (Different prices for different sizes)
             </label>
             <p className="helper-text">
               Set prices for each ML size. Leave empty if not available.
@@ -402,7 +403,7 @@ function ProductForm() {
                 className="upload-image-btn"
                 onClick={() => document.getElementById('product-image').click()}
               >
-                📁 Choose Image from Computer
+                <FaUpload /> Choose Image from Computer
               </button>
               
               {imagePreview && (
@@ -417,7 +418,7 @@ function ProductForm() {
                       setFormData(prev => ({ ...prev, image_url: '' }))
                     }}
                   >
-                    ✕ Remove
+                    <FaTimes /> Remove
                   </button>
                 </div>
               )}
@@ -452,7 +453,7 @@ function ProductForm() {
                 checked={formData.is_deal}
                 onChange={handleChange}
               />
-              Hot Deal
+              <FaTag /> Hot Deal
             </label>
           </div>
 
@@ -464,7 +465,7 @@ function ProductForm() {
                 checked={formData.is_top_seller}
                 onChange={handleChange}
               />
-              Top Seller
+              <FaStar /> Top Seller
             </label>
           </div>
 
@@ -476,7 +477,7 @@ function ProductForm() {
                 checked={formData.is_new_arrival}
                 onChange={handleChange}
               />
-              New Arrival
+              <FaBox /> New Arrival
             </label>
           </div>
 
@@ -497,7 +498,9 @@ function ProductForm() {
           <button type="submit" className="btn-primary" disabled={loading}>
             {loading ? 'Saving...' : (isEdit ? 'Update Product' : 'Create Product')}
           </button>
-          <Link to="/admin/products" className="btn-secondary">Cancel</Link>
+          <Link to="/admin/products" className="btn-secondary">
+            <FaTimes /> Cancel
+          </Link>
         </div>
       </form>
     </div>

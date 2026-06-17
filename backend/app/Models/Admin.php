@@ -9,15 +9,49 @@ class Admin extends Authenticatable
 {
     use HasFactory, HasApiTokens;
     
-    protected $table = 'admins';           // YEH ADD KARO
-    protected $primaryKey = 'admin_id';    // YEH ADD KARO
-    protected $fillable = ['admin_name', 'admin_email', 'admin_password'];
-    protected $hidden = ['admin_password'];
+    protected $table = 'admins';
+    protected $primaryKey = 'admin_id';
     
-    public $timestamps = true;              // YEH ADD KARO
+    protected $fillable = [
+        'admin_name', 
+        'admin_email', 
+        'admin_password',
+        'admin_role',
+        'remember_token'
+    ];
     
+    protected $hidden = [
+        'admin_password',
+        'remember_token'
+    ];
+    
+    public $timestamps = true;
+    
+    // ✅ For Sanctum authentication - password field
     public function getAuthPassword()
     {
         return $this->admin_password;
+    }
+    
+    // ✅ For Sanctum authentication - username field
+    public function getAuthIdentifierName()
+    {
+        return 'admin_id';
+    }
+    
+    // ✅ For Sanctum authentication - remember token
+    public function getRememberToken()
+    {
+        return $this->remember_token;
+    }
+    
+    public function setRememberToken($value)
+    {
+        $this->remember_token = $value;
+    }
+    
+    public function getRememberTokenName()
+    {
+        return 'remember_token';
     }
 }

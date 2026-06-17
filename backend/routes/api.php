@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\PaymentConfirmationController;
+use App\Http\Controllers\Api\ContactController;  // ✅ ADD THIS
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -20,7 +21,7 @@ use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
-use App\Http\Controllers\Admin\ContactController; 
+use App\Http\Controllers\Admin\ContactController as AdminContactController;  // ✅ ADD THIS (rename to avoid conflict)
 use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\HeroController as AdminHeroController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
@@ -45,6 +46,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// ✅ User Forgot Password Routes (Public)
+Route::post('/user/forgot-password', [AuthController::class, 'sendUserOtp']);
+Route::post('/user/verify-otp', [AuthController::class, 'verifyUserOtp']);
+Route::post('/user/reset-password', [AuthController::class, 'resetUserPassword']);
+
 // Products
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
@@ -58,7 +64,7 @@ Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
 Route::get('/blog-categories', [BlogController::class, 'categories']);
 
-// Contact & Newsletter
+// ========== ✅ CONTACT & NEWSLETTER ==========
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/newsletter', [NewsletterController::class, 'subscribe']);
 
@@ -116,11 +122,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/wishlist/remove/{id}', [OrderController::class, 'removeFromWishlist']);
     
     // ========== ORDER ROUTES ==========
-    Route::post('/orders', [OrderController::class, 'store']);                          // Create order
-    Route::get('/orders', [OrderController::class, 'index']);                           // Get user orders
-    Route::get('/orders/{id}', [OrderController::class, 'show']);                       // Get single order
-    Route::post('/orders/{id}/payment-confirmation', [OrderController::class, 'uploadPaymentProof']); // Upload payment proof
-    Route::get('/orders/{id}/payment-confirmation', [OrderController::class, 'getPaymentConfirmation']); // Get payment confirmation
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::post('/orders/{id}/payment-confirmation', [OrderController::class, 'uploadPaymentProof']);
+    Route::get('/orders/{id}/payment-confirmation', [OrderController::class, 'getPaymentConfirmation']);
     
     // Profile
     Route::get('/profile', [OrderController::class, 'profile']);
@@ -130,8 +136,6 @@ Route::middleware('auth:sanctum')->group(function () {
 // =====================================================
 // PUBLIC TRACK ORDER API (No authentication required)
 // =====================================================
-
-// ========== TRACK ORDER ==========
 Route::get('/orders/track/{orderNumber}', [OrderController::class, 'trackByOrderNumber']);
 
 // =====================================================
@@ -141,6 +145,11 @@ Route::prefix('admin')->group(function () {
     // Admin Auth
     Route::post('/login', [AdminAuthController::class, 'login']);
     Route::post('/logout', [AdminAuthController::class, 'logout']);
+    
+    // ✅ Admin Forgot Password Routes
+    Route::post('/forgot-password', [AdminAuthController::class, 'sendOtp']);
+    Route::post('/verify-otp', [AdminAuthController::class, 'verifyOtp']);
+    Route::post('/reset-password', [AdminAuthController::class, 'resetPassword']);
     
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -163,8 +172,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/orders', [AdminOrderController::class, 'index']);
     Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
     Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
-    Route::put('/orders/{id}/payment-status', [AdminOrderController::class, 'updatePaymentStatus']); // ✅ ADD THIS
-    Route::get('/orders/{id}/payment-proof', [AdminOrderController::class, 'getPaymentProof']);       // ✅ GET Payment Proof
+    Route::put('/orders/{id}/payment-status', [AdminOrderController::class, 'updatePaymentStatus']);
+    Route::get('/orders/{id}/payment-proof', [AdminOrderController::class, 'getPaymentProof']);
     
     // Users Management
     Route::get('/users', [UserController::class, 'index']);
@@ -178,11 +187,11 @@ Route::prefix('admin')->group(function () {
     Route::delete('/testimonials/{id}', [AdminTestimonialController::class, 'destroy']);
     
     // Contact Queries Management
-    Route::get('/contacts', [ContactController::class, 'index']);
-    Route::get('/contacts/{id}', [ContactController::class, 'show']);
-    Route::put('/contacts/{id}/read', [ContactController::class, 'markAsRead']);
-    Route::post('/contacts/{id}/reply', [ContactController::class, 'reply']);
-    Route::delete('/contacts/{id}', [ContactController::class, 'destroy']);
+    Route::get('/contacts', [AdminContactController::class, 'index']);
+    Route::get('/contacts/{id}', [AdminContactController::class, 'show']);
+    Route::put('/contacts/{id}/read', [AdminContactController::class, 'markAsRead']);
+    Route::post('/contacts/{id}/reply', [AdminContactController::class, 'reply']);
+    Route::delete('/contacts/{id}', [AdminContactController::class, 'destroy']);
     
     // Newsletter Subscribers
     Route::get('/subscribers', [SubscriberController::class, 'index']);
