@@ -32,22 +32,22 @@
   }
 }
 
-/* Success Icon */
-.success-icon {
+/* ✅ Pending Icon - Yellow/Gold */
+.pending-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  background: linear-gradient(135deg, #d4af37, #b8960c);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #000000;
   margin: 0 auto 25px;
-  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
   animation: scaleIn 0.5s ease 0.2s both;
 }
 
-.success-icon svg {
+.pending-icon svg {
   font-size: 40px;
 }
 
@@ -85,12 +85,40 @@
   border-radius: 6px;
 }
 
-/* Success Message */
-.success-message {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 20px 0 30px;
+/* ✅ Pending Message */
+.pending-message {
+  font-size: 18px;
+  font-weight: 600;
+  color: #d4af37;
+  margin: 20px 0 10px;
   line-height: 1.6;
+}
+
+.pending-sub-message {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 15px 0 30px;
+  line-height: 1.6;
+  padding: 16px 20px;
+  background: rgba(212, 175, 55, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.08);
+  text-align: left;
+}
+
+.pending-sub-message .clock-icon {
+  color: #d4af37;
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pending-sub-message span {
+  flex: 1;
 }
 
 /* Next Steps */
@@ -220,12 +248,12 @@
     padding: 35px 25px;
   }
   
-  .success-icon {
+  .pending-icon {
     width: 60px;
     height: 60px;
   }
   
-  .success-icon svg {
+  .pending-icon svg {
     font-size: 30px;
   }
   
@@ -239,6 +267,11 @@
   
   .order-id strong {
     font-size: 16px;
+  }
+  
+  .pending-sub-message {
+    font-size: 14px;
+    padding: 14px 16px;
   }
   
   .confirmation-buttons {
@@ -275,12 +308,12 @@
     font-size: 22px;
   }
   
-  .success-icon {
+  .pending-icon {
     width: 50px;
     height: 50px;
   }
   
-  .success-icon svg {
+  .pending-icon svg {
     font-size: 24px;
   }
   
@@ -288,8 +321,14 @@
     font-size: 14px;
   }
   
-  .success-message {
+  .pending-message {
+    font-size: 16px;
+  }
+  
+  .pending-sub-message {
     font-size: 13px;
+    padding: 12px 14px;
+    flex-direction: row;
   }
   
   .track-btn,

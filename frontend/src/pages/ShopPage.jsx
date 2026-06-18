@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
+import { FiSearch, FiFilter, FiX } from 'react-icons/fi'
 
 function ShopPage() {
   const location = useLocation()
@@ -15,10 +16,11 @@ function ShopPage() {
   const [priceRange, setPriceRange] = useState(10000)
   const [selectedNotes, setSelectedNotes] = useState([])
   const [searchQuery, setSearchQuery] = useState("")
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   
   const [categories, setCategories] = useState(["All"])
   const [genders, setGenders] = useState(["All", "Male", "Female", "Unisex"])
-  const [fragranceNotes, setFragranceNotes] = useState(["Oud", "Amber", "Musk", "Rose"])
+  const [fragranceNotes, setFragranceNotes] = useState(["Oud", "Amber", "Musk", "Rose", "Saffron", "Vanilla"])
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
@@ -36,7 +38,6 @@ function ShopPage() {
       }
       
       const data = await response.json()
-      console.log('Products from DB:', data)
       
       setAllProducts(data)
       
@@ -51,13 +52,11 @@ function ShopPage() {
     }
   }
 
-  // ✅ Smart search function - finds products with similar names
   const findSimilarProducts = (searchTerm, products) => {
     if (!searchTerm || searchTerm === 'All') return []
     
     const searchLower = searchTerm.toLowerCase()
     
-    // First try exact match
     let exactMatches = products.filter(p => 
       p.name.toLowerCase() === searchLower
     )
@@ -66,7 +65,6 @@ function ShopPage() {
       return exactMatches
     }
     
-    // Then try contains match
     let containsMatches = products.filter(p => 
       p.name.toLowerCase().includes(searchLower)
     )
@@ -75,18 +73,15 @@ function ShopPage() {
       return containsMatches
     }
     
-    // Then try word-by-word match (for "Royal Oud" vs "Royal Oudf")
     const searchWords = searchLower.split(' ')
     let wordMatches = products.filter(p => {
       const productLower = p.name.toLowerCase()
-      // Check if at least 2 words match or 70% of search term matches
       let matchCount = 0
       searchWords.forEach(word => {
         if (word.length > 2 && productLower.includes(word)) {
           matchCount++
         }
       })
-      // Return true if at least 50% of words match
       return matchCount >= Math.ceil(searchWords.length / 2)
     })
     
@@ -94,7 +89,6 @@ function ShopPage() {
       return wordMatches
     }
     
-    // Finally, try partial word match (first 3-4 characters)
     const firstFewChars = searchLower.substring(0, 4)
     if (firstFewChars.length >= 3) {
       let partialMatches = products.filter(p => 
@@ -108,43 +102,32 @@ function ShopPage() {
     return []
   }
 
-  // ✅ Handle URL params with smart matching
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     let categoryParam = params.get('category')
     const genderParam = params.get('gender')
     
-    console.log('Raw category param:', categoryParam)
-    
     if (categoryParam) {
       categoryParam = decodeURIComponent(categoryParam)
-      console.log('Decoded category param:', categoryParam)
       
-      // First check if it's a gender
       if (categoryParam === 'Male' || categoryParam === 'Female' || categoryParam === 'Unisex') {
         setSelectedGender(categoryParam)
         setSelectedCategory("All")
         setSearchQuery("")
       } 
-      // Check if it's a category
       else if (categories.includes(categoryParam)) {
         setSelectedCategory(categoryParam)
         setSelectedGender("All")
         setSearchQuery("")
       }
-      // Otherwise treat as product name search with smart matching
       else {
-        // Find similar products
         const similarProducts = findSimilarProducts(categoryParam, allProducts)
         
         if (similarProducts.length > 0) {
-          // If we found similar products, set search query
           setSearchQuery(categoryParam)
           setSelectedCategory("All")
           setSelectedGender("All")
-          console.log('Found similar products:', similarProducts.map(p => p.name))
         } else {
-          // No matches found, set as category
           setSelectedCategory(categoryParam)
           setSelectedGender("All")
           setSearchQuery("")
@@ -195,27 +178,21 @@ function ShopPage() {
     return notesStr.split(',').map(n => n.trim())
   }
   
-  // ✅ Smart filter products
   const filteredProducts = allProducts.filter(product => {
-    // Category filter
     if (selectedCategory !== "All" && product.category !== selectedCategory) {
       return false
     }
     
-    // Gender filter
     if (selectedGender !== "All" && product.gender !== selectedGender) return false
     
-    // Smart search filter
     if (searchQuery) {
       const similarProducts = findSimilarProducts(searchQuery, [product])
       if (similarProducts.length === 0) return false
     }
     
-    // Price filter
     const productPrice = product.price_num || 0
     if (productPrice > priceRange) return false
     
-    // Fragrance notes filter
     if (selectedNotes.length > 0) {
       const productNotes = parseNotes(product.notes)
       const hasNote = selectedNotes.some(note => productNotes.includes(note))
@@ -225,12 +202,22 @@ function ShopPage() {
     return true
   })
   
+  const clearAllFilters = () => {
+    setSelectedCategory("All")
+    setSelectedGender("All")
+    setPriceRange(10000)
+    setSelectedNotes([])
+    setSearchQuery("")
+    navigate('/shop')
+  }
+  
+  const hasActiveFilters = selectedCategory !== "All" || selectedGender !== "All" || priceRange < 10000 || selectedNotes.length > 0 || searchQuery
+
   if (loading) {
     return (
       <div className="shop-page">
         <div className="shop-header">
           <h1>Our Collection</h1>
-          <p>Discover our premium range of attars</p>
         </div>
         <div className="loading-container">
           <div className="spinner"></div>
@@ -245,7 +232,6 @@ function ShopPage() {
       <div className="shop-page">
         <div className="shop-header">
           <h1>Our Collection</h1>
-          <p>Discover our premium range of attars</p>
         </div>
         <div className="error-container">
           <p>⚠️ Error: {error}</p>
@@ -259,20 +245,39 @@ function ShopPage() {
     <div className="shop-page">
       <div className="shop-header">
         <h1>Our Collection</h1>
-        <p>Discover our premium range of attars</p>
+      </div>
+      
+      {/* Mobile Filter Toggle */}
+      <div className="mobile-filter-toggle">
+        <button onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}>
+          <FiFilter /> Filters
+          {hasActiveFilters && <span className="filter-badge">{filteredProducts.length}</span>}
+        </button>
+        {searchQuery && (
+          <button className="clear-search-btn" onClick={() => {
+            setSearchQuery("")
+            navigate('/shop')
+          }}>
+            <FiX /> Clear Search
+          </button>
+        )}
       </div>
       
       <div className="shop-container">
-        <div className="shop-sidebar">
+        {/* Sidebar */}
+        <div className={`shop-sidebar ${isMobileFilterOpen ? 'open' : ''}`}>
+          <div className="sidebar-close" onClick={() => setIsMobileFilterOpen(false)}>
+            <FiX />
+          </div>
+          
           <div className="sidebar-section">
-            <h4>Search</h4>
+            <h4><FiSearch /> Search</h4>
             <input 
               type="text" 
               placeholder="Search products..." 
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value)
-                // Update URL when searching
                 if (e.target.value) {
                   navigate(`/shop?category=${encodeURIComponent(e.target.value)}`)
                 } else {
@@ -294,6 +299,7 @@ function ShopPage() {
                     onClick={(e) => { e.preventDefault(); handleCategoryClick(cat) }}
                   >
                     {cat}
+                    {selectedCategory === cat && <span className="active-dot">●</span>}
                   </a>
                 </li>
               ))}
@@ -311,6 +317,7 @@ function ShopPage() {
                     onClick={(e) => { e.preventDefault(); handleGenderClick(gender) }}
                   >
                     {gender}
+                    {selectedGender === gender && <span className="active-dot">●</span>}
                   </a>
                 </li>
               ))}
@@ -336,40 +343,42 @@ function ShopPage() {
           
           <div className="sidebar-section">
             <h4>Fragrance Notes</h4>
-            {fragranceNotes.map(note => (
-              <label key={note} className="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  checked={selectedNotes.includes(note)}
-                  onChange={() => handleNoteChange(note)}
-                /> {note}
-              </label>
-            ))}
+            <div className="notes-grid">
+              {fragranceNotes.map(note => (
+                <label key={note} className={`checkbox-label ${selectedNotes.includes(note) ? 'active' : ''}`}>
+                  <input 
+                    type="checkbox" 
+                    checked={selectedNotes.includes(note)}
+                    onChange={() => handleNoteChange(note)}
+                  /> 
+                  <span>{note}</span>
+                </label>
+              ))}
+            </div>
           </div>
           
-          {(selectedCategory !== "All" || selectedGender !== "All" || priceRange < 10000 || selectedNotes.length > 0 || searchQuery) && (
+          {hasActiveFilters && (
             <div className="sidebar-section">
-              <button 
-                className="reset-btn"
-                onClick={() => {
-                  setSelectedCategory("All")
-                  setSelectedGender("All")
-                  setPriceRange(10000)
-                  setSelectedNotes([])
-                  setSearchQuery("")
-                  navigate('/shop')
-                }}
-              >
-                Reset All Filters
+              <button className="reset-btn" onClick={clearAllFilters}>
+                Clear All Filters
               </button>
             </div>
           )}
         </div>
         
+        {/* Products */}
         <div className="shop-products">
-          <div className="products-count">
-            Showing {filteredProducts.length} products
+          <div className="products-header">
+            <div className="products-count">
+              {filteredProducts.length} {filteredProducts.length === 1 ? 'Product' : 'Products'}
+            </div>
+            {hasActiveFilters && (
+              <button className="clear-filters-btn" onClick={clearAllFilters}>
+                Clear Filters
+              </button>
+            )}
           </div>
+          
           {filteredProducts.length === 0 ? (
             <div className="no-products">
               <p>No products found. Try changing your filters.</p>
@@ -392,7 +401,7 @@ function ShopPage() {
                   notes={product.notes}
                   image_url={product.image_url}
                   description={product.description}
-                  ml_prices={product.ml_prices}  // ✅ ADD THIS LINE - IMPORTANT
+                  ml_prices={product.ml_prices}
                 />
               ))}
             </div>

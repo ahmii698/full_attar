@@ -2,356 +2,131 @@
    DEALS PAGE - COMPLETE
 ========================= */
 
-.deal-card {
-  position: relative;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(212,175,55,0.1);
-  border-radius: 16px;
-  overflow: hidden;
-  transition: 0.3s;
+.shop-page {
+  padding: 40px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.deal-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(212,175,55,0.3);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+.shop-header {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-.discount-tag {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: linear-gradient(135deg, #ff4444, #cc0000);
-  color: white;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
-  z-index: 2;
-}
-
-.price-row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+.shop-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffffff;
   margin-bottom: 10px;
 }
 
-.original-price {
-  color: rgba(255,255,255,0.4);
-  font-size: 14px;
-  text-decoration: line-through;
+.shop-header h1 span {
+  color: #d4af37;
 }
 
-/* =========================
-   PRODUCT IMAGE
-========================= */
-
-.deal-card .product-image {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #1a1a2a, #0a0a1a);
-}
-
-.deal-card .product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.deal-card:hover .product-image img {
-  transform: scale(1.05);
-}
-
-/* =========================
-   WISHLIST BUTTON
-========================= */
-
-.deal-card .wishlist-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(5px);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: 0.3s;
-  z-index: 2;
-  color: rgba(255,255,255,0.8);
+.shop-header p {
+  color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
 }
 
-.deal-card .wishlist-btn:hover {
-  background: rgba(0,0,0,0.7);
-  transform: scale(1.1);
-}
-
 /* =========================
-   PRODUCT INFO
+   LOADING & ERROR
 ========================= */
 
-.deal-card .product-info {
-  padding: 16px;
-}
-
-.deal-card .product-info h4 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #ffffff;
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.product-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: #d4af37;
-}
-
-.product-rating {
+.loading-container {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 10px;
-}
-
-.stars {
-  color: #d4af37;
-  font-size: 12px;
-  letter-spacing: 1px;
-}
-
-.rating-count {
-  color: rgba(255,255,255,0.4);
-  font-size: 11px;
-}
-
-/* =========================
-   ML SELECTOR
-========================= */
-
-.ml-selector {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 8px 0 12px 0;
-  flex-wrap: wrap;
-}
-
-.ml-label {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 500;
-  margin-right: 2px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.ml-options {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-
-.ml-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 3px 10px;
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 500;
-  font-family: inherit;
-}
-
-.ml-btn:hover:not(.disabled):not(.active) {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
-}
-
-.ml-btn.active {
-  background: linear-gradient(135deg, #d4af37, #b8960c);
-  border-color: #d4af37;
-  color: #000;
-  font-weight: 600;
-}
-
-.ml-btn.disabled {
-  opacity: 0.25;
-  cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.02);
-  border-color: rgba(255, 255, 255, 0.03);
-}
-
-/* =========================
-   ADD TO CART BUTTON
-========================= */
-
-.deal-card .add-to-cart {
-  width: 100%;
-  background: rgba(212,175,55,0.1);
-  border: 1px solid rgba(212,175,55,0.3);
-  padding: 10px;
-  border-radius: 30px;
-  color: #d4af37;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.3s;
-  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-family: inherit;
+  min-height: 300px;
 }
 
-.deal-card .add-to-cart:hover {
+.loading-container .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(212, 175, 55, 0.1);
+  border-top: 4px solid #d4af37;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  margin-top: 15px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.error-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.error-container p {
+  color: #ff6b6b;
+  margin-bottom: 20px;
+}
+
+.error-container button {
   background: #d4af37;
   color: #000;
-  gap: 12px;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.error-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* =========================
+   NO PRODUCTS
+========================= */
+
+.no-products {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.no-products p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 18px;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
 
-/* Tablet */
 @media (max-width: 768px) {
-  .deal-card .product-image {
-    height: 180px;
+  .shop-page {
+    padding: 20px 10px;
   }
   
-  .deal-card .product-info h4 {
-    font-size: 13px;
+  .shop-header h1 {
+    font-size: 28px;
   }
   
-  .product-price {
-    font-size: 16px;
-  }
-  
-  .original-price {
-    font-size: 12px;
-  }
-  
-  .ml-btn {
-    font-size: 9px;
-    padding: 2px 8px;
-  }
-  
-  .ml-label {
-    font-size: 10px;
-  }
-  
-  .deal-card .add-to-cart {
-    padding: 8px;
-    font-size: 11px;
-  }
-  
-  .stars {
-    font-size: 10px;
-  }
-  
-  .rating-count {
-    font-size: 10px;
-  }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  .deal-card .product-image {
-    height: 160px;
-  }
-  
-  .deal-card .product-info {
-    padding: 12px;
-  }
-  
-  .deal-card .product-info h4 {
-    font-size: 12px;
-    white-space: normal;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .product-price {
+  .shop-header p {
     font-size: 14px;
   }
-  
-  .original-price {
-    font-size: 11px;
-  }
-  
-  .ml-selector {
-    gap: 5px;
-    margin: 6px 0 10px 0;
-  }
-  
-  .ml-btn {
-    font-size: 8px;
-    padding: 2px 6px;
-  }
-  
-  .ml-label {
-    font-size: 9px;
-  }
-  
-  .deal-card .add-to-cart {
-    padding: 6px;
-    font-size: 10px;
-  }
-  
-  .deal-card .add-to-cart svg {
-    font-size: 12px;
-  }
-  
-  .deal-card .wishlist-btn {
-    width: 30px;
-    height: 30px;
-    font-size: 13px;
-  }
-  
-  .stars {
-    font-size: 9px;
-  }
-  
-  .rating-count {
-    font-size: 9px;
-  }
-  
-  .price-row {
-    gap: 6px;
-  }
-}
-
-/* Grid View Adjustment */
-@media (max-width: 768px) {
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 15px !important;
-  }
 }
 
 @media (max-width: 480px) {
-  .products-grid {
-    grid-template-columns: 1fr !important;
-    max-width: 300px;
-    margin: 0 auto;
+  .shop-header h1 {
+    font-size: 24px;
+  }
+  
+  .shop-header p {
+    font-size: 13px;
   }
 }

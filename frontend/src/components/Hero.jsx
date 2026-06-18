@@ -119,8 +119,9 @@ function Hero() {
   const imageUrl = getImageUrl(heroData.image_url)
 
   return (
-    <div className="hero-wrapper">
-      <div className="main-content">
+    // ✅ Sirf marginTop -25px kiya hai gap hataane ke liye, baaki sab original
+    <div className="hero-wrapper" style={{ marginTop: '-25px', paddingTop: '0' }}>
+      <div className="main-content" style={{ paddingTop: '0', paddingBottom: '0' }}>
         <div className="left-content">
           {heroData.badge_text && (
             <div className="badge">

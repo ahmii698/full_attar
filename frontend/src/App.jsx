@@ -54,7 +54,8 @@ function App() {
       <CartProvider>
         <div className="app">
           <Navbar />
-          <main className="main">
+          {/* ✅ Sab pages ko page-content mein wrap karo */}
+          <main className="page-content">
             <Routes>
               {/* Main Pages */}
               <Route path="/" element={<HomePage />} />

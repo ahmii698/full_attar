@@ -1,14 +1,18 @@
+/* =========================
+   FOOTER - COMPLETE UPDATED
+========================= */
+
 .footer {
   background: #050505;
   border-top: 1px solid rgba(212, 175, 55, 0.1);
-  padding: 50px 60px 20px;
+  padding: 60px 60px 25px;
 }
 
 .footer-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 40px;
-  margin-bottom: 40px;
+  gap: 50px;
+  margin-bottom: 45px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -30,37 +34,52 @@
   transform: scale(1.03);
 }
 
-/* ========== SOCIAL LINKS - WHITE ICONS (No Golden) ========== */
+/* ========== SOCIAL LINKS - BARA (NO CIRCLE) ========== */
 .social-links {
   display: flex;
-  gap: 20px;
+  gap: 25px;
   margin-top: 20px;
 }
 
 .social-icon {
   text-decoration: none;
-  font-size: 20px;
-  color: #ffffff;  /* White color - Golden nahi */
-  transition: 0.3s;
+  font-size: 28px;
+  color: #ffffff;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* ✅ Circle background hata diya */
 }
 
 .social-icon:hover {
-  color: #d4af37;  /* Sirf hover pe golden */
-  transform: translateY(-3px);
+  color: #d4af37;
+  transform: translateY(-4px) scale(1.1);
 }
 
+/* ========== FOOTER HEADINGS - BARA ========== */
 .footer-col h4 {
   color: #d4af37;
-  font-size: 16px;
-  margin-bottom: 20px;
-  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 22px;
+  font-weight: 700;
   position: relative;
   display: inline-block;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
+.footer-col h4::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 35px;
+  height: 2px;
+  background: linear-gradient(90deg, #d4af37, transparent);
+}
+
+/* ========== FOOTER LINKS ========== */
 .footer-col ul {
   list-style: none;
   padding: 0;
@@ -68,49 +87,60 @@
 }
 
 .footer-col li {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .footer-col a {
   color: rgba(255, 255, 255, 0.5);
   text-decoration: none;
-  font-size: 13px;
-  transition: 0.3s;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
   display: inline-block;
 }
 
 .footer-col a:hover {
   color: #d4af37;
+  transform: translateX(5px);
+}
+
+/* ========== CONTACT INFO ========== */
+.contact-info li {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  transition: all 0.3s ease;
+}
+
+.contact-info li:hover {
+  color: rgba(255, 255, 255, 0.8);
   transform: translateX(3px);
 }
 
-/* ========== CONTACT INFO ICONS - WHITE (No Golden) ========== */
-.contact-info li {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
 .contact-info li svg {
-  color: #ffffff;  /* White color - Golden nahi */
-  font-size: 14px;
-  min-width: 16px;
+  color: #d4af37;
+  font-size: 18px;
+  min-width: 20px;
   transition: 0.3s;
 }
 
 .contact-info li:hover svg {
-  color: #d4af37;  /* Sirf hover pe golden */
+  color: #ffd700;
+  transform: scale(1.1);
 }
 
+/* ========== FOOTER BOTTOM ========== */
 .footer-bottom {
   text-align: center;
-  padding-top: 20px;
+  padding-top: 25px;
   border-top: 1px solid rgba(212, 175, 55, 0.1);
   color: rgba(255, 255, 255, 0.4);
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* ========== RESPONSIVE STYLES ========== */
@@ -118,14 +148,26 @@
 /* Tablet (768px - 992px) */
 @media (max-width: 992px) {
   .footer {
-    padding: 40px 30px 20px;
+    padding: 45px 30px 20px;
   }
   .footer-container {
     grid-template-columns: repeat(2, 1fr);
-    gap: 35px;
+    gap: 40px;
   }
   .footer-logo-img {
     height: 90px;
+  }
+  .footer-col h4 {
+    font-size: 18px;
+  }
+  .footer-col a {
+    font-size: 14px;
+  }
+  .contact-info li {
+    font-size: 14px;
+  }
+  .social-icon {
+    font-size: 24px;
   }
 }
 
@@ -137,14 +179,14 @@
   
   .footer-container {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 35px;
   }
   
   .footer-col:first-child {
     text-align: center;
-    padding-bottom: 10px;
+    padding-bottom: 15px;
     border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-    margin-bottom: 10px;
+    margin-bottom: 15px;
   }
   
   .footer-logo-wrapper {
@@ -159,6 +201,11 @@
   .social-links {
     justify-content: center;
     margin-top: 15px;
+    gap: 18px;
+  }
+  
+  .social-icon {
+    font-size: 22px;
   }
   
   .footer-col {
@@ -167,10 +214,16 @@
   
   .footer-col h4 {
     display: inline-block;
-    margin-bottom: 15px;
-    font-size: 15px;
-    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
-    padding-bottom: 8px;
+    margin-bottom: 18px;
+    font-size: 17px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .footer-col h4::after {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
   }
   
   .footer-col ul {
@@ -180,11 +233,11 @@
   }
   
   .footer-col li {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   
   .footer-col a {
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .footer-col a:hover {
@@ -199,12 +252,22 @@
   
   .contact-info li {
     justify-content: center;
-    margin-bottom: 10px;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .contact-info li:hover {
+    transform: translateX(0);
+  }
+  
+  .contact-info li svg {
+    font-size: 16px;
   }
   
   .footer-bottom {
     margin-top: 20px;
     padding-top: 20px;
+    font-size: 13px;
   }
 }
 
@@ -215,41 +278,45 @@
   }
   
   .footer-container {
-    gap: 25px;
+    gap: 30px;
   }
   
   .footer-logo-img {
     height: 60px;
   }
   
+  .social-links {
+    gap: 14px;
+  }
+  
   .social-icon {
-    font-size: 18px;
+    font-size: 20px;
   }
   
   .footer-col h4 {
-    font-size: 14px;
-    margin-bottom: 12px;
+    font-size: 16px;
+    margin-bottom: 14px;
   }
   
   .footer-col li {
-    margin-bottom: 6px;
-  }
-  
-  .footer-col a {
-    font-size: 12px;
-  }
-  
-  .contact-info li {
-    font-size: 12px;
     margin-bottom: 8px;
   }
   
+  .footer-col a {
+    font-size: 13px;
+  }
+  
+  .contact-info li {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  
   .contact-info li svg {
-    font-size: 12px;
+    font-size: 15px;
   }
   
   .footer-bottom p {
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
@@ -264,19 +331,31 @@
   }
   
   .social-icon {
-    font-size: 16px;
+    font-size: 18px;
+  }
+  
+  .social-links {
+    gap: 10px;
   }
   
   .footer-col h4 {
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .footer-col a {
-    font-size: 11px;
+    font-size: 12px;
   }
   
   .contact-info li {
+    font-size: 12px;
+    gap: 8px;
+  }
+  
+  .contact-info li svg {
+    font-size: 13px;
+  }
+  
+  .footer-bottom p {
     font-size: 11px;
-    gap: 6px;
   }
 }

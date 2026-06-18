@@ -1,9 +1,15 @@
+/* =========================
+   HERO SECTION - SIRF TEXT BARA
+========================= */
+
 .hero-wrapper {
   min-height: calc(100vh - 65px);
   display: flex;
   align-items: center;
   padding: 0 60px;
   background: #000000;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
 
 .main-content {
@@ -14,11 +20,14 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .left-content {
   flex: 1;
   max-width: 600px;
+  padding: 0 !important;
 }
 
 .badge {
@@ -27,7 +36,7 @@
   gap: 10px;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(212,175,55,0.25);
-  padding: 6px 16px;
+  padding: 8px 20px;          /* ✅ 6px 16px se 8px 20px kiya */
   border-radius: 50px;
   margin-bottom: 25px;
 }
@@ -46,9 +55,10 @@
   50% { opacity: 1; transform: scale(1.2); }
 }
 
+/* ✅ MAIN TITLE - BARA */
 .main-title {
-  font-size: 48px;
-  font-weight: 700;
+  font-size: 54px;            /* ✅ 48px se 54px kiya */
+  font-weight: 800;           /* ✅ 700 se 800 kiya */
   line-height: 1.2;
   color: #fff;
   margin-bottom: 20px;
@@ -58,10 +68,11 @@
   color: #d4af37;
 }
 
+/* ✅ DESCRIPTION - BARA */
 .description {
-  color: rgba(255,255,255,0.7);
-  font-size: 15px;
-  line-height: 1.6;
+  color: rgba(255,255,255,0.75);
+  font-size: 17px;            /* ✅ 15px se 17px kiya */
+  line-height: 1.7;           /* ✅ 1.6 se 1.7 kiya */
   margin-bottom: 16px;
 }
 
@@ -79,14 +90,16 @@
   text-align: center;
 }
 
+/* ✅ STAT NUMBER - BARA */
 .stat h3 {
-  font-size: 28px;
+  font-size: 32px;            /* ✅ 28px se 32px kiya */
   color: #d4af37;
   margin-bottom: 4px;
 }
 
+/* ✅ STAT LABEL - BARA */
 .stat p {
-  font-size: 12px;
+  font-size: 14px;            /* ✅ 12px se 14px kiya */
   color: rgba(255,255,255,0.6);
 }
 
@@ -96,13 +109,14 @@
   width: 100%;
 }
 
+/* ✅ EXPLORE BUTTON - BARA */
 .explore-btn {
   background: linear-gradient(135deg, #d4af37, #b8960c);
   border: none;
   color: #000000;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 12px 28px;
+  font-size: 18px;            /* ✅ 16px se 18px kiya */
+  font-weight: 700;           /* ✅ 600 se 700 kiya */
+  padding: 14px 32px;         /* ✅ 12px 28px se 14px 32px kiya */
   border-radius: 40px;
   cursor: pointer;
   transition: all 0.3s;
@@ -123,6 +137,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 !important;
 }
 
 .bottle-wrapper {
@@ -165,11 +180,11 @@
   }
   
   .main-title {
-    font-size: 40px;
+    font-size: 44px;          /* ✅ 40px se 44px kiya */
   }
   
   .description {
-    font-size: 14px;
+    font-size: 15px;          /* ✅ 14px se 15px kiya */
   }
   
   .stats {
@@ -177,7 +192,7 @@
   }
   
   .stat h3 {
-    font-size: 24px;
+    font-size: 28px;          /* ✅ 24px se 28px kiya */
   }
   
   .bottle-img {
@@ -189,13 +204,13 @@
 @media (max-width: 1024px) {
   .hero-wrapper {
     min-height: auto;
-    padding: 60px 40px;
+    padding: 40px 40px;
   }
   
   .main-content {
     flex-direction: column;
     text-align: center;
-    gap: 50px;
+    gap: 40px;
   }
   
   .left-content {
@@ -229,15 +244,15 @@
 /* Mobile (up to 768px) */
 @media (max-width: 768px) {
   .hero-wrapper {
-    padding: 50px 30px;
+    padding: 30px 20px;
   }
   
   .main-title {
-    font-size: 32px;
+    font-size: 36px;          /* ✅ 32px se 36px kiya */
   }
   
   .description {
-    font-size: 13px;
+    font-size: 15px;          /* ✅ 13px se 15px kiya */
   }
   
   .stats {
@@ -247,16 +262,16 @@
   }
   
   .stat h3 {
-    font-size: 22px;
+    font-size: 26px;          /* ✅ 22px se 26px kiya */
   }
   
   .stat p {
-    font-size: 11px;
+    font-size: 13px;          /* ✅ 11px se 13px kiya */
   }
   
   .explore-btn {
-    font-size: 14px;
-    padding: 10px 24px;
+    font-size: 16px;          /* ✅ 14px se 16px kiya */
+    padding: 12px 28px;       /* ✅ 10px 24px se 12px 28px kiya */
   }
   
   .right-content {
@@ -271,36 +286,36 @@
 /* Mobile Small (up to 480px) */
 @media (max-width: 480px) {
   .hero-wrapper {
-    padding: 40px 20px;
+    padding: 20px 15px;
   }
   
   .main-title {
-    font-size: 28px;
+    font-size: 30px;          /* ✅ 28px se 30px kiya */
   }
   
   .description {
-    font-size: 12px;
+    font-size: 14px;          /* ✅ 12px se 14px kiya */
   }
   
   .badge span {
-    font-size: 11px;
+    font-size: 12px;          /* ✅ 11px se 12px kiya */
   }
   
   .stats {
-    gap: 20px;
+    gap: 15px;
   }
   
   .stat h3 {
-    font-size: 18px;
+    font-size: 22px;          /* ✅ 18px se 22px kiya */
   }
   
   .stat p {
-    font-size: 9px;
+    font-size: 11px;          /* ✅ 9px se 11px kiya */
   }
   
   .explore-btn {
-    font-size: 13px;
-    padding: 8px 20px;
+    font-size: 14px;          /* ✅ 13px se 14px kiya */
+    padding: 10px 24px;       /* ✅ 8px 20px se 10px 24px kiya */
   }
   
   .right-content {

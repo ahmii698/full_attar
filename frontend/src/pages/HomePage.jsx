@@ -87,9 +87,9 @@ function HomePage() {
     return `${APP_URL}${imagePath}`
   }, [APP_URL])
 
-  // ✅ Memoize products to prevent unnecessary re-renders
-  const displayTopSellers = useMemo(() => topSellers.slice(0, 4), [topSellers])
-  const displayDeals = useMemo(() => deals.slice(0, 4), [deals])
+  // ✅ CHANGE: 4 se 5 products dikhane ke liye
+  const displayTopSellers = useMemo(() => topSellers.slice(0, 5), [topSellers])
+  const displayDeals = useMemo(() => deals.slice(0, 5), [deals])
 
   // ✅ Memoize components
   const BestSellersSection = useMemo(() => (
@@ -197,9 +197,50 @@ function HomePage() {
       <Newsletter />
 
       <style>{`
+        /* ✅ BILKUL GAP NAHI - NAVBAR KE FORAN BAAD HERO */
+        
+        /* Navbar ka margin bottom hatao */
+        .navbar {
+          margin-bottom: 0 !important;
+          padding-bottom: 0 !important;
+        }
+
+        /* Hero wrapper - bilkul gap hatao */
+        .homepage .hero-wrapper {
+          padding: 0 !important;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+        }
+
+        .homepage .hero-wrapper .main-content {
+          padding-top: 0 !important;
+          padding-bottom: 0 !important;
+          min-height: auto !important;
+        }
+
+        .homepage .hero-wrapper .left-content {
+          padding: 0 !important;
+        }
+
+        .homepage .hero-wrapper .right-content {
+          padding: 0 !important;
+        }
+
+        /* Products section ka top margin hatao */
+        .homepage .products-section:first-of-type {
+          margin-top: 0 !important;
+          padding-top: 0 !important;
+        }
+
+        /* Section heading ka gap kam */
+        .homepage .section-heading {
+          margin-bottom: 10px !important;
+        }
+
+        /* View All button gap kam */
         .view-all-wrapper {
           text-align: center;
-          margin-top: 40px;
+          margin-top: 15px !important;
         }
         
         .view-all-btn {
@@ -207,13 +248,13 @@ function HomePage() {
           align-items: center;
           justify-content: center;
           gap: 10px;
-          padding: 12px 28px;
+          padding: 10px 24px;
           background: linear-gradient(135deg, #d4af37, #b8960c);
           color: #000000;
           border: none;
           border-radius: 40px;
           font-weight: 700;
-          font-size: 0.9rem;
+          font-size: 0.85rem;
           text-decoration: none;
           transition: all 0.3s ease;
           cursor: pointer;
@@ -233,6 +274,53 @@ function HomePage() {
           padding: 40px;
           color: rgba(255,255,255,0.4);
           font-size: 16px;
+        }
+
+        /* Products grid gap kam */
+        .products-grid {
+          gap: 12px !important;
+        }
+
+        /* All sections gap kam */
+        .homepage .faq-section {
+          margin-top: 10px !important;
+          padding-top: 10px !important;
+        }
+
+        .homepage .testimonials-section {
+          margin-top: 10px !important;
+          padding-top: 10px !important;
+        }
+
+        .homepage .contact-page {
+          margin-top: 10px !important;
+          padding-top: 10px !important;
+        }
+
+        .homepage .newsletter-section {
+          margin-top: 10px !important;
+          padding-top: 10px !important;
+        }
+
+        /* ✅ Mobile responsive */
+        @media (max-width: 768px) {
+          .homepage .hero-wrapper {
+            margin-top: 0 !important;
+          }
+          
+          .homepage .products-section:first-of-type {
+            margin-top: 0 !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .homepage .hero-wrapper {
+            margin-top: 0 !important;
+          }
+          
+          .homepage .products-section:first-of-type {
+            margin-top: 0 !important;
+          }
         }
       `}</style>
     </div>

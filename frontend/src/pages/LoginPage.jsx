@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash, FaArrowLeft, FaSpinner } from 'react-icons/fa'
+import { FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash, FaArrowLeft, FaSpinner, FaGem, FaArrowRight } from 'react-icons/fa'
 import './LoginPage.css'
 
 function LoginPage({ redirectTo }) {
@@ -12,8 +12,8 @@ function LoginPage({ redirectTo }) {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [signupSuccess, setSignupSuccess] = useState(false)
   
-  // Get redirect path from props or location state
   const from = redirectTo || location.state?.from?.pathname || '/'
   
   const [formData, setFormData] = useState({
@@ -39,29 +39,49 @@ function LoginPage({ redirectTo }) {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
     setError('')
+    setSignupSuccess(false)
   }
   
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSignupSuccess(false)
     
     try {
       if (isLogin) {
         await login(formData.email, formData.password)
         navigate(from, { replace: true })
       } else {
+        // ✅ Sign up - pehle account create karo
         await signup(formData.name, formData.email, formData.password)
-        navigate(from, { replace: true })
+        
+        // ✅ Sign up success message
+        setSignupSuccess(true)
+        setError('')
+        
+        // ✅ Form clear karo
+        setFormData({
+          name: '',
+          email: '',
+          password: ''
+        })
+        
+        // ✅ 2 second baad login mode mein switch karo
+        setTimeout(() => {
+          setIsLogin(true)
+          setSignupSuccess(false)
+          // ✅ Login page par hi raho, redirect mat karo
+        }, 2000)
       }
     } catch (err) {
       setError(err.message)
+      setSignupSuccess(false)
     } finally {
       setLoading(false)
     }
   }
 
-  // ✅ Send OTP for User
   const handleSendOtp = async (e) => {
     e.preventDefault()
     if (!otpEmail) {
@@ -106,7 +126,6 @@ function LoginPage({ redirectTo }) {
     }
   }
 
-  // ✅ Verify OTP
   const handleVerifyOtp = async (e) => {
     e.preventDefault()
     if (!otp || otp.length !== 6) {
@@ -141,7 +160,6 @@ function LoginPage({ redirectTo }) {
     }
   }
 
-  // ✅ Reset Password
   const handleResetPassword = async (e) => {
     e.preventDefault()
     if (!newPassword || newPassword.length < 6) {
@@ -197,13 +215,32 @@ function LoginPage({ redirectTo }) {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-card">
+          {/* Logo */}
+         
+
           <div className="auth-header">
-            <h1>{!showForgotPassword ? (isLogin ? 'Welcome Back' : 'Create Account') : 'Reset Password'}</h1>
-            <p>{!showForgotPassword ? (isLogin ? 'Login to your account' : 'Sign up to get started') : 'Enter your email to reset password'}</p>
+            <h1>
+              {!showForgotPassword 
+                ? (isLogin ? 'Welcome Back!' : 'Create Account') 
+                : 'Reset Password'
+              }
+            </h1>
+            <p>
+              {!showForgotPassword 
+                ? (isLogin ? 'Login to your account' : 'Sign up to get started') 
+                : 'Enter your email to reset password'
+              }
+            </p>
           </div>
 
+          {/* ✅ Sign Up Success Message */}
+          {signupSuccess && (
+            <div className="auth-success">
+              ✅ Account created successfully! Please login with your credentials.
+            </div>
+          )}
+
           {!showForgotPassword ? (
-            // ✅ Login/Signup Form
             <>
               {error && <div className="auth-error">{error}</div>}
               
@@ -267,6 +304,7 @@ function LoginPage({ redirectTo }) {
                 
                 <button type="submit" className="auth-btn" disabled={loading}>
                   {loading ? <FaSpinner className="spinner" /> : (isLogin ? 'Login' : 'Sign Up')}
+                  {!loading && <FaArrowRight className="btn-arrow" />}
                 </button>
               </form>
               
@@ -278,6 +316,7 @@ function LoginPage({ redirectTo }) {
                     onClick={() => {
                       setIsLogin(!isLogin)
                       setError('')
+                      setSignupSuccess(false)
                       setFormData({ name: '', email: '', password: '' })
                     }} 
                     className="switch-auth"
@@ -288,7 +327,6 @@ function LoginPage({ redirectTo }) {
               </div>
             </>
           ) : (
-            // ✅ Forgot Password Form
             <div className="forgot-password-form">
               <button
                 type="button"
@@ -310,7 +348,6 @@ function LoginPage({ redirectTo }) {
               {otpError && <div className="auth-error">{otpError}</div>}
               {otpMessage && <div className="auth-success">{otpMessage}</div>}
 
-              {/* Step 1: Email */}
               {otpStep === 1 && (
                 <form onSubmit={handleSendOtp}>
                   <div className="input-group">
@@ -329,7 +366,6 @@ function LoginPage({ redirectTo }) {
                 </form>
               )}
 
-              {/* Step 2: OTP */}
               {otpStep === 2 && (
                 <form onSubmit={handleVerifyOtp}>
                   <p className="otp-info">Enter the 6-digit OTP sent to <strong>{otpEmail}</strong></p>
@@ -360,7 +396,6 @@ function LoginPage({ redirectTo }) {
                 </form>
               )}
 
-              {/* Step 3: New Password */}
               {otpStep === 3 && (
                 <form onSubmit={handleResetPassword}>
                   <div className="input-group">

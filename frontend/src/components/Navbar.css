@@ -1,13 +1,11 @@
-/* IMPORTANT: Body ya main content ke liye - Navbar ki height handle karne ke liye */
-body {
-  padding-top: 100px;
-}
+/* =========================
+   NAVBAR - SIRF TEXT BARA
+========================= */
 
-/* Ya phir agar specific container hai to uske liye */
-.main-content,
-.hero-wrapper,
-.page-wrapper {
-  padding-top: 20px;
+/* ✅ Body padding hatao */
+body {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 .navbar {
@@ -21,9 +19,11 @@ body {
   padding: 20px 60px;
   background: #000000;
   z-index: 1000;
+  height: auto;
+  min-height: auto;
 }
 
-/* ========== SIMPLE NATURAL LOGO - NO EXTRA EFFECTS ========== */
+/* Logo - original size */
 .logo {
   display: flex;
   align-items: center;
@@ -51,17 +51,18 @@ body {
 
 .nav-links {
   display: flex;
-  gap: 35px;
+  gap: 40px;
   align-items: center;
 }
 
+/* ✅ NAV LINK - BARA TEXT */
 .nav-link {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 17px !important;
+  font-weight: 700;
   transition: all 0.3s;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
 .nav-link:hover, .nav-link.active {
@@ -71,16 +72,17 @@ body {
 /* Nav Icons */
 .nav-icons {
   display: flex;
-  gap: 25px;
+  gap: 28px;
   align-items: center;
 }
 
+/* ✅ ICONS - BARA */
 .icon-btn {
   background: transparent;
   border: none;
-  font-size: 20px;
+  font-size: 22px !important;
   cursor: pointer;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.85);
   transition: 0.3s;
   position: relative;
   display: flex;
@@ -102,7 +104,7 @@ body {
   right: -14px;
   background: #d4af37;
   color: #000000;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 50%;
@@ -345,7 +347,7 @@ body {
   width: 100%;
 }
 
-/* ========== MEGA MENU STYLES ========== */
+/* ========== MEGA MENU STYLES - BARA TEXT ========== */
 .mega-menu-container {
   position: static;
 }
@@ -356,7 +358,7 @@ body {
 
 .mega-menu.full-width {
   position: fixed;
-  top: 100px;
+  top: 110px;
   left: 0;
   right: 0;
   width: 100%;
@@ -365,7 +367,7 @@ body {
   border-top: 1px solid rgba(212, 175, 55, 0.2);
   border-bottom: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 0;
-  padding: 25px 60px;
+  padding: 30px 60px;           /* ✅ 25px se 30px kiya */
   z-index: 999;
   box-shadow: 0 20px 40px rgba(0,0,0,0.5);
   margin-top: 0;
@@ -378,9 +380,9 @@ body {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(212, 175, 55, 0.3);
   color: #d4af37;
-  font-size: 16px;
-  width: 32px;
-  height: 32px;
+  font-size: 18px;              /* ✅ 16px se 18px kiya */
+  width: 36px;                  /* ✅ 32px se 36px kiya */
+  height: 36px;                 /* ✅ 32px se 36px kiya */
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -403,17 +405,18 @@ body {
 .mega-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 25px;
+  gap: 30px;                    /* ✅ 25px se 30px kiya */
   margin-bottom: 0;
 }
 
+/* ✅ MEGA MENU HEADING - BARA */
 .mega-col h4 {
   color: #d4af37;
-  font-size: 14px;
-  margin-bottom: 12px;
-  font-weight: 700;
+  font-size: 18px;              /* ✅ 15px se 18px kiya */
+  margin-bottom: 16px;          /* ✅ 12px se 16px kiya */
+  font-weight: 800;             /* ✅ 700 se 800 kiya */
   border-left: 3px solid #d4af37;
-  padding-left: 12px;
+  padding-left: 14px;           /* ✅ 12px se 14px kiya */
 }
 
 .mega-col ul {
@@ -421,25 +424,30 @@ body {
 }
 
 .mega-col li {
-  margin-bottom: 8px;
+  margin-bottom: 10px;          /* ✅ 8px se 10px kiya */
 }
 
+/* ✅ MEGA MENU LINKS - BARA */
 .mega-col a {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.75);
   text-decoration: none;
-  font-size: 12px;
+  font-size: 16px;              /* ✅ 13px se 16px kiya */
+  font-weight: 500;             /* ✅ 400 se 500 kiya */
   transition: 0.3s;
   cursor: pointer;
+  display: block;
+  padding: 2px 0;
 }
 
 .mega-col a:hover {
   color: #d4af37;
+  padding-left: 6px;
 }
 
 /* ========== MOBILE MENU ========== */
 .mobile-menu {
   position: fixed;
-  top: 100px;
+  top: 110px;
   left: 0;
   right: 0;
   background: #0a0a0a;
@@ -454,14 +462,14 @@ body {
 .mobile-menu a {
   color: white;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 18px;
   padding: 10px 0;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .mobile-menu .mobile-logout-btn {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 16px;
+  font-size: 18px;
   padding: 10px 0;
 }
 
@@ -483,11 +491,17 @@ body {
     height: 90px;
   }
   body {
-    padding-top: 80px;
+    padding-top: 0 !important;
   }
   .search-dropdown {
     width: 300px;
     right: -10px;
+  }
+  .mega-menu.full-width {
+    top: 85px;
+  }
+  .mobile-menu {
+    top: 85px;
   }
 }
 
@@ -502,7 +516,7 @@ body {
     height: 75px;
   }
   body {
-    padding-top: 65px;
+    padding-top: 0 !important;
   }
   .search-dropdown {
     width: 280px;
@@ -517,6 +531,12 @@ body {
   }
   .search-dropdown-item {
     padding: 10px 12px;
+  }
+  .mega-menu.full-width {
+    top: 70px;
+  }
+  .mobile-menu {
+    top: 70px;
   }
 }
 
@@ -538,7 +558,7 @@ body {
     height: 65px;
   }
   body {
-    padding-top: 55px;
+    padding-top: 0 !important;
   }
   .search-dropdown {
     width: 260px;
@@ -549,5 +569,11 @@ body {
   }
   .search-dropdown-price {
     font-size: 11px;
+  }
+  .mega-menu.full-width {
+    top: 60px;
+  }
+  .mobile-menu {
+    top: 60px;
   }
 }

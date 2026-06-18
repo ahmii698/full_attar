@@ -153,6 +153,94 @@ img {
 }
 
 /* =========================
+   PAGE CONTENT - NAVBAR FIX ✅
+========================= */
+
+/* ✅ Sab pages ke content ko navbar ke neeche se start karne ke liye */
+.page-content {
+  padding-top: 110px;
+  min-height: 100vh;
+  background: #000000;
+}
+
+/* ✅ Home page specific - Hero ka gap hatao */
+.page-content .homepage {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* ✅ Hero wrapper ka margin hatao */
+.page-content .hero-wrapper {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* ✅ Shop page heading fix */
+.page-content .shop-header {
+  padding-top: 10px !important;
+  margin-top: 0 !important;
+}
+
+/* ✅ Deals page heading fix */
+.page-content .deals-header {
+  padding-top: 10px !important;
+  margin-top: 0 !important;
+}
+
+/* ✅ Best Sellers page heading fix */
+.page-content .best-sellers-header {
+  padding-top: 10px !important;
+  margin-top: 0 !important;
+}
+
+/* ✅ Products section ka top margin hatao */
+.page-content .products-section:first-of-type {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* ✅ Agar kisi page mein extra padding ki zaroorat ho toh */
+.page-content .shop-page,
+.page-content .deals-page,
+.page-content .best-sellers-page,
+.page-content .blogs-page,
+.page-content .contact-page,
+.page-content .about-page,
+.page-content .faq-page,
+.page-content .cart-page,
+.page-content .wishlist-page,
+.page-content .checkout-page,
+.page-content .payment-page,
+.page-content .track-order-page,
+.page-content .login-page,
+.page-content .profile-page,
+.page-content .orders-page {
+  padding-top: 0 !important;
+}
+
+/* =========================
+   RESPONSIVE - PAGE CONTENT ✅
+========================= */
+
+@media (max-width: 992px) {
+  .page-content {
+    padding-top: 90px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-content {
+    padding-top: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-content {
+    padding-top: 70px;
+  }
+}
+
+/* =========================
    UTILITY CLASSES
 ========================= */
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FaCheckCircle, FaArrowRight, FaShoppingBag, FaEnvelope, FaShieldAlt, FaBox, FaTruck } from 'react-icons/fa'
+import { FaClock, FaArrowRight, FaShoppingBag, FaEnvelope, FaShieldAlt, FaBox, FaTruck, FaHourglassHalf } from 'react-icons/fa'
 import './OrderConfirmationPage.css'
 
 function OrderConfirmationPage() {
@@ -76,16 +76,19 @@ function OrderConfirmationPage() {
   return (
     <div className="confirmation-page">
       <div className="confirmation-container">
-        <div className="success-icon">
-          <FaCheckCircle />
+        <div className="pending-icon">
+          <FaHourglassHalf />
         </div>
-        <h1>Thank You!</h1>
+        <h1>Order Placed!</h1>
         <p className="order-id">
           Order ID: <strong>{order.orderNumber}</strong>
         </p>
-        <p className="success-message">
+        <p className="pending-message">
           Your order has been placed successfully! 
-          {order.success && ' Admin will review your payment and approve your order within 24 hours.'}
+        </p>
+        <p className="pending-sub-message">
+          <FaClock className="clock-icon" /> 
+          <span>Your order is pending admin approval. Please wait while we verify your payment.</span>
         </p>
         
         <div className="next-steps">
@@ -93,7 +96,7 @@ function OrderConfirmationPage() {
           <ul>
             <li><FaEnvelope /> You will receive order confirmation email</li>
             <li><FaShieldAlt /> Admin will verify your payment</li>
-            <li><FaBox /> We will process your order within 24 hours</li>
+            <li><FaBox /> We will process your order after approval</li>
             <li><FaTruck /> Track your order using the Order ID</li>
           </ul>
         </div>

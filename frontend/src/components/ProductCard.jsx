@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react'
 import { Link } from 'react-router-dom'
-import { FaHeart, FaRegHeart, FaShoppingCart } from 'react-icons/fa'
+import { FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
 import { useCart } from '../contexts/CartContext'
 
 function ProductCard({ id, name, price, rating, priceNum, image_url, discount_price, discount_percent, is_deal, ml_prices }) {
@@ -11,12 +11,12 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   const [selectedPrice, setSelectedPrice] = useState(priceNum)
 
   const APP_URL = 'http://127.0.0.1:8000'
-  const FRONTEND_URL = 'http://localhost:5173'
 
   // ✅ Parse ml_prices
   const mlPrices = ml_prices && typeof ml_prices === 'object' ? ml_prices : {}
   
-  const mlOptions = [50, 60, 70, 80, 90, 100]
+  // ✅ Sirf 3 ML options
+  const mlOptions = [50, 60, 70]
 
   const getPriceForMl = (ml) => {
     if (mlPrices && mlPrices[ml]) {
@@ -114,12 +114,32 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   }
   
   const finalImageUrl = getImageUrl()
+
+  // ✅ DYNAMIC STARS FUNCTION
+  const renderStars = (rating) => {
+    const stars = []
+    const numRating = Number(rating) || 0
+    const fullStars = Math.floor(numRating)
+    const hasHalfStar = numRating % 1 >= 0.5
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<FaStar key={`full-${i}`} className="star-filled" />)
+    }
+    if (hasHalfStar) {
+      stars.push(<FaStarHalfAlt key="half" className="star-half" />)
+    }
+    const emptyStars = 5 - stars.length
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<FaRegStar key={`empty-${i}`} className="star-empty" />)
+    }
+    return stars
+  }
   
   return (
     <Link to={`/product/${id}`} className="product-card-link">
       <div className={`product-card ${is_deal ? 'deal-card' : ''}`}>
         {is_deal && calculatedDiscountPercent > 0 && (
-          <div className="discount-tag">{calculatedDiscountPercent}% OFF</div>
+          <div className="discount-tag">{calculatedDiscountPercent}%</div>
         )}
         
         <div className="product-image">
@@ -137,23 +157,20 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
         <div className="product-info">
           <h4>{name}</h4>
           <div className="product-price-row">
-            {originalPrice ? (
-              <>
-                <span className="original-price">{originalPrice}</span>
-                <span className="product-price">{displayPrice}</span>
-              </>
-            ) : (
-              <span className="product-price">{getDisplayPriceForMl(selectedMl)}</span>
+            <span className="product-price">{displayPrice}</span>
+            {originalPrice && (
+              <span className="original-price">{originalPrice}</span>
             )}
             <div className="product-rating">
-              <span className="stars">★★★★★</span>
+              <span className="stars">
+                {renderStars(rating || 0)}
+              </span>
               <span className="rating-count">({rating || 0})</span>
             </div>
           </div>
 
-          {/* ML SELECTOR */}
+          {/* ✅ ML SELECTOR - SIRF BUTTONS, NO LABEL */}
           <div className="ml-selector" onClick={(e) => e.preventDefault()}>
-            <span className="ml-label">Size:</span>
             <div className="ml-options">
               {mlOptions.map(ml => (
                 <button
@@ -178,5 +195,4 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   )
 }
 
-// ✅ Memoize to prevent unnecessary re-renders
 export default memo(ProductCard)
