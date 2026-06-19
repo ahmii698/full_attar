@@ -156,7 +156,7 @@ textarea.form-control {
 }
 
 /* =========================
-   ML PRICES SECTION
+   ML PRICES SECTION - SIRF 3, 6, 12
 ========================= */
 
 .ml-prices-section {
@@ -186,6 +186,7 @@ textarea.form-control {
   color: rgba(255, 255, 255, 0.35);
 }
 
+/* ✅ 3 COLUMNS FOR 3, 6, 12 */
 .ml-prices-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -383,6 +384,250 @@ textarea.form-control {
 }
 
 /* =========================
+   TOP HIGHLIGHTS SECTION
+========================= */
+
+.top-highlights-section {
+  background: rgba(212, 175, 55, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 5px;
+}
+
+.highlights-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #d4af37;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.helper-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.helper-text small {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.highlights-input-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.highlight-input-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.highlight-label-input {
+  flex: 0 0 180px;
+}
+
+.highlight-value-input {
+  flex: 1;
+}
+
+.no-highlights-message {
+  padding: 15px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  border: 1px dashed rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.add-highlight-btn {
+  background: rgba(212, 175, 55, 0.08);
+  color: #d4af37;
+  border: 1px dashed rgba(212, 175, 55, 0.25);
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  transition: all 0.3s;
+  width: 100%;
+  font-family: inherit;
+  margin-top: 8px;
+}
+
+.add-highlight-btn:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #d4af37;
+  transform: translateY(-1px);
+}
+
+.remove-highlight-btn {
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.15);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-highlight-btn:hover {
+  background: #dc3545;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* =========================
+   RICH TEXT EDITOR - QUILL
+========================= */
+
+.description-editor-section {
+  margin-top: 5px;
+}
+
+.description-editor-section label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.editor-hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 400;
+}
+
+.quill-editor {
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.quill-editor .ql-toolbar {
+  background: #222222;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 8px 8px 0 0;
+  padding: 8px 12px;
+}
+
+.quill-editor .ql-toolbar .ql-stroke {
+  stroke: #c4c3ca;
+}
+
+.quill-editor .ql-toolbar .ql-fill {
+  fill: #c4c3ca;
+}
+
+.quill-editor .ql-toolbar .ql-picker {
+  color: #c4c3ca;
+}
+
+.quill-editor .ql-toolbar .ql-picker-options {
+  background: #1a1a1a;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.quill-editor .ql-toolbar button:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.quill-editor .ql-toolbar button.ql-active {
+  background: rgba(212, 175, 55, 0.15);
+  color: #d4af37;
+}
+
+.quill-editor .ql-container {
+  min-height: 200px;
+  font-size: 14px;
+  color: #ffffff;
+  background: #1a1a1a;
+}
+
+.quill-editor .ql-editor {
+  min-height: 200px;
+  padding: 16px;
+  font-family: inherit;
+}
+
+.quill-editor .ql-editor.ql-blank::before {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
+.quill-editor .ql-editor h1,
+.quill-editor .ql-editor h2,
+.quill-editor .ql-editor h3,
+.quill-editor .ql-editor h4,
+.quill-editor .ql-editor h5,
+.quill-editor .ql-editor h6 {
+  color: #ffffff;
+}
+
+.quill-editor .ql-editor strong,
+.quill-editor .ql-editor b {
+  font-weight: 700;
+}
+
+.quill-editor .ql-editor em,
+.quill-editor .ql-editor i {
+  font-style: italic;
+}
+
+.quill-editor .ql-editor ul,
+.quill-editor .ql-editor ol {
+  padding-left: 24px;
+}
+
+.quill-editor .ql-editor blockquote {
+  border-left: 3px solid #d4af37;
+  padding-left: 16px;
+  margin: 8px 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.quill-editor .ql-editor code {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.quill-editor .ql-editor a {
+  color: #d4af37;
+  text-decoration: underline;
+}
+
+/* Quill scrollbar */
+.quill-editor .ql-editor::-webkit-scrollbar {
+  width: 6px;
+}
+
+.quill-editor .ql-editor::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.quill-editor .ql-editor::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 3px;
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
 
@@ -432,6 +677,14 @@ textarea.form-control {
   .ml-prices-section {
     padding: 15px;
   }
+  
+  .quill-editor .ql-container {
+    min-height: 150px;
+  }
+  
+  .quill-editor .ql-editor {
+    min-height: 150px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -440,6 +693,7 @@ textarea.form-control {
     gap: 15px;
   }
   
+  /* ✅ Mobile par 3, 6, 12 ek column mein */
   .ml-prices-grid {
     grid-template-columns: 1fr;
   }
@@ -466,5 +720,21 @@ textarea.form-control {
   .btn-cancel-duplicate {
     width: 100%;
     text-align: center;
+  }
+  
+  .highlight-input-item {
+    flex-wrap: wrap;
+  }
+  
+  .highlight-label-input {
+    flex: 1 1 100%;
+  }
+  
+  .highlight-value-input {
+    flex: 1 1 calc(100% - 50px);
+  }
+  
+  .quill-editor .ql-toolbar {
+    flex-wrap: wrap;
   }
 }

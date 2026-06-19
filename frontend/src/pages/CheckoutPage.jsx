@@ -9,7 +9,6 @@ function CheckoutPage() {
   const { user } = useAuth()
   const { cartItems, getCartTotal, getCartCount, clearCart } = useCart()
   const [loading, setLoading] = useState(false)
-  const [currentStep, setCurrentStep] = useState(1)
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -45,17 +44,6 @@ function CheckoutPage() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
-
-  const handleNextStep = (e) => {
-    e.preventDefault()
-    setCurrentStep(2)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const handlePrevStep = () => {
-    setCurrentStep(1)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleSubmit = async (e) => {
@@ -138,307 +126,250 @@ function CheckoutPage() {
         <div className="checkout-grid">
           <div className="billing-form">
 
-            {/* Step Indicator */}
-            <div className="step-indicator">
-              <div className={`step ${currentStep === 1 ? 'active' : 'completed'}`}>
-                <div className="step-number">
-                  {currentStep > 1 ? '✓' : '1'}
-                </div>
-                <span className="step-label">Personal Info</span>
-              </div>
-
-              <div className={`step-line ${currentStep > 1 ? 'completed' : ''}`}></div>
-
-              <div className={`step ${currentStep === 2 ? 'active' : ''}`}>
-                <div className="step-number">2</div>
-                <span className="step-label">Address & Payment</span>
-              </div>
+            <div className="form-header">
+              <h2>Billing Details</h2>
+              <p>Fill in your information to complete the order</p>
             </div>
 
-            {/* Step 1 */}
-            {currentStep === 1 && (
-              <form onSubmit={handleNextStep}>
-                <div className="form-header">
-                  <h2>Personal Information</h2>
-                  <p>Tell us who you are</p>
-                </div>
+            <form onSubmit={handleSubmit}>
+              {/* Full Name */}
+              <div className="form-group" style={{ marginBottom: '38px' }}>
+                <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
+                  Full Name <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="full_name"
+                  value={formData.full_name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Ahmed"
+                  style={{
+                    width: '100%',
+                    padding: '14px 18px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1.5px solid rgba(255,255,255,0.06)',
+                    borderRadius: '10px',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
 
-                {/* Full Name */}
-                <div className="form-group" style={{ marginBottom: '35px' }}>
+              {/* Email Address */}
+              <div className="form-group" style={{ marginBottom: '38px' }}>
+                <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
+                  Email Address <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="you@example.com"
+                  style={{
+                    width: '100%',
+                    padding: '14px 18px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1.5px solid rgba(255,255,255,0.06)',
+                    borderRadius: '10px',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Phone Number */}
+              <div className="form-group" style={{ marginBottom: '38px' }}>
+                <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
+                  Phone Number <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  placeholder="03XX-XXXXXXX"
+                  style={{
+                    width: '100%',
+                    padding: '14px 18px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1.5px solid rgba(255,255,255,0.06)',
+                    borderRadius: '10px',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Street Address */}
+              <div className="form-group" style={{ marginBottom: '38px' }}>
+                <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
+                  Street Address <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                  placeholder="House #, Street, Area"
+                  style={{
+                    width: '100%',
+                    padding: '14px 18px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1.5px solid rgba(255,255,255,0.06)',
+                    borderRadius: '10px',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* City and Zipcode Row */}
+              <div className="form-row-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '22px', marginBottom: '0' }}>
+                <div className="form-group" style={{ marginBottom: '38px' }}>
                   <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
-                    Full Name <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
+                    City <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
                   </label>
                   <input
                     type="text"
-                    name="full_name"
-                    value={formData.full_name}
+                    name="city"
+                    value={formData.city}
                     onChange={handleChange}
                     required
-                    placeholder="Ahmed"
+                    placeholder="Karachi"
                     style={{
                       width: '100%',
-                      padding: '13px 16px',
+                      padding: '14px 18px',
                       background: 'rgba(255,255,255,0.03)',
                       border: '1.5px solid rgba(255,255,255,0.06)',
                       borderRadius: '10px',
                       color: '#ffffff',
-                      fontSize: '14px',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                {/* Email Address */}
-                <div className="form-group" style={{ marginBottom: '35px' }}>
-                  <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
-                    Email Address <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    placeholder="you@example.com"
-                    style={{
-                      width: '100%',
-                      padding: '13px 16px',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1.5px solid rgba(255,255,255,0.06)',
-                      borderRadius: '10px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                {/* Phone Number */}
-                <div className="form-group" style={{ marginBottom: '35px' }}>
-                  <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
-                    Phone Number <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    placeholder="03XX-XXXXXXX"
-                    style={{
-                      width: '100%',
-                      padding: '13px 16px',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1.5px solid rgba(255,255,255,0.06)',
-                      borderRadius: '10px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                <div className="step-buttons" style={{ marginTop: '20px' }}>
-                  <button type="submit" className="btn-next">
-                    Continue →
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {/* Step 2 */}
-            {currentStep === 2 && (
-              <form onSubmit={handleSubmit}>
-                <div className="form-header">
-                  <h2>Address & Payment</h2>
-                  <p>Where should we deliver?</p>
-                </div>
-
-                {/* Street Address */}
-                <div className="form-group" style={{ marginBottom: '35px' }}>
-                  <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
-                    Street Address <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    required
-                    placeholder="House #, Street, Area"
-                    style={{
-                      width: '100%',
-                      padding: '13px 16px',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1.5px solid rgba(255,255,255,0.06)',
-                      borderRadius: '10px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                {/* City and Zipcode Row */}
-                <div className="form-row-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '0' }}>
-                  <div className="form-group" style={{ marginBottom: '35px' }}>
-                    <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
-                      City <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleChange}
-                      required
-                      placeholder="Karachi"
-                      style={{
-                        width: '100%',
-                        padding: '13px 16px',
-                        background: 'rgba(255,255,255,0.03)',
-                        border: '1.5px solid rgba(255,255,255,0.06)',
-                        borderRadius: '10px',
-                        color: '#ffffff',
-                        fontSize: '14px',
-                        outline: 'none',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                  <div className="form-group" style={{ marginBottom: '35px' }}>
-                    <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
-                      Zipcode
-                    </label>
-                    <input
-                      type="text"
-                      name="zipcode"
-                      value={formData.zipcode}
-                      onChange={handleChange}
-                      placeholder="75500"
-                      style={{
-                        width: '100%',
-                        padding: '13px 16px',
-                        background: 'rgba(255,255,255,0.03)',
-                        border: '1.5px solid rgba(255,255,255,0.06)',
-                        borderRadius: '10px',
-                        color: '#ffffff',
-                        fontSize: '14px',
-                        outline: 'none',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Payment Method */}
-                <div className="form-group" style={{ marginBottom: '35px' }}>
-                  <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
-                    Payment Method <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
-                  </label>
-                  <select
-                    name="payment_method"
-                    value={formData.payment_method}
-                    onChange={handleChange}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '13px 16px',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1.5px solid rgba(255,255,255,0.06)',
-                      borderRadius: '10px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                      cursor: 'pointer',
-                      appearance: 'none',
-                      WebkitAppearance: 'none',
-                      paddingRight: '40px'
-                    }}
-                  >
-                    <option value="bank_transfer">Bank Transfer</option>
-                    <option value="scan_qr">Scan QR</option>
-                    <option value="mobile_banking">Mobile Banking</option>
-                  </select>
-                </div>
-
-                {/* Order Notes */}
-                <div className="form-group" style={{ marginBottom: '35px' }}>
-                  <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
-                    Order Notes <span style={{ color: '#d4af37', fontSize: '13px' }}>(Optional)</span>
-                  </label>
-                  <textarea
-                    name="notes"
-                    value={formData.notes}
-                    onChange={handleChange}
-                    rows="3"
-                    placeholder="Any special instructions..."
-                    style={{
-                      width: '100%',
-                      padding: '13px 16px',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1.5px solid rgba(255,255,255,0.06)',
-                      borderRadius: '10px',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                      resize: 'vertical',
-                      minHeight: '85px',
-                      fontFamily: 'inherit'
-                    }}
-                  ></textarea>
-                </div>
-
-                <div className="step-buttons" style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-                  <button
-                    type="button"
-                    className="btn-back-step"
-                    onClick={handlePrevStep}
-                    style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1.5px solid rgba(255,255,255,0.08)',
-                      padding: '14px 20px',
-                      borderRadius: '12px',
-                      fontWeight: '600',
-                      fontSize: '14px',
-                      color: 'rgba(255,255,255,0.5)',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      letterSpacing: '0.3px',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    ← Back
-                  </button>
-                  <button
-                    type="submit"
-                    className="confirm-order-btn"
-                    disabled={loading}
-                    style={{
-                      flex: '1',
-                      background: 'linear-gradient(135deg, #d4af37, #b8960c)',
-                      border: 'none',
-                      padding: '14px 20px',
-                      borderRadius: '12px',
-                      fontWeight: '700',
                       fontSize: '15px',
-                      color: '#000000',
-                      cursor: loading ? 'not-allowed' : 'pointer',
-                      transition: 'all 0.3s ease',
-                      letterSpacing: '0.5px',
-                      opacity: loading ? '0.5' : '1'
+                      outline: 'none',
+                      boxSizing: 'border-box'
                     }}
-                  >
-                    {loading ? 'Processing...' : 'Proceed to Payment →'}
-                  </button>
+                  />
                 </div>
-              </form>
-            )}
+                <div className="form-group" style={{ marginBottom: '38px' }}>
+                  <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
+                    Zipcode
+                  </label>
+                  <input
+                    type="text"
+                    name="zipcode"
+                    value={formData.zipcode}
+                    onChange={handleChange}
+                    placeholder="75500"
+                    style={{
+                      width: '100%',
+                      padding: '14px 18px',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1.5px solid rgba(255,255,255,0.06)',
+                      borderRadius: '10px',
+                      color: '#ffffff',
+                      fontSize: '15px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Payment Method */}
+              <div className="form-group" style={{ marginBottom: '38px' }}>
+                <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
+                  Payment Method <span style={{ color: '#d4af37', fontSize: '13px' }}>*</span>
+                </label>
+                <select
+                  name="payment_method"
+                  value={formData.payment_method}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '14px 18px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1.5px solid rgba(255,255,255,0.06)',
+                    borderRadius: '10px',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer',
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                    paddingRight: '40px'
+                  }}
+                >
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="scan_qr">Scan QR</option>
+                  <option value="mobile_banking">Mobile Banking</option>
+                </select>
+              </div>
+
+              {/* Order Notes */}
+              <div className="form-group" style={{ marginBottom: '38px' }}>
+                <label style={{ display: 'block', marginBottom: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '15px', fontWeight: '600' }}>
+                  Order Notes <span style={{ color: '#d4af37', fontSize: '13px' }}>(Optional)</span>
+                </label>
+                <textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  rows="3"
+                  placeholder="Any special instructions..."
+                  style={{
+                    width: '100%',
+                    padding: '14px 18px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1.5px solid rgba(255,255,255,0.06)',
+                    borderRadius: '10px',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    resize: 'vertical',
+                    minHeight: '90px',
+                    fontFamily: 'inherit'
+                  }}
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                className="confirm-order-btn"
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  background: 'linear-gradient(135deg, #d4af37, #b8960c)',
+                  border: 'none',
+                  padding: '16px 20px',
+                  borderRadius: '12px',
+                  fontWeight: '700',
+                  fontSize: '16px',
+                  color: '#000000',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s ease',
+                  letterSpacing: '0.5px',
+                  marginTop: '12px',
+                  opacity: loading ? '0.5' : '1'
+                }}
+              >
+                {loading ? 'Processing...' : 'Proceed to Payment →'}
+              </button>
+            </form>
 
           </div>
 

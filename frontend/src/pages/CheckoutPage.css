@@ -61,83 +61,6 @@
 }
 
 /* =========================
-   STEP INDICATOR
-========================= */
-
-.step-indicator {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  gap: 0;
-}
-
-.step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-}
-
-.step-number {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.3);
-  background: transparent;
-  transition: all 0.4s ease;
-  flex-shrink: 0;
-}
-
-.step-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.3);
-  transition: all 0.4s ease;
-  white-space: nowrap;
-}
-
-.step.active .step-number {
-  background: #d4af37;
-  border-color: #d4af37;
-  color: #000000;
-}
-
-.step.active .step-label {
-  color: #ffffff;
-}
-
-.step.completed .step-number {
-  background: rgba(212, 175, 55, 0.15);
-  border-color: rgba(212, 175, 55, 0.4);
-  color: #d4af37;
-}
-
-.step.completed .step-label {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.step-line {
-  flex: 1;
-  height: 1.5px;
-  background: rgba(255, 255, 255, 0.06);
-  margin: 0 12px;
-  border-radius: 2px;
-  transition: all 0.4s ease;
-}
-
-.step-line.completed {
-  background: rgba(212, 175, 55, 0.3);
-}
-
-/* =========================
    FORM HEADER
 ========================= */
 
@@ -147,7 +70,7 @@
 
 .form-header h2 {
   color: #ffffff;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: 0.3px;
   margin-bottom: 4px;
@@ -163,7 +86,7 @@
 ========================= */
 
 .form-group {
-  margin-bottom: 32px;  /* ✅ Field ke beech gap */
+  margin-bottom: 28px;
   display: block;
 }
 
@@ -174,16 +97,16 @@
 .form-group label {
   display: block;
   color: rgba(255, 255, 255, 0.6);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.3px;
   line-height: 1.2;
-  margin-bottom: 10px;  /* ✅ Label aur input ke beech gap */
+  margin-bottom: 8px;
 }
 
 .form-group label span {
   color: #d4af37;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .form-group input,
@@ -254,73 +177,22 @@
 }
 
 /* =========================
-   STEP BUTTONS
-========================= */
-
-.step-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;  /* ✅ Buttons ke upar gap */
-}
-
-.btn-next {
-  flex: 1;
-  background: linear-gradient(135deg, #d4af37, #b8960c);
-  border: none;
-  padding: 14px 20px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 15px;
-  color: #000000;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 0.5px;
-}
-
-.btn-next:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.25);
-}
-
-.btn-next:active {
-  transform: translateY(0);
-}
-
-.btn-back-step {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
-  padding: 14px 20px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-
-.btn-back-step:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* =========================
    SUBMIT BUTTON
 ========================= */
 
 .confirm-order-btn {
-  flex: 1;
+  width: 100%;
   background: linear-gradient(135deg, #d4af37, #b8960c);
   border: none;
-  padding: 14px 20px;
+  padding: 15px 20px;
   border-radius: 12px;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 16px;
   color: #000000;
   cursor: pointer;
   transition: all 0.3s ease;
   letter-spacing: 0.5px;
+  margin-top: 10px;
 }
 
 .confirm-order-btn:hover:not(:disabled) {
@@ -451,11 +323,12 @@
   }
 
   .form-group {
-    margin-bottom: 28px;  /* ✅ Mobile par bhi gap */
+    margin-bottom: 24px;
   }
 
   .form-group label {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
   }
 
   .form-row-2 {
@@ -464,7 +337,7 @@
   }
 
   .form-row-2 .form-group {
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
 
   .form-row-2 .form-group:last-child {
@@ -479,14 +352,9 @@
     font-size: 18px;
   }
 
-  .confirm-order-btn,
-  .btn-next {
+  .confirm-order-btn {
     font-size: 14px;
     padding: 12px 16px;
-  }
-
-  .step-label {
-    font-size: 12px;
   }
 }
 
@@ -506,11 +374,11 @@
   }
 
   .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   .form-group label {
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     font-size: 12px;
   }
 
@@ -521,14 +389,8 @@
     font-size: 13px;
   }
 
-  .confirm-order-btn,
-  .btn-next {
+  .confirm-order-btn {
     font-size: 13px;
-    padding: 11px 14px;
-  }
-
-  .btn-back-step {
-    font-size: 12px;
     padding: 11px 14px;
   }
 
@@ -538,9 +400,5 @@
 
   .summary-total {
     font-size: 16px;
-  }
-
-  .step-label {
-    display: none;
   }
 }

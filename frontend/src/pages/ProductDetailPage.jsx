@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaStarHalfAlt } from 'react-icons/fa'
+import { FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaStarHalfAlt, FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
 import { toast, ToastContainer } from 'react-toastify'
@@ -19,10 +19,21 @@ function ProductDetailPage() {
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [selectedMl, setSelectedMl] = useState(50)
   const [selectedPrice, setSelectedPrice] = useState(0)
+  const [showAllHighlights, setShowAllHighlights] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
   const APP_URL = 'http://127.0.0.1:8000'
   const FRONTEND_URL = 'http://localhost:5173'
+
+  // ✅ Check window resize for mobile detection
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     fetchProduct()
@@ -249,6 +260,14 @@ function ProductDetailPage() {
   const originalPrice = product.discount_price ? `Rs. ${product.price_num.toLocaleString()}` : null
   const fragranceNotes = parseNotes(product.notes)
   const imageUrl = getImageUrl(product.image_url)
+  
+  // ✅ Get top highlights - filter out empty ones
+  const topHighlights = (product.top_highlights || []).filter(h => h.label && h.value)
+  
+  // ✅ Desktop: Show all, Mobile: Show first 3 then view all
+  const initialDisplayCount = isMobile ? 3 : topHighlights.length
+  const displayHighlights = showAllHighlights ? topHighlights : topHighlights.slice(0, initialDisplayCount)
+  const shouldShowViewAll = isMobile && topHighlights.length > 3
 
   return (
     <>
@@ -372,11 +391,47 @@ function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Description Section */}
+          {/* ✅ TOP HIGHLIGHTS SECTION - VIEW ALL ONLY ON MOBILE */}
+          {topHighlights.length > 0 && (
+            <div className="top-highlights-section">
+              <h3 className="highlights-title"> Top Highlights</h3>
+              <div className={`highlights-grid ${isMobile ? 'mobile-grid' : 'desktop-grid'}`}>
+                {displayHighlights.map((highlight, index) => (
+                  <div key={index} className="highlight-item">
+                    <span className="highlight-label">{highlight.label}</span>
+                    <span className="highlight-value">{highlight.value}</span>
+                  </div>
+                ))}
+              </div>
+              
+              {/* ✅ View All / Show Less Button - ONLY ON MOBILE */}
+              {shouldShowViewAll && (
+                <button 
+                  className="view-all-highlights-btn"
+                  onClick={() => setShowAllHighlights(!showAllHighlights)}
+                >
+                  {showAllHighlights ? (
+                    <>Show Less <FaChevronUp /></>
+                  ) : (
+                    <>View All ({topHighlights.length}) <FaChevronDown /></>
+                  )}
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* ✅ DESCRIPTION SECTION - SCROLLABLE WITH HTML RENDERING */}
           <div className="description-section">
             <h3 className="description-title">Description</h3>
             <div className="description-content">
-              <p>{product.description || 'No description available for this product.'}</p>
+              {product.description ? (
+                <div 
+                  className="description-scroll"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+              ) : (
+                <p className="no-description">No description available for this product.</p>
+              )}
             </div>
           </div>
         </div>
@@ -646,13 +701,134 @@ function ProductDetailPage() {
             color: #d4af37;
           }
 
+          /* ✅ TOP HIGHLIGHTS */
+          .top-highlights-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin: 25px 0;
+            border: 1px solid rgba(212, 175, 55, 0.08);
+          }
+
+          .highlights-title {
+            color: #d4af37;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          /* ✅ DESKTOP GRID - 3 Columns */
+          .highlights-grid.desktop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px 20px;
+          }
+
+          /* ✅ MOBILE GRID - 1 Column */
+          .highlights-grid.mobile-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+
+          .highlight-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border-left: 3px solid #d4af37;
+            transition: all 0.3s ease;
+          }
+
+          .highlight-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateX(3px);
+          }
+
+          .highlight-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+          }
+
+          .highlight-value {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            margin-top: 3px;
+          }
+
+          /* ✅ VIEW ALL BUTTON - ONLY SHOW ON MOBILE */
+          .view-all-highlights-btn {
+            display: none;
+            margin-top: 15px;
+            padding: 10px 24px;
+            background: rgba(212, 175, 55, 0.08);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+          }
+
+          .view-all-highlights-btn:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
+            transform: translateY(-2px);
+          }
+
+          .view-all-highlights-btn svg {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+          }
+
+          /* ✅ SHOW VIEW ALL ONLY ON MOBILE */
+          @media (max-width: 768px) {
+            .view-all-highlights-btn {
+              display: inline-flex;
+            }
+            
+            .highlights-grid.desktop-grid {
+              display: none;
+            }
+          }
+
+          /* ✅ HIDE VIEW ALL ON DESKTOP */
+          @media (min-width: 769px) {
+            .view-all-highlights-btn {
+              display: none !important;
+            }
+            
+            .highlights-grid.mobile-grid {
+              display: none;
+            }
+          }
+
+          /* ✅ DESCRIPTION SECTION - SCROLLABLE */
           .description-section {
             background: rgba(255,255,255,0.02);
             border-radius: 16px;
             padding: 30px 35px;
             margin-top: 25px;
             border: 1px solid rgba(212,175,55,0.1);
+            max-height: 400px;
+            display: flex;
+            flex-direction: column;
           }
+
           .description-title {
             color: #d4af37;
             font-size: 22px;
@@ -660,11 +836,119 @@ function ProductDetailPage() {
             margin-bottom: 18px;
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(212,175,55,0.2);
+            flex-shrink: 0;
           }
-          .description-content p {
+
+          .description-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+          }
+
+          .description-content::-webkit-scrollbar {
+            width: 6px;
+          }
+
+          .description-content::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.03);
+            border-radius: 3px;
+          }
+
+          .description-content::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 3px;
+          }
+
+          .description-content::-webkit-scrollbar-thumb:hover {
+            background: #b8960c;
+          }
+
+          /* ✅ DESCRIPTION HTML CONTENT STYLING */
+          .description-scroll {
             color: #ffffff;
-            line-height: 1.8;
+            line-height: 1.9;
             font-size: 16px;
+          }
+
+          .description-scroll h1,
+          .description-scroll h2,
+          .description-scroll h3,
+          .description-scroll h4,
+          .description-scroll h5,
+          .description-scroll h6 {
+            color: #d4af37;
+            margin-top: 18px;
+            margin-bottom: 12px;
+            font-weight: 600;
+          }
+
+          .description-scroll h1 { font-size: 28px; }
+          .description-scroll h2 { font-size: 24px; }
+          .description-scroll h3 { font-size: 20px; }
+          .description-scroll h4 { font-size: 18px; }
+          .description-scroll h5 { font-size: 16px; }
+          .description-scroll h6 { font-size: 14px; }
+
+          .description-scroll p {
+            margin-bottom: 14px;
+            line-height: 1.8;
+          }
+
+          .description-scroll strong,
+          .description-scroll b {
+            color: #d4af37;
+            font-weight: 700;
+          }
+
+          .description-scroll ul,
+          .description-scroll ol {
+            padding-left: 24px;
+            margin-bottom: 14px;
+          }
+
+          .description-scroll li {
+            margin-bottom: 6px;
+            line-height: 1.6;
+          }
+
+          .description-scroll blockquote {
+            border-left: 4px solid #d4af37;
+            padding-left: 16px;
+            margin: 14px 0;
+            color: rgba(255,255,255,0.8);
+            font-style: italic;
+          }
+
+          .description-scroll a {
+            color: #d4af37;
+            text-decoration: underline;
+          }
+
+          .description-scroll code {
+            background: rgba(255,255,255,0.05);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+          }
+
+          .description-scroll img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+          }
+
+          .description-scroll br {
+            display: block;
+            content: "";
+            margin: 5px 0;
+          }
+
+          .no-description {
+            color: rgba(255,255,255,0.4);
+            font-style: italic;
+            text-align: center;
+            padding: 20px 0;
           }
 
           .loading-container, .error-container {
@@ -678,6 +962,7 @@ function ProductDetailPage() {
             text-decoration: none;
           }
 
+          /* ✅ RESPONSIVE */
           @media (max-width: 768px) {
             .product-detail-page {
               padding: 110px 15px 30px;
@@ -705,8 +990,12 @@ function ProductDetailPage() {
               width: 100%;
               justify-content: center;
             }
+            .top-highlights-section {
+              padding: 20px;
+            }
             .description-section {
               padding: 20px;
+              max-height: 300px;
             }
             .ml-options {
               justify-content: center;
@@ -716,6 +1005,16 @@ function ProductDetailPage() {
               padding: 6px 12px;
               font-size: 12px;
             }
+            .view-all-highlights-btn {
+              font-size: 13px;
+              padding: 8px 18px;
+            }
+            .description-scroll {
+              font-size: 15px;
+            }
+            .description-scroll h1 { font-size: 24px; }
+            .description-scroll h2 { font-size: 20px; }
+            .description-scroll h3 { font-size: 18px; }
           }
 
           @media (max-width: 480px) {
@@ -735,11 +1034,21 @@ function ProductDetailPage() {
               width: 80px;
               font-size: 13px;
             }
-            .description-content p {
-              font-size: 14px;
+            .top-highlights-section {
+              padding: 15px;
+            }
+            .highlight-item {
+              padding: 8px 12px;
+            }
+            .highlight-value {
+              font-size: 13px;
+            }
+            .highlight-label {
+              font-size: 10px;
             }
             .description-section {
               padding: 15px;
+              max-height: 250px;
             }
             .ml-btn {
               padding: 4px 10px;
@@ -759,6 +1068,18 @@ function ProductDetailPage() {
             .star-filled, .star-half, .star-empty {
               font-size: 16px;
             }
+            .view-all-highlights-btn {
+              font-size: 12px;
+              padding: 6px 14px;
+              width: 100%;
+              justify-content: center;
+            }
+            .description-scroll {
+              font-size: 14px;
+            }
+            .description-scroll h1 { font-size: 20px; }
+            .description-scroll h2 { font-size: 18px; }
+            .description-scroll h3 { font-size: 16px; }
           }
         `}</style>
       </div>

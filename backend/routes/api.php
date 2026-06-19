@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\PaymentConfirmationController;
-use App\Http\Controllers\Api\ContactController;  // ✅ ADD THIS
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -21,7 +21,7 @@ use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
-use App\Http\Controllers\Admin\ContactController as AdminContactController;  // ✅ ADD THIS (rename to avoid conflict)
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\HeroController as AdminHeroController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
@@ -31,6 +31,9 @@ use App\Http\Controllers\Admin\OutletController as AdminOutletController;
 use App\Http\Controllers\Admin\CartController as AdminCartController;
 use App\Http\Controllers\Admin\PaymentConfirmationController as AdminPaymentConfirmationController;
 use Illuminate\Support\Facades\Route;
+use App\Mail\OrderStatusMail;
+use App\Models\Order;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +54,7 @@ Route::post('/user/forgot-password', [AuthController::class, 'sendUserOtp']);
 Route::post('/user/verify-otp', [AuthController::class, 'verifyUserOtp']);
 Route::post('/user/reset-password', [AuthController::class, 'resetUserPassword']);
 
-// Products
+// ========== PRODUCTS ==========
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/top-sellers', [ProductController::class, 'topSellers']);
@@ -59,31 +62,31 @@ Route::get('/new-arrivals', [ProductController::class, 'newArrivals']);
 Route::get('/deals', [ProductController::class, 'deals']);
 Route::get('/categories', [ProductController::class, 'categories']);
 
-// Blogs
+// ========== BLOGS ==========
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
 Route::get('/blog-categories', [BlogController::class, 'categories']);
 
-// ========== ✅ CONTACT & NEWSLETTER ==========
+// ========== CONTACT & NEWSLETTER ==========
 Route::post('/contact', [ContactController::class, 'store']);
 Route::post('/newsletter', [NewsletterController::class, 'subscribe']);
 
-// Testimonials - Public API
+// ========== TESTIMONIALS ==========
 Route::get('/testimonials', [TestimonialController::class, 'index']);
 Route::post('/testimonials', [TestimonialController::class, 'store']);
 
-// ========== HERO SECTION APIs ==========
+// ========== HERO SECTION ==========
 Route::get('/hero', [HeroController::class, 'index']);
 Route::get('/hero-stats', [HeroController::class, 'stats']);
 Route::get('/site-settings', [SiteSettingController::class, 'index']);
 Route::get('/social-links', [SiteSettingController::class, 'socialLinks']);
 Route::get('/banners', [BannerController::class, 'index']);
 
-// ========== FAQ APIs ==========
+// ========== FAQ ==========
 Route::get('/faqs', [FaqController::class, 'index']);
 Route::get('/faq-categories', [FaqController::class, 'categories']);
 
-// ========== OUTLETS APIs ==========
+// ========== OUTLETS ==========
 Route::get('/outlets', [OutletController::class, 'index']);
 Route::get('/outlets/{id}', [OutletController::class, 'show']);
 
@@ -137,6 +140,37 @@ Route::middleware('auth:sanctum')->group(function () {
 // PUBLIC TRACK ORDER API (No authentication required)
 // =====================================================
 Route::get('/orders/track/{orderNumber}', [OrderController::class, 'trackByOrderNumber']);
+
+// =====================================================
+// ✅ TEST EMAIL ROUTE (For Debugging) - FIXED
+// =====================================================
+Route::get('/test-email/{id}', function ($id) {
+    try {
+        $order = Order::with('items')->findOrFail($id);
+        
+        $customerEmail = $order->email;
+        $customerName = $order->full_name ?? 'Customer';
+        $status = 'processing';
+        
+        Mail::to($customerEmail)->send(new OrderStatusMail($order, $status, $customerName));
+        
+        return response()->json([
+            'success' => true,
+            'message' => '✅ Email sent to: ' . $customerEmail,
+            'order' => [
+                'id' => $order->order_id,
+                'number' => $order->order_number,
+                'email' => $order->email,
+                'name' => $order->full_name
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => '❌ Error: ' . $e->getMessage()
+        ], 500);
+    }
+});
 
 // =====================================================
 // ADMIN APIs
@@ -250,7 +284,7 @@ Route::prefix('admin')->group(function () {
     Route::delete('/carts/user/{userId}', [AdminCartController::class, 'clearUserCart']);
     Route::get('/carts/stats', [AdminCartController::class, 'stats']);
     
-    // ========== PAYMENT CONFIRMATIONS MANAGEMENT ==========
+    // Payment Confirmations Management
     Route::get('/payment-confirmations', [AdminPaymentConfirmationController::class, 'index']);
     Route::get('/payment-confirmations/{id}', [AdminPaymentConfirmationController::class, 'show']);
     Route::put('/payment-confirmations/{id}/approve', [AdminPaymentConfirmationController::class, 'approve']);

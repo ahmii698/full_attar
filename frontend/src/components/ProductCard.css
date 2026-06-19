@@ -222,7 +222,7 @@
 }
 
 /* =========================
-   ML SELECTOR - SIRF BUTTONS, NO LABEL - 1 LINE
+   ML SELECTOR - SIRF 3 BUTTONS: 3ml, 6ml, 12ml
 ========================= */
 
 .ml-selector {
@@ -430,6 +430,7 @@
     font-size: 12px;
   }
   
+  /* ✅ ML buttons responsive - 3ml, 6ml, 12ml */
   .ml-btn {
     font-size: 11px;
     padding: 3px 12px;
@@ -499,6 +500,7 @@
     margin: 4px 0 8px 0;
   }
   
+  /* ✅ ML buttons responsive - 3ml, 6ml, 12ml */
   .ml-btn {
     font-size: 10px;
     padding: 3px 10px;
@@ -562,6 +564,7 @@
     font-size: 11px;
   }
   
+  /* ✅ ML buttons responsive - 3ml, 6ml, 12ml */
   .ml-btn {
     font-size: 9px;
     padding: 2px 8px;
@@ -585,6 +588,36 @@
     right: 6px;
     line-height: 1.1;
     padding: 1px;
+  }
+}
+
+/* ✅ EXTRA SMALL - 3ml, 6ml, 12ml buttons properly fit */
+@media (max-width: 380px) {
+  .ml-btn {
+    font-size: 8px;
+    padding: 2px 6px;
+    min-width: 26px;
+  }
+  
+  .ml-options {
+    gap: 3px;
+  }
+  
+  .product-info h4 {
+    font-size: 11px;
+  }
+  
+  .product-price {
+    font-size: 12px;
+  }
+  
+  .add-to-cart {
+    font-size: 8px;
+    padding: 4px 4px;
+  }
+  
+  .add-to-cart svg {
+    font-size: 8px;
   }
 }
 

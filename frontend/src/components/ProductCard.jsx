@@ -7,7 +7,7 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   const { addToCart, addToWishlist, removeFromWishlist, wishlistItems } = useCart()
   
   const [isWishlisted, setIsWishlisted] = useState(false)
-  const [selectedMl, setSelectedMl] = useState(50)
+  const [selectedMl, setSelectedMl] = useState(3) // ✅ Default 3ml
   const [selectedPrice, setSelectedPrice] = useState(priceNum)
 
   const APP_URL = 'http://127.0.0.1:8000'
@@ -15,8 +15,8 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   // ✅ Parse ml_prices
   const mlPrices = ml_prices && typeof ml_prices === 'object' ? ml_prices : {}
   
-  // ✅ Sirf 3 ML options
-  const mlOptions = [50, 60, 70]
+  // ✅ SIRF 3 ML OPTIONS: 3, 6, 12
+  const mlOptions = [3, 6, 12]
 
   const getPriceForMl = (ml) => {
     if (mlPrices && mlPrices[ml]) {
@@ -31,7 +31,7 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   }
 
   const isMlAvailable = (ml) => {
-    if (ml === 50) return true
+    if (ml === 3) return true // ✅ 3ml always available
     return !!(mlPrices && mlPrices[ml])
   }
 
@@ -169,7 +169,7 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
             </div>
           </div>
 
-          {/* ✅ ML SELECTOR - SIRF BUTTONS, NO LABEL */}
+          {/* ✅ ML SELECTOR - SIRF 3 BUTTONS: 3ml, 6ml, 12ml */}
           <div className="ml-selector" onClick={(e) => e.preventDefault()}>
             <div className="ml-options">
               {mlOptions.map(ml => (

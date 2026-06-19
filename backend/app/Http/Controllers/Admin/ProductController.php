@@ -36,18 +36,30 @@ class ProductController extends Controller
             $product->stock_quantity = $request->stock_quantity ?? 10;
             $product->is_top_seller = $request->is_top_seller ?? 0;
             $product->is_new_arrival = $request->is_new_arrival ?? 0;
+            $product->description = $request->description ?? null;
+            
+            // ✅ Handle Top Highlights
+            if ($request->has('top_highlights')) {
+                $highlights = $request->top_highlights;
+                if (is_string($highlights)) {
+                    $highlights = json_decode($highlights, true);
+                }
+                $product->top_highlights = $highlights;
+            } else {
+                // ✅ Default highlights will be set via model accessor
+                $product->top_highlights = null;
+            }
 
             // ✅ Handle ML Prices
             if ($request->has('ml_prices')) {
                 $mlPrices = $request->ml_prices;
-                // If it's a JSON string, decode it
                 if (is_string($mlPrices)) {
                     $mlPrices = json_decode($mlPrices, true);
                 }
                 $product->ml_prices = json_encode($mlPrices);
             }
 
-            // ✅ Handle image upload - direct public folder
+            // ✅ Handle image upload
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
@@ -97,24 +109,30 @@ class ProductController extends Controller
             $product->stock_quantity = $request->stock_quantity ?? 10;
             $product->is_top_seller = $request->is_top_seller ?? 0;
             $product->is_new_arrival = $request->is_new_arrival ?? 0;
+            $product->description = $request->description ?? null;
+            
+            // ✅ Handle Top Highlights
+            if ($request->has('top_highlights')) {
+                $highlights = $request->top_highlights;
+                if (is_string($highlights)) {
+                    $highlights = json_decode($highlights, true);
+                }
+                $product->top_highlights = $highlights;
+            } else {
+                $product->top_highlights = null;
+            }
 
             // ✅ Handle ML Prices
             if ($request->has('ml_prices')) {
                 $mlPrices = $request->ml_prices;
-                // If it's a JSON string, decode it
                 if (is_string($mlPrices)) {
                     $mlPrices = json_decode($mlPrices, true);
                 }
                 $product->ml_prices = json_encode($mlPrices);
-            } else {
-                // If no ml_prices sent, keep existing or set null
-                // You can choose to keep existing or set null
-                // $product->ml_prices = null;
             }
 
             // ✅ Handle image upload
             if ($request->hasFile('image')) {
-                // Delete old image if exists
                 if ($product->image_url && file_exists(public_path($product->image_url))) {
                     unlink(public_path($product->image_url));
                 }
@@ -150,7 +168,6 @@ class ProductController extends Controller
         try {
             $product = Product::find($id);
             if ($product) {
-                // Delete associated image
                 if ($product->image_url && file_exists(public_path($product->image_url))) {
                     unlink(public_path($product->image_url));
                 }

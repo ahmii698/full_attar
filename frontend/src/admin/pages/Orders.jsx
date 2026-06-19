@@ -52,8 +52,14 @@ function Orders() {
       
       if (response.ok) {
         const data = await response.json()
-        setOrders(data)
-        setTotalItems(data.length)
+        // ✅ SORT: Newest first (by created_at or order_date)
+        const sortedOrders = data.sort((a, b) => {
+          const dateA = new Date(a.created_at || a.order_date || 0)
+          const dateB = new Date(b.created_at || b.order_date || 0)
+          return dateB - dateA // ✅ Newest first
+        })
+        setOrders(sortedOrders)
+        setTotalItems(sortedOrders.length)
       }
     } catch (error) {
       console.error('Error fetching orders:', error)
@@ -194,6 +200,42 @@ function Orders() {
   const statusOptions = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
   const paymentStatusOptions = ['pending', 'paid', 'failed', 'refunded']
 
+  // ✅ Generate page numbers with ellipsis
+  const getPageNumbers = () => {
+    const pageNumbers = []
+    const maxVisiblePages = 5
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i)
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pageNumbers.push(i)
+        }
+        pageNumbers.push('...')
+        pageNumbers.push(totalPages)
+      } else if (currentPage >= totalPages - 2) {
+        pageNumbers.push(1)
+        pageNumbers.push('...')
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pageNumbers.push(i)
+        }
+      } else {
+        pageNumbers.push(1)
+        pageNumbers.push('...')
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pageNumbers.push(i)
+        }
+        pageNumbers.push('...')
+        pageNumbers.push(totalPages)
+      }
+    }
+    
+    return pageNumbers
+  }
+
   if (loading) return <div className="admin-loading">Loading orders...</div>
 
   return (
@@ -294,7 +336,7 @@ function Orders() {
             </table>
           </div>
 
-          {/* ✅ Pagination */}
+          {/* ✅ Enhanced Pagination with Ellipsis */}
           {totalPages > 1 && (
             <div className="pagination-container">
               <div className="pagination">
@@ -307,14 +349,18 @@ function Orders() {
                 </button>
                 
                 <div className="page-numbers">
-                  {[...Array(totalPages).keys()].map(number => (
-                    <button
-                      key={number + 1}
-                      onClick={() => handlePageChange(number + 1)}
-                      className={`page-number ${currentPage === number + 1 ? 'active' : ''}`}
-                    >
-                      {number + 1}
-                    </button>
+                  {getPageNumbers().map((number, index) => (
+                    number === '...' ? (
+                      <span key={`ellipsis-${index}`} className="page-ellipsis">...</span>
+                    ) : (
+                      <button
+                        key={number}
+                        onClick={() => handlePageChange(number)}
+                        className={`page-number ${currentPage === number ? 'active' : ''}`}
+                      >
+                        {number}
+                      </button>
+                    )
                   ))}
                 </div>
                 

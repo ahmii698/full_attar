@@ -2,7 +2,54 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { FaUpload, FaTimes, FaTag, FaBox, FaStar, FaCheck, FaImage, FaPlus, FaMinus, FaArrowLeft } from 'react-icons/fa'
 import { getProduct, createProduct, updateProduct } from '../services/adminApi'
+// React Quill imports change karein
+import ReactQuill from 'react-quill-new'
+import 'react-quill-new/dist/quill.snow.css'
+// CSS ka path change ho sakta hai, agar upar wala kaam na kare toh yeh try karein:
+// import 'react-quill-new/dist/styles.css'
 import '../styles/ProductForm.css'
+
+// ✅ Clean text function - removes unwanted characters and formatting
+const cleanDescription = (text) => {
+  if (!text) return '';
+  
+  // Remove unwanted characters
+  let cleaned = text
+    .replace(/[\u2018\u2019]/g, "'")  // Smart quotes to straight
+    .replace(/[\u201C\u201D]/g, '"')  // Smart double quotes to straight
+    .replace(/[\u2013\u2014]/g, '-')  // Em/En dashes to hyphen
+    .replace(/\u2026/g, '...')        // Ellipsis to three dots
+    .replace(/\u00A0/g, ' ')          // Non-breaking space to space
+    .replace(/\r\n/g, '\n')           // Windows line breaks
+    .replace(/\r/g, '\n')             // Mac line breaks
+    .trim();
+  
+  return cleaned;
+};
+
+// ✅ Quill modules configuration
+const quillModules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ color: [] }, { background: [] }],
+    [{ list: 'ordered'}, { list: 'bullet' }],
+    [{ align: [] }],
+    ['blockquote', 'code-block'],
+    ['link', 'image'],
+    ['clean']
+  ],
+}
+
+const quillFormats = [
+  'header',
+  'bold', 'italic', 'underline', 'strike',
+  'color', 'background',
+  'list', 'bullet',
+  'align',
+  'blockquote', 'code-block',
+  'link', 'image'
+]
 
 function ProductForm() {
   const { id } = useParams()
@@ -26,13 +73,12 @@ function ProductForm() {
     is_top_seller: false,
     is_new_arrival: false,
     description: '',
+    top_highlights: [],
+    // ✅ SIRF 3, 6, 12 ML PRICES
     ml_prices: {
-      '50': '',
-      '60': '',
-      '70': '',
-      '80': '',
-      '90': '',
-      '100': ''
+      '3': '',
+      '6': '',
+      '12': ''
     }
   })
   const [isEdit, setIsEdit] = useState(false)
@@ -53,12 +99,31 @@ function ProductForm() {
       const res = await getProduct(id)
       const product = res.data
       
-      let mlPrices = { '50': '', '60': '', '70': '', '80': '', '90': '', '100': '' }
+      // ✅ SIRF 3, 6, 12 ML PRICES
+      let mlPrices = { '3': '', '6': '', '12': '' }
       if (product.ml_prices) {
         const parsed = typeof product.ml_prices === 'string' 
           ? JSON.parse(product.ml_prices) 
           : product.ml_prices
-        mlPrices = { ...mlPrices, ...parsed }
+        // Sirf 3, 6, 12 hi lo
+        mlPrices = { 
+          '3': parsed['3'] || '',
+          '6': parsed['6'] || '',
+          '12': parsed['12'] || ''
+        }
+      }
+      
+      let topHighlights = []
+      if (product.top_highlights) {
+        if (typeof product.top_highlights === 'string') {
+          try {
+            topHighlights = JSON.parse(product.top_highlights)
+          } catch (e) {
+            topHighlights = []
+          }
+        } else if (Array.isArray(product.top_highlights)) {
+          topHighlights = product.top_highlights
+        }
       }
       
       setFormData({
@@ -77,6 +142,7 @@ function ProductForm() {
         is_top_seller: product.is_top_seller === 1,
         is_new_arrival: product.is_new_arrival === 1,
         description: product.description || '',
+        top_highlights: topHighlights,
         ml_prices: mlPrices
       })
       
@@ -106,6 +172,15 @@ function ProductForm() {
     }))
   }
 
+  // ✅ Handle description change from Quill - WITH CLEANING
+  const handleDescriptionChange = (value) => {
+    const cleaned = cleanDescription(value);
+    setFormData(prev => ({
+      ...prev,
+      description: cleaned
+    }))
+  }
+
   const handleMlPriceChange = (ml, value) => {
     setFormData(prev => ({
       ...prev,
@@ -113,6 +188,26 @@ function ProductForm() {
         ...prev.ml_prices,
         [ml]: value
       }
+    }))
+  }
+
+  const handleHighlightChange = (index, field, value) => {
+    const newHighlights = [...formData.top_highlights]
+    newHighlights[index] = { ...newHighlights[index], [field]: value }
+    setFormData(prev => ({ ...prev, top_highlights: newHighlights }))
+  }
+
+  const addHighlight = () => {
+    setFormData(prev => ({
+      ...prev,
+      top_highlights: [...prev.top_highlights, { label: '', value: '' }]
+    }))
+  }
+
+  const removeHighlight = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      top_highlights: prev.top_highlights.filter((_, i) => i !== index)
     }))
   }
 
@@ -136,6 +231,13 @@ function ProductForm() {
         if (key === 'ml_prices') {
           const mlPricesJson = JSON.stringify(formData.ml_prices)
           submitData.append('ml_prices', mlPricesJson)
+        } else if (key === 'top_highlights') {
+          const highlightsJson = JSON.stringify(formData.top_highlights)
+          submitData.append('top_highlights', highlightsJson)
+        } else if (key === 'description') {
+          // ✅ Send cleaned description
+          const cleanedDesc = cleanDescription(formData.description || '');
+          submitData.append('description', cleanedDesc)
         } else if (formData[key] !== undefined && formData[key] !== '') {
           if (key === 'is_deal' || key === 'is_top_seller' || key === 'is_new_arrival') {
             submitData.append(key, formData[key] ? 1 : 0)
@@ -313,78 +415,102 @@ function ProductForm() {
             />
           </div>
 
-          {/* ==================== ML PRICES SECTION ==================== */}
+          {/* ==================== ML PRICES SECTION - SIRF 3, 6, 12 ==================== */}
           <div className="form-group full-width ml-prices-section">
             <label className="ml-prices-label">
-              <FaTag /> ML Prices (Different prices for different sizes)
+              <FaTag /> ML Prices (3ml, 6ml, 12ml)
             </label>
             <p className="helper-text">
               Set prices for each ML size. Leave empty if not available.
               <br />
-              <small>Default 50ml price will be used if no price is set.</small>
+              <small>Default price will be used if no price is set.</small>
             </p>
             <div className="ml-prices-grid">
               <div className="ml-price-item">
-                <label>50ml (Default)</label>
+                <label>3ml (Default)</label>
                 <input
                   type="number"
-                  value={formData.ml_prices['50'] || ''}
-                  onChange={(e) => handleMlPriceChange('50', e.target.value)}
+                  value={formData.ml_prices['3'] || ''}
+                  onChange={(e) => handleMlPriceChange('3', e.target.value)}
                   className="form-control"
                   placeholder="Base price"
                 />
               </div>
               <div className="ml-price-item">
-                <label>60ml</label>
+                <label>6ml</label>
                 <input
                   type="number"
-                  value={formData.ml_prices['60'] || ''}
-                  onChange={(e) => handleMlPriceChange('60', e.target.value)}
+                  value={formData.ml_prices['6'] || ''}
+                  onChange={(e) => handleMlPriceChange('6', e.target.value)}
                   className="form-control"
-                  placeholder="Price for 60ml"
+                  placeholder="Price for 6ml"
                 />
               </div>
               <div className="ml-price-item">
-                <label>70ml</label>
+                <label>12ml</label>
                 <input
                   type="number"
-                  value={formData.ml_prices['70'] || ''}
-                  onChange={(e) => handleMlPriceChange('70', e.target.value)}
+                  value={formData.ml_prices['12'] || ''}
+                  onChange={(e) => handleMlPriceChange('12', e.target.value)}
                   className="form-control"
-                  placeholder="Price for 70ml"
-                />
-              </div>
-              <div className="ml-price-item">
-                <label>80ml</label>
-                <input
-                  type="number"
-                  value={formData.ml_prices['80'] || ''}
-                  onChange={(e) => handleMlPriceChange('80', e.target.value)}
-                  className="form-control"
-                  placeholder="Price for 80ml"
-                />
-              </div>
-              <div className="ml-price-item">
-                <label>90ml</label>
-                <input
-                  type="number"
-                  value={formData.ml_prices['90'] || ''}
-                  onChange={(e) => handleMlPriceChange('90', e.target.value)}
-                  className="form-control"
-                  placeholder="Price for 90ml"
-                />
-              </div>
-              <div className="ml-price-item">
-                <label>100ml</label>
-                <input
-                  type="number"
-                  value={formData.ml_prices['100'] || ''}
-                  onChange={(e) => handleMlPriceChange('100', e.target.value)}
-                  className="form-control"
-                  placeholder="Price for 100ml"
+                  placeholder="Price for 12ml"
                 />
               </div>
             </div>
+          </div>
+
+          {/* ==================== TOP HIGHLIGHTS SECTION ==================== */}
+          <div className="form-group full-width top-highlights-section">
+            <label className="highlights-label">
+              <FaStar /> Top Highlights
+            </label>
+            <p className="helper-text">
+              Add key features of this product. These will appear on the product detail page.
+              <br />
+              <small>Leave empty to use default highlights for all products.</small>
+            </p>
+            
+            <div className="highlights-input-grid">
+              {formData.top_highlights && formData.top_highlights.length > 0 ? (
+                formData.top_highlights.map((highlight, index) => (
+                  <div key={index} className="highlight-input-item">
+                    <input
+                      type="text"
+                      value={highlight.label || ''}
+                      onChange={(e) => handleHighlightChange(index, 'label', e.target.value)}
+                      placeholder="Label (e.g., Fragrance Family)"
+                      className="form-control highlight-label-input"
+                    />
+                    <input
+                      type="text"
+                      value={highlight.value || ''}
+                      onChange={(e) => handleHighlightChange(index, 'value', e.target.value)}
+                      placeholder="Value (e.g., Oud, Amber, Musk)"
+                      className="form-control highlight-value-input"
+                    />
+                    <button
+                      type="button"
+                      className="remove-highlight-btn"
+                      onClick={() => removeHighlight(index)}
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="no-highlights-message">
+                  <p>No custom highlights added. Default highlights will be used.</p>
+                </div>
+              )}
+            </div>
+            
+            <button
+              type="button"
+              className="add-highlight-btn"
+              onClick={addHighlight}
+            >
+              <FaPlus /> Add Highlight
+            </button>
           </div>
 
           {/* Image Upload Section */}
@@ -481,15 +607,17 @@ function ProductForm() {
             </label>
           </div>
 
-          <div className="form-group full-width">
-            <label>Description</label>
-            <textarea
-              name="description"
+          {/* ✅ RICH TEXT EDITOR FOR DESCRIPTION */}
+          <div className="form-group full-width description-editor-section">
+            <label>Description <span className="editor-hint">(Format your text with the toolbar below)</span></label>
+            <ReactQuill
+              theme="snow"
               value={formData.description || ''}
-              onChange={handleChange}
-              className="form-control"
-              rows="4"
-              placeholder="Product description..."
+              onChange={handleDescriptionChange}
+              modules={quillModules}
+              formats={quillFormats}
+              placeholder="Write a detailed description of the product..."
+              className="quill-editor"
             />
           </div>
         </div>

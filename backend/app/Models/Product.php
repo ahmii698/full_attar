@@ -19,19 +19,20 @@ class Product extends Model
         'gender', 
         'notes', 
         'image_url', 
-        'description', 
+        'description',
+        'top_highlights',  // ✅ ADDED - Top Highlights column
         'stock_quantity', 
         'is_top_seller', 
         'is_new_arrival',
         'is_deal', 
         'discount_price', 
         'discount_percent',
-        'ml_prices'  // ✅ ADDED - ML Prices column
+        'ml_prices'
     ];
     
-    // ✅ ADDED - Cast ml_prices to array when accessing
     protected $casts = [
         'ml_prices' => 'array',
+        'top_highlights' => 'array',  // ✅ ADDED - Cast to array
         'is_deal' => 'boolean',
         'is_top_seller' => 'boolean',
         'is_new_arrival' => 'boolean'
@@ -39,7 +40,7 @@ class Product extends Model
     
     public $timestamps = false;
     
-    // ✅ OPTIONAL - Accessor to decode ml_prices
+    // ✅ Accessor for ml_prices
     public function getMlPricesAttribute($value)
     {
         if ($value === null) {
@@ -48,7 +49,7 @@ class Product extends Model
         return json_decode($value, true);
     }
     
-    // ✅ OPTIONAL - Mutator to encode ml_prices
+    // ✅ Mutator for ml_prices
     public function setMlPricesAttribute($value)
     {
         if ($value === null) {
@@ -61,5 +62,44 @@ class Product extends Model
         } else {
             $this->attributes['ml_prices'] = $value;
         }
+    }
+    
+    // ✅ Accessor for top_highlights
+    public function getTopHighlightsAttribute($value)
+    {
+        if ($value === null) {
+            return $this->getDefaultHighlights();
+        }
+        return json_decode($value, true);
+    }
+    
+    // ✅ Mutator for top_highlights
+    public function setTopHighlightsAttribute($value)
+    {
+        if ($value === null || empty($value)) {
+            $this->attributes['top_highlights'] = json_encode($this->getDefaultHighlights());
+            return;
+        }
+        
+        if (is_array($value)) {
+            $this->attributes['top_highlights'] = json_encode($value);
+        } else {
+            $this->attributes['top_highlights'] = $value;
+        }
+    }
+    
+    // ✅ Default highlights for attar products
+    public function getDefaultHighlights()
+    {
+        return [
+            ['label' => 'Fragrance Family', 'value' => 'Oud, Amber, Musk'],
+            ['label' => 'Longevity', 'value' => '24+ Hours'],
+            ['label' => 'Alcohol-Free', 'value' => 'Yes'],
+            ['label' => 'Handcrafted', 'value' => 'Traditional Techniques'],
+            ['label' => 'Concentration', 'value' => 'Pure Attar Oil'],
+            ['label' => 'Origin', 'value' => 'Premium Quality'],
+            ['label' => 'Suitable For', 'value' => 'Men & Women'],
+            ['label' => 'Occasion', 'value' => 'Daily Wear, Special Events']
+        ];
     }
 }

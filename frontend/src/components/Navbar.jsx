@@ -30,21 +30,23 @@ function Navbar() {
   
   const categories = {
     premium: [
+      { name: '18+', filter: '18+' },
       { name: 'Black & Silver Platinum', filter: 'Black & Silver Platinum' },
       { name: 'Royal Oud', filter: 'Royal Oud' },
       { name: 'Musk Al Mahal', filter: 'Musk Al Mahal' },
-      { name: 'Sultan E Ameer', filter: 'Sultan E Ameer' },
-      { name: 'Oud Al Aswad', filter: 'Oud Al Aswad' }
+      { name: 'Sultan E Ameer', filter: 'Sultan E Ameer' }
+     
     ],
     western: [
-      { name: 'Winter Collection 2024', filter: 'Winter Collection 2024' },
-      { name: 'Amber Rose', filter: 'Amber Rose' },
+      { name: 'Office', filter: 'Office' },
+     
       { name: 'Silver & White', filter: 'Silver & White' },
-      { name: 'Floral Dream', filter: 'Floral Dream' }
+      { name: 'Floral Dream', filter: 'Floral Dream' },
+      { name: 'Hajj Perfume', filter: 'Hajj Perfume' }
     ],
     eastern: [
-      { name: 'Ameer Al Oud', filter: 'Ameer Al Oud' },
-      { name: 'Oudh Al Ward', filter: 'Oudh Al Ward' },
+      { name: 'Mughal Oud', filter: 'Mughal Oud' },
+      { name: 'Night Rush', filter: 'Night Rush' },
       { name: 'Eastern Oud', filter: 'Eastern Oud' }
     ],
     gender: [
