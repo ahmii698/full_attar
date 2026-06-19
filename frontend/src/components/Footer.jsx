@@ -93,9 +93,9 @@ function Footer() {
         <div className="footer-col">
           <h4>Contact Info</h4>
           <ul className="contact-info">
-            <li><FaPhone /> +92 300 1234567</li>
-            <li><FaEnvelope /> info@royalattar.com</li>
-            <li><FaMapMarkerAlt /> Karachi, Pakistan</li>
+            <li><FaPhone /> +92 319 7753774</li>
+            <li><FaEnvelope /> Khurram313awan@gmail.com</li>
+            <li><FaMapMarkerAlt /> Gujarat, Pakistan</li>
           </ul>
         </div>
       </div>

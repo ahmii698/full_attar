@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
+import { FaWhatsapp } from 'react-icons/fa'
 import Hero from '../components/Hero'
 import SectionHeading from '../components/SectionHeading'
 import ProductCard from '../components/ProductCard'
@@ -16,8 +17,9 @@ function HomePage() {
   const [dataLoaded, setDataLoaded] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-  const APP_URL = 'http://127.0.0.1:8000'
+  // ✅ Using env variables
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+  const STORAGE_URL = import.meta.env.VITE_STORAGE_URL || 'http://localhost:8000/storage'
 
   // ✅ Check if data is already in sessionStorage
   useEffect(() => {
@@ -39,11 +41,18 @@ function HomePage() {
 
   const fetchData = useCallback(async () => {
     try {
+      console.log('🔄 Fetching data from:', API_BASE_URL)
+      
       const [topRes, dealsRes, bannersRes] = await Promise.all([
         fetch(`${API_BASE_URL}/top-sellers`),
         fetch(`${API_BASE_URL}/deals`),
         fetch(`${API_BASE_URL}/banners`)
       ])
+      
+      // ✅ Check if responses are OK
+      if (!topRes.ok) throw new Error(`top-sellers: ${topRes.status}`)
+      if (!dealsRes.ok) throw new Error(`deals: ${dealsRes.status}`)
+      if (!bannersRes.ok) throw new Error(`banners: ${bannersRes.status}`)
       
       const topData = await topRes.json()
       const dealsData = await dealsRes.json()
@@ -67,7 +76,7 @@ function HomePage() {
       setDataLoaded(true)
       
     } catch (err) {
-      console.error('Error fetching data:', err)
+      console.error('❌ Error fetching data:', err)
       setDataLoaded(true)
     } finally {
       setIsLoading(false)
@@ -75,23 +84,23 @@ function HomePage() {
   }, [API_BASE_URL])
 
   useEffect(() => {
-    // ✅ Only fetch if not already loaded from cache
     if (!dataLoaded) {
       fetchData()
     }
   }, [dataLoaded, fetchData])
 
+  // ✅ Fix image URL - using STORAGE_URL
   const getImageUrl = useCallback((imagePath) => {
     if (!imagePath) return null
     if (imagePath.startsWith('http')) return imagePath
-    return `${APP_URL}${imagePath}`
-  }, [APP_URL])
+    // Remove /storage/ prefix if present to avoid duplication
+    const cleanPath = imagePath.replace(/^\/storage\//, '')
+    return `${STORAGE_URL}/${cleanPath}`
+  }, [STORAGE_URL])
 
-  // ✅ CHANGE: 4 se 5 products dikhane ke liye
   const displayTopSellers = useMemo(() => topSellers.slice(0, 5), [topSellers])
   const displayDeals = useMemo(() => deals.slice(0, 5), [deals])
 
-  // ✅ Memoize components
   const BestSellersSection = useMemo(() => (
     <section className="products-section">
       <SectionHeading title="Best Sellers" subtitle="Our most loved fragrances" />
@@ -110,7 +119,7 @@ function HomePage() {
               discount_percent={product.discount_percent}
               is_deal={product.is_deal === 1}
               rating={product.rating || 0}
-              image_url={product.image_url}
+              image_url={getImageUrl(product.image_url)}
               ml_prices={product.ml_prices}
             />
           ))
@@ -120,7 +129,7 @@ function HomePage() {
         <Link to="/best-sellers" className="view-all-btn">View All →</Link>
       </div>
     </section>
-  ), [displayTopSellers, dataLoaded])
+  ), [displayTopSellers, dataLoaded, getImageUrl])
 
   const DealsSection = useMemo(() => (
     <section className="products-section">
@@ -140,7 +149,7 @@ function HomePage() {
               discount_percent={product.discount_percent}
               is_deal={true}
               rating={product.rating || 0}
-              image_url={product.image_url}
+              image_url={getImageUrl(product.image_url)}
               ml_prices={product.ml_prices}
             />
           ))
@@ -150,7 +159,7 @@ function HomePage() {
         <Link to="/deals" className="view-all-btn">View All →</Link>
       </div>
     </section>
-  ), [displayDeals, dataLoaded])
+  ), [displayDeals, dataLoaded, getImageUrl])
 
   const BannersSection = useMemo(() => (
     dataLoaded && banners.length > 0 && banners.map((banner, index) => (
@@ -167,7 +176,20 @@ function HomePage() {
     ))
   ), [banners, dataLoaded, getImageUrl])
 
-  // ✅ If still loading and no cache, show minimal loading
+  // ✅ WhatsApp Floating Button
+  const WhatsAppButton = useMemo(() => (
+    <a
+      href="https://wa.me/923197753774"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="whatsapp-float"
+      aria-label="Chat on WhatsApp"
+    >
+      <FaWhatsapp />
+      <span className="whatsapp-tooltip">Chat with us!</span>
+    </a>
+  ), [])
+
   if (isLoading && !dataLoaded) {
     return (
       <div className="homepage">
@@ -179,147 +201,169 @@ function HomePage() {
   return (
     <div className="homepage">
       <Hero />
-      
       {BestSellersSection}
-      
       {BannersSection}
-      
       {DealsSection}
-      
       <FAQSection />
-      
       <section className="testimonials-section">
         <SectionHeading title="What Our Customers Say" subtitle="Trusted by thousands" />
         <TestimonialSlider />
       </section>
-      
       <ContactPage />
       <Newsletter />
 
+      {/* ✅ WhatsApp Floating Button - Sirf Home Page par show hoga */}
+      {WhatsAppButton}
+
       <style>{`
-        /* ✅ BILKUL GAP NAHI - NAVBAR KE FORAN BAAD HERO */
+        .navbar { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+        .homepage .hero-wrapper { padding: 0 !important; margin: 0 !important; }
+        .homepage .hero-wrapper .main-content { padding-top: 0 !important; padding-bottom: 0 !important; }
+        .homepage .products-section:first-of-type { margin-top: 0 !important; padding-top: 0 !important; }
+        .homepage .section-heading { margin-bottom: 10px !important; }
+        .view-all-wrapper { text-align: center; margin-top: 15px !important; }
+        .view-all-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 24px; background: linear-gradient(135deg, #d4af37, #b8960c); color: #000000; border: none; border-radius: 40px; font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); }
+        .view-all-btn:hover { background: linear-gradient(135deg, #c4a030, #a08010); transform: translateX(6px); gap: 14px; box-shadow: 0 6px 18px rgba(212, 175, 55, 0.4); }
+        .no-products { grid-column: 1 / -1; text-align: center; padding: 40px; color: rgba(255,255,255,0.4); font-size: 16px; }
+        .products-grid { gap: 12px !important; }
         
-        /* Navbar ka margin bottom hatao */
-        .navbar {
-          margin-bottom: 0 !important;
-          padding-bottom: 0 !important;
-        }
-
-        /* Hero wrapper - bilkul gap hatao */
-        .homepage .hero-wrapper {
-          padding: 0 !important;
-          margin-top: 0 !important;
-          margin-bottom: 0 !important;
-        }
-
-        .homepage .hero-wrapper .main-content {
-          padding-top: 0 !important;
-          padding-bottom: 0 !important;
-          min-height: auto !important;
-        }
-
-        .homepage .hero-wrapper .left-content {
-          padding: 0 !important;
-        }
-
-        .homepage .hero-wrapper .right-content {
-          padding: 0 !important;
-        }
-
-        /* Products section ka top margin hatao */
-        .homepage .products-section:first-of-type {
-          margin-top: 0 !important;
-          padding-top: 0 !important;
-        }
-
-        /* Section heading ka gap kam */
-        .homepage .section-heading {
-          margin-bottom: 10px !important;
-        }
-
-        /* View All button gap kam */
-        .view-all-wrapper {
-          text-align: center;
-          margin-top: 15px !important;
-        }
-        
-        .view-all-btn {
-          display: inline-flex;
+        /* ✅ WhatsApp Floating Button Styles */
+        .whatsapp-float {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          width: 65px;
+          height: 65px;
+          background: linear-gradient(135deg, #25d366, #128C7E);
+          color: #ffffff;
+          border-radius: 50%;
+          display: flex;
           align-items: center;
           justify-content: center;
-          gap: 10px;
-          padding: 10px 24px;
-          background: linear-gradient(135deg, #d4af37, #b8960c);
-          color: #000000;
-          border: none;
-          border-radius: 40px;
-          font-weight: 700;
-          font-size: 0.85rem;
-          text-decoration: none;
+          font-size: 36px;
+          box-shadow: 0 6px 30px rgba(37, 211, 102, 0.4);
           transition: all 0.3s ease;
-          cursor: pointer;
-          box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-        }
-        
-        .view-all-btn:hover {
-          background: linear-gradient(135deg, #c4a030, #a08010);
-          transform: translateX(6px);
-          gap: 14px;
-          box-shadow: 0 6px 18px rgba(212, 175, 55, 0.4);
+          z-index: 1000;
+          text-decoration: none;
+          animation: whatsappPulse 2s infinite;
         }
 
-        .no-products {
-          grid-column: 1 / -1;
-          text-align: center;
-          padding: 40px;
-          color: rgba(255,255,255,0.4);
-          font-size: 16px;
+        .whatsapp-float:hover {
+          transform: scale(1.12);
+          box-shadow: 0 8px 40px rgba(37, 211, 102, 0.6);
+          color: #ffffff;
         }
 
-        /* Products grid gap kam */
-        .products-grid {
-          gap: 12px !important;
+        .whatsapp-float:active {
+          transform: scale(0.95);
         }
 
-        /* All sections gap kam */
-        .homepage .faq-section {
-          margin-top: 10px !important;
-          padding-top: 10px !important;
+        /* ✅ Tooltip */
+        .whatsapp-tooltip {
+          position: absolute;
+          right: 80px;
+          background: rgba(0, 0, 0, 0.8);
+          color: #ffffff;
+          padding: 8px 16px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-weight: 500;
+          white-space: nowrap;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.3s ease;
+          pointer-events: none;
         }
 
-        .homepage .testimonials-section {
-          margin-top: 10px !important;
-          padding-top: 10px !important;
+        .whatsapp-tooltip::after {
+          content: '';
+          position: absolute;
+          right: -8px;
+          top: 50%;
+          transform: translateY(-50%);
+          border-left: 8px solid rgba(0, 0, 0, 0.8);
+          border-top: 6px solid transparent;
+          border-bottom: 6px solid transparent;
         }
 
-        .homepage .contact-page {
-          margin-top: 10px !important;
-          padding-top: 10px !important;
+        .whatsapp-float:hover .whatsapp-tooltip {
+          opacity: 1;
+          visibility: visible;
+          right: 85px;
         }
 
-        .homepage .newsletter-section {
-          margin-top: 10px !important;
-          padding-top: 10px !important;
+        /* ✅ Pulse Animation */
+        @keyframes whatsappPulse {
+          0%, 100% {
+            box-shadow: 0 6px 30px rgba(37, 211, 102, 0.4);
+          }
+          50% {
+            box-shadow: 0 6px 50px rgba(37, 211, 102, 0.7);
+          }
         }
 
-        /* ✅ Mobile responsive */
+        /* ✅ Notification Badge */
+        .whatsapp-float::after {
+          content: '1';
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          background: #ff4444;
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 700;
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid #0a0a0a;
+          animation: badgePulse 1.5s infinite;
+        }
+
+        @keyframes badgePulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.15);
+          }
+        }
+
         @media (max-width: 768px) {
-          .homepage .hero-wrapper {
-            margin-top: 0 !important;
+          .homepage .hero-wrapper { margin-top: 0 !important; }
+          .homepage .products-section:first-of-type { margin-top: 0 !important; }
+          
+          .whatsapp-float {
+            width: 55px;
+            height: 55px;
+            font-size: 30px;
+            bottom: 20px;
+            right: 20px;
           }
           
-          .homepage .products-section:first-of-type {
-            margin-top: 0 !important;
+          .whatsapp-tooltip {
+            display: none;
+          }
+          
+          .whatsapp-float::after {
+            width: 18px;
+            height: 18px;
+            font-size: 9px;
           }
         }
 
         @media (max-width: 480px) {
-          .homepage .hero-wrapper {
-            margin-top: 0 !important;
-          }
+          .homepage .hero-wrapper { margin-top: 0 !important; }
+          .homepage .products-section:first-of-type { margin-top: 0 !important; }
           
-          .homepage .products-section:first-of-type {
-            margin-top: 0 !important;
+          .whatsapp-float {
+            width: 50px;
+            height: 50px;
+            font-size: 26px;
+            bottom: 15px;
+            right: 15px;
           }
         }
       `}</style>
