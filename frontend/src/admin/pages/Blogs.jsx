@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaChevronLeft, FaChevronRight, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import { getBlogs, deleteBlog } from '../services/adminApi'
+import { STORAGE_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/Blogs.css'
 
 function Blogs() {
@@ -14,8 +15,9 @@ function Blogs() {
   const [itemsPerPage] = useState(8)
   const [totalItems, setTotalItems] = useState(0)
 
-  const APP_URL = 'http://localhost:8000'
-  const FRONTEND_URL = 'http://localhost:5173'
+  // ✅ USING CONFIG - NO HARDCODED URLS
+  const APP_URL = STORAGE_URL?.replace('/storage', '') || 'http://localhost:8000'
+  const FRONTEND_URL = window.location.origin || 'http://localhost:5173'
 
   useEffect(() => {
     fetchBlogs()

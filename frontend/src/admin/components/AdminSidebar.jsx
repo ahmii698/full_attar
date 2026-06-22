@@ -31,10 +31,7 @@ function AdminSidebar() {
           <i className="fas fa-bell"></i> Subscribers
         </NavLink>
         
-        {/* Outlets LINK */}
-        <NavLink to="/admin/outlets" className="nav-item">
-          <i className="fas fa-store"></i> Outlets
-        </NavLink>
+        {/* ❌ Outlets LINK REMOVED */}
         
         {/* FAQ LINK */}
         <NavLink to="/admin/faqs" className="nav-item">

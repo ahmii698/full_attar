@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
 import footerLogo from '../assets/ra.png'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function Footer() {
   const [socialLinks, setSocialLinks] = useState([])
   const [loading, setLoading] = useState(true)
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
   // Map platform names to icons
   const getIcon = (platform) => {
@@ -31,7 +30,7 @@ function Footer() {
 
   const fetchSocialLinks = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/social-links`)
+      const response = await fetch(`${API_URL}/social-links`)  // ✅ USING API_URL
       const data = await response.json()
       setSocialLinks(data.filter(link => link.is_active === 1))
     } catch (error) {

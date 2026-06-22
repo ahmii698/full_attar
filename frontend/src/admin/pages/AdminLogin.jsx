@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaEnvelope, FaLock, FaArrowLeft, FaSpinner } from 'react-icons/fa'
 import { useAdminAuth } from '../contexts/AdminAuthContext'
+import { API_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/AdminLogin.css'
 
 function AdminLogin() {
@@ -23,8 +24,6 @@ function AdminLogin() {
   const [otpMessage, setOtpMessage] = useState('')
   const [otpError, setOtpError] = useState('')
   const [resendTimer, setResendTimer] = useState(0)
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -58,7 +57,7 @@ function AdminLogin() {
     setOtpMessage('')
 
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/forgot-password`, {
+      const response = await fetch(`${API_URL}/admin/forgot-password`, {  // ✅ USING API_URL
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: otpEmail })
@@ -103,7 +102,7 @@ function AdminLogin() {
     setOtpMessage('')
 
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/verify-otp`, {
+      const response = await fetch(`${API_URL}/admin/verify-otp`, {  // ✅ USING API_URL
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: otpEmail, otp: otp })
@@ -142,13 +141,14 @@ function AdminLogin() {
     setOtpMessage('')
 
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/reset-password`, {
+      const response = await fetch(`${API_URL}/admin/reset-password`, {  // ✅ USING API_URL
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: otpEmail,
           otp: otp,
-          password: newPassword
+          password: newPassword,
+          password_confirmation: confirmPassword  // ✅ Added for validation
         })
       })
 

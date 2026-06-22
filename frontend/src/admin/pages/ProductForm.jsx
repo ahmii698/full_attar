@@ -2,18 +2,16 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { FaUpload, FaTimes, FaTag, FaBox, FaStar, FaCheck, FaImage, FaPlus, FaMinus, FaArrowLeft } from 'react-icons/fa'
 import { getProduct, createProduct, updateProduct } from '../services/adminApi'
-// React Quill imports change karein
+// React Quill imports
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
-// CSS ka path change ho sakta hai, agar upar wala kaam na kare toh yeh try karein:
-// import 'react-quill-new/dist/styles.css'
+import { API_URL, STORAGE_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/ProductForm.css'
 
 // ✅ Clean text function - removes unwanted characters and formatting
 const cleanDescription = (text) => {
   if (!text) return '';
   
-  // Remove unwanted characters
   let cleaned = text
     .replace(/[\u2018\u2019]/g, "'")  // Smart quotes to straight
     .replace(/[\u201C\u201D]/g, '"')  // Smart double quotes to straight
@@ -27,28 +25,20 @@ const cleanDescription = (text) => {
   return cleaned;
 };
 
-// ✅ Quill modules configuration
+// ✅ Quill modules configuration - SIMPLIFIED FOR CLEAN TEXT
 const quillModules = {
   toolbar: [
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ color: [] }, { background: [] }],
+    [{ header: [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline'],
     [{ list: 'ordered'}, { list: 'bullet' }],
-    [{ align: [] }],
-    ['blockquote', 'code-block'],
-    ['link', 'image'],
     ['clean']
   ],
 }
 
 const quillFormats = [
   'header',
-  'bold', 'italic', 'underline', 'strike',
-  'color', 'background',
-  'list', 'bullet',
-  'align',
-  'blockquote', 'code-block',
-  'link', 'image'
+  'bold', 'italic', 'underline',
+  'list', 'bullet'
 ]
 
 function ProductForm() {
@@ -74,7 +64,6 @@ function ProductForm() {
     is_new_arrival: false,
     description: '',
     top_highlights: [],
-    // ✅ SIRF 3, 6, 12 ML PRICES
     ml_prices: {
       '3': '',
       '6': '',
@@ -83,8 +72,9 @@ function ProductForm() {
   })
   const [isEdit, setIsEdit] = useState(false)
 
-  const APP_URL = 'http://localhost:8000'
-  const FRONTEND_URL = 'http://localhost:5173'
+  // ✅ USING CONFIG - NO HARDCODED URLS
+  const APP_URL = STORAGE_URL?.replace('/storage', '') || 'http://localhost:8000'
+  const FRONTEND_URL = window.location.origin || 'http://localhost:5173'
 
   useEffect(() => {
     if (id) {
@@ -99,13 +89,11 @@ function ProductForm() {
       const res = await getProduct(id)
       const product = res.data
       
-      // ✅ SIRF 3, 6, 12 ML PRICES
       let mlPrices = { '3': '', '6': '', '12': '' }
       if (product.ml_prices) {
         const parsed = typeof product.ml_prices === 'string' 
           ? JSON.parse(product.ml_prices) 
           : product.ml_prices
-        // Sirf 3, 6, 12 hi lo
         mlPrices = { 
           '3': parsed['3'] || '',
           '6': parsed['6'] || '',
@@ -235,7 +223,6 @@ function ProductForm() {
           const highlightsJson = JSON.stringify(formData.top_highlights)
           submitData.append('top_highlights', highlightsJson)
         } else if (key === 'description') {
-          // ✅ Send cleaned description
           const cleanedDesc = cleanDescription(formData.description || '');
           submitData.append('description', cleanedDesc)
         } else if (formData[key] !== undefined && formData[key] !== '') {
@@ -607,18 +594,20 @@ function ProductForm() {
             </label>
           </div>
 
-          {/* ✅ RICH TEXT EDITOR FOR DESCRIPTION */}
+          {/* ✅ RICH TEXT EDITOR FOR DESCRIPTION - NO WHITE BACKGROUND */}
           <div className="form-group full-width description-editor-section">
             <label>Description <span className="editor-hint">(Format your text with the toolbar below)</span></label>
-            <ReactQuill
-              theme="snow"
-              value={formData.description || ''}
-              onChange={handleDescriptionChange}
-              modules={quillModules}
-              formats={quillFormats}
-              placeholder="Write a detailed description of the product..."
-              className="quill-editor"
-            />
+            <div className="quill-wrapper">
+              <ReactQuill
+                theme="snow"
+                value={formData.description || ''}
+                onChange={handleDescriptionChange}
+                modules={quillModules}
+                formats={quillFormats}
+                placeholder="Write a detailed description of the product..."
+                className="quill-editor"
+              />
+            </div>
           </div>
         </div>
 

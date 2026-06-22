@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { getBlogs, createBlog, updateBlog } from '../services/adminApi'
+import { API_URL, STORAGE_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/BlogForm.css'
 
 function BlogForm() {
@@ -22,8 +23,9 @@ function BlogForm() {
   })
   const [isEdit, setIsEdit] = useState(false)
 
-  const APP_URL = 'http://localhost:8000'
-  const FRONTEND_URL = 'http://localhost:5173'
+  // ✅ USING CONFIG - NO HARDCODED URLS
+  const APP_URL = STORAGE_URL?.replace('/storage', '') || 'http://localhost:8000'
+  const FRONTEND_URL = window.location.origin || 'http://localhost:5173'
 
   useEffect(() => {
     if (id) {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { FaBox, FaEye, FaCheckCircle, FaClock, FaTruck, FaMapMarkerAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 import './OrdersPage.css'
 
 function OrdersPage() {
@@ -16,7 +17,6 @@ function OrdersPage() {
   const [itemsPerPage] = useState(10)
   const [totalItems, setTotalItems] = useState(0)
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
   const token = localStorage.getItem('token')
 
   useEffect(() => {
@@ -26,7 +26,7 @@ function OrdersPage() {
   const fetchOrders = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/orders`, {
+      const response = await fetch(`${API_URL}/orders`, {  // ✅ USING API_URL
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'Content-Type': 'application/json'

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { API_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/FAQs.css'
 
 function FAQs() {
@@ -15,7 +16,7 @@ function FAQs() {
   const fetchFAQs = async () => {
     try {
       const token = localStorage.getItem('admin_token')
-      const res = await axios.get('http://localhost:8000/api/admin/faqs', {
+      const res = await axios.get(`${API_URL}/admin/faqs`, {  // ✅ USING API_URL
         headers: { Authorization: `Bearer ${token}` }
       })
       setFaqs(res.data)
@@ -32,11 +33,11 @@ function FAQs() {
     
     try {
       if (editingId) {
-        await axios.put(`http://localhost:8000/api/admin/faqs/${editingId}`, formData, {
+        await axios.put(`${API_URL}/admin/faqs/${editingId}`, formData, {  // ✅ USING API_URL
           headers: { Authorization: `Bearer ${token}` }
         })
       } else {
-        await axios.post('http://localhost:8000/api/admin/faqs', formData, {
+        await axios.post(`${API_URL}/admin/faqs`, formData, {  // ✅ USING API_URL
           headers: { Authorization: `Bearer ${token}` }
         })
       }
@@ -51,7 +52,7 @@ function FAQs() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this FAQ?')) {
       const token = localStorage.getItem('admin_token')
-      await axios.delete(`http://localhost:8000/api/admin/faqs/${id}`, {
+      await axios.delete(`${API_URL}/admin/faqs/${id}`, {  // ✅ USING API_URL
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchFAQs()
@@ -70,7 +71,7 @@ function FAQs() {
 
   const toggleActive = async (faq) => {
     const token = localStorage.getItem('admin_token')
-    await axios.put(`http://localhost:8000/api/admin/faqs/${faq.faq_id}`, {
+    await axios.put(`${API_URL}/admin/faqs/${faq.faq_id}`, {  // ✅ USING API_URL
       ...faq,
       is_active: !faq.is_active
     }, {

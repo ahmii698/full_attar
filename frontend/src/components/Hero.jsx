@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import BottleImage from './BottleImage'
+import { API_URL, STORAGE_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function Hero() {
   const [heroData, setHeroData] = useState(null)
@@ -7,8 +8,8 @@ function Hero() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-  const APP_URL = 'http://127.0.0.1:8000'
+  // ✅ USING CONFIG
+  const APP_URL = STORAGE_URL.replace('/storage', '') || 'http://127.0.0.1:8000'
 
   useEffect(() => {
     fetchHeroData()
@@ -17,13 +18,23 @@ function Hero() {
 
   const fetchHeroData = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/hero`)
+      const response = await fetch(`${API_URL}/hero`)  // ✅ USING API_URL
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
       
-      const data = await response.json()
+      // ✅ RAW TEXT LO - Handle `//` issue
+      let text = await response.text()
+      console.log('Raw hero response:', text)
+      
+      // ✅ Remove leading '//' if present
+      if (text.startsWith('//')) {
+        text = text.substring(2).trim()
+      }
+      
+      // ✅ Parse JSON
+      const data = JSON.parse(text)
       
       let activeSlider = null
       
@@ -36,18 +47,29 @@ function Hero() {
       setHeroData(activeSlider)
     } catch (err) {
       setError(err.message)
+      console.error('Hero fetch error:', err)
     }
   }
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/hero-stats`)
+      const response = await fetch(`${API_URL}/hero-stats`)  // ✅ USING API_URL
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
       
-      const data = await response.json()
+      // ✅ RAW TEXT LO - Handle `//` issue
+      let text = await response.text()
+      console.log('Raw stats response:', text)
+      
+      // ✅ Remove leading '//' if present
+      if (text.startsWith('//')) {
+        text = text.substring(2).trim()
+      }
+      
+      // ✅ Parse JSON
+      const data = JSON.parse(text)
       
       if (Array.isArray(data)) {
         setStats(data)
@@ -62,6 +84,7 @@ function Hero() {
       }
     } catch (err) {
       setStats([])
+      console.error('Stats fetch error:', err)
     } finally {
       setLoading(false)
     }

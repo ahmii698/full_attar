@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function ContactMapSection() {
   const [loading, setLoading] = useState(false)
@@ -11,8 +12,6 @@ function ContactMapSection() {
     query_date: '',
     message: ''
   })
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -71,7 +70,7 @@ function ContactMapSection() {
     try {
       console.log('📤 Sending data:', formData)
       
-      const response = await fetch(`${API_BASE_URL}/contact`, {
+      const response = await fetch(`${API_URL}/contact`, {  // ✅ USING API_URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

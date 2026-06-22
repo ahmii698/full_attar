@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
 import ProductCard from '../components/ProductCard'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function BestSellersPage() {
   const [bestSellers, setBestSellers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
   useEffect(() => {
     fetchBestSellers()
@@ -16,11 +15,8 @@ function BestSellersPage() {
     try {
       setLoading(true)
       
-      // Option 1: If you have dedicated API endpoint
-      const response = await fetch(`${API_BASE_URL}/top-sellers`)
-      
-      // Option 2: If no dedicated endpoint, fetch all and filter (uncomment below)
-      // const response = await fetch(`${API_BASE_URL}/products`)
+      // ✅ USING CONFIG API_URL
+      const response = await fetch(`${API_URL}/top-sellers`)
       
       if (!response.ok) {
         throw new Error('Failed to fetch best sellers')
@@ -28,9 +24,6 @@ function BestSellersPage() {
       
       let data = await response.json()
       console.log('Best Sellers Data:', data)
-      
-      // If using /products endpoint, filter is_top_seller = 1
-      // data = data.filter(product => product.is_top_seller === 1)
       
       setBestSellers(data)
     } catch (err) {
@@ -103,7 +96,7 @@ function BestSellersPage() {
                 notes={product.notes}
                 image_url={product.image_url}
                 description={product.description}
-                ml_prices={product.ml_prices}  // ✅ ADD THIS LINE
+                ml_prices={product.ml_prices}
               />
             ))}
           </div>

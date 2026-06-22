@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getProducts, deleteProduct } from '../services/adminApi'
+import { API_URL, STORAGE_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/Products.css'
 
 function Products() {
@@ -9,8 +10,9 @@ function Products() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 8
 
-  const APP_URL = 'http://localhost:8000'
-  const FRONTEND_URL = 'http://localhost:5173'
+  // ✅ USING CONFIG - NO HARDCODED URLS
+  const APP_URL = STORAGE_URL?.replace('/storage', '') || 'http://localhost:8000'
+  const FRONTEND_URL = window.location.origin || 'http://localhost:5173'
 
   useEffect(() => {
     fetchProducts()

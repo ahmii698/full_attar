@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
 import ProductCard from '../components/ProductCard'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 import './DealsPage.css'
 
 function DealsPage() {
   const [deals, setDeals] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
   useEffect(() => {
     fetchDeals()
@@ -17,7 +16,7 @@ function DealsPage() {
     try {
       setLoading(true)
       
-      const response = await fetch(`${API_BASE_URL}/deals`)
+      const response = await fetch(`${API_URL}/deals`)  // ✅ USING API_URL
       
       if (!response.ok) {
         throw new Error('Failed to fetch deals')
@@ -40,7 +39,7 @@ function DealsPage() {
     return (
       <div className="shop-page">
         <div className="shop-header">
-          <h1>Hot Deals </h1>
+          <h1>Hot Deals 🔥</h1>
           <p>Limited time offers. Up to 40% off on selected attars!</p>
         </div>
         <div className="loading-container">
@@ -56,7 +55,7 @@ function DealsPage() {
     return (
       <div className="shop-page">
         <div className="shop-header">
-          <h1>Hot Deals </h1>
+          <h1>Hot Deals 🔥</h1>
           <p>Limited time offers. Up to 40% off on selected attars!</p>
         </div>
         <div className="error-container">
@@ -70,7 +69,7 @@ function DealsPage() {
   return (
     <div className="shop-page">
       <div className="shop-header">
-        <h1>Hot Deals </h1>
+        <h1>Hot Deals 🔥</h1>
         <p>Limited time offers. Up to 40% off on selected attars!</p>
       </div>
       

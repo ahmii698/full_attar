@@ -4,6 +4,7 @@ import {
   FaUpload, FaFileImage, FaTrash, FaArrowRight, FaShieldAlt, 
   FaRegIdCard, FaInfoCircle, FaQuestionCircle, FaSpinner, FaCheck
 } from 'react-icons/fa'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function UploadProofPage() {
   const { id } = useParams()
@@ -76,10 +77,9 @@ function UploadProofPage() {
     formData.append('transaction_id', `TXN${Date.now()}`)
     
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
       const token = localStorage.getItem('token')
       
-      const response = await fetch(`${API_URL}/orders/${id}/payment-confirmation`, {
+      const response = await fetch(`${API_URL}/orders/${id}/payment-confirmation`, {  // ✅ USING API_URL
         method: 'POST',
         headers: {
           'Authorization': token ? `Bearer ${token}` : ''
@@ -155,7 +155,6 @@ function UploadProofPage() {
         {/* Order Reference */}
         <div className="order-ref-card">
           <div className="ref-header">
-          
             <span className="ref-label">ORDER ID</span>
           </div>
           <div className="ref-value">{order.orderNumber}</div>

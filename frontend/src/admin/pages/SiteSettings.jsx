@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { API_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/SiteSettings.css'
 
 function SiteSettings() {
@@ -18,10 +19,10 @@ function SiteSettings() {
     try {
       const token = localStorage.getItem('admin_token')
       const [settingsRes, socialRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/admin/site-settings', {
+        axios.get(`${API_URL}/admin/site-settings`, {  // ✅ USING API_URL
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:8000/api/admin/social-links', {
+        axios.get(`${API_URL}/admin/social-links`, {  // ✅ USING API_URL
           headers: { Authorization: `Bearer ${token}` }
         })
       ])
@@ -58,7 +59,7 @@ function SiteSettings() {
       // Save all settings
       for (const [key, value] of Object.entries(editedSettings)) {
         if (settings[key] !== value) {
-          await axios.put(`http://localhost:8000/api/admin/site-settings/${key}`, { value }, {
+          await axios.put(`${API_URL}/admin/site-settings/${key}`, { value }, {  // ✅ USING API_URL
             headers: { Authorization: `Bearer ${token}` }
           })
         }
@@ -68,7 +69,7 @@ function SiteSettings() {
       for (const link of editedSocialLinks) {
         const originalLink = socialLinks.find(l => l.social_id === link.social_id)
         if (originalLink && originalLink.url !== link.url) {
-          await axios.put(`http://localhost:8000/api/admin/social-links/${link.social_id}`, link, {
+          await axios.put(`${API_URL}/admin/social-links/${link.social_id}`, link, {  // ✅ USING API_URL
             headers: { Authorization: `Bearer ${token}` }
           })
         }

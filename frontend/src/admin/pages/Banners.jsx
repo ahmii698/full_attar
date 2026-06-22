@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { API_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/Banners.css'
 
 function Banners() {
@@ -16,7 +17,7 @@ function Banners() {
   const fetchBanners = async () => {
     try {
       const token = localStorage.getItem('admin_token')
-      const res = await axios.get('http://localhost:8000/api/admin/banners', {
+      const res = await axios.get(`${API_URL}/admin/banners`, {  // ✅ USING API_URL
         headers: { Authorization: `Bearer ${token}` }
       })
       setBanners(res.data)
@@ -95,7 +96,7 @@ function Banners() {
         formData.append('image_url', bannerData.image_url)
       }
       
-      await axios.post(`http://localhost:8000/api/admin/banners/${bannerId}?_method=PUT`, formData, {
+      await axios.post(`${API_URL}/admin/banners/${bannerId}?_method=PUT`, formData, {  // ✅ USING API_URL
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'

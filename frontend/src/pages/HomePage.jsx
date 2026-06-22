@@ -9,6 +9,7 @@ import FAQSection from '../components/FAQSection'
 import TestimonialSlider from '../components/TestimonialSlider'
 import ContactPage from './ContactPage'
 import Newsletter from '../components/Newsletter'
+import { API_URL, STORAGE_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function HomePage() {
   const [topSellers, setTopSellers] = useState([])
@@ -16,10 +17,6 @@ function HomePage() {
   const [banners, setBanners] = useState([])
   const [dataLoaded, setDataLoaded] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-
-  // ✅ Using env variables
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
-  const STORAGE_URL = import.meta.env.VITE_STORAGE_URL || 'http://localhost:8000/storage'
 
   // ✅ Check if data is already in sessionStorage
   useEffect(() => {
@@ -41,12 +38,12 @@ function HomePage() {
 
   const fetchData = useCallback(async () => {
     try {
-      console.log('🔄 Fetching data from:', API_BASE_URL)
+      console.log('🔄 Fetching data from:', API_URL)
       
       const [topRes, dealsRes, bannersRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/top-sellers`),
-        fetch(`${API_BASE_URL}/deals`),
-        fetch(`${API_BASE_URL}/banners`)
+        fetch(`${API_URL}/top-sellers`),  // ✅ USING API_URL
+        fetch(`${API_URL}/deals`),
+        fetch(`${API_URL}/banners`)
       ])
       
       // ✅ Check if responses are OK
@@ -81,7 +78,7 @@ function HomePage() {
     } finally {
       setIsLoading(false)
     }
-  }, [API_BASE_URL])
+  }, [])
 
   useEffect(() => {
     if (!dataLoaded) {

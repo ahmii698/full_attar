@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { FaCopy, FaCheck, FaQrcode, FaMobileAlt, FaShieldAlt, FaUniversity } from 'react-icons/fa'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function PaymentPage() {
   const { id } = useParams()

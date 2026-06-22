@@ -1,7 +1,9 @@
 import { useState, useEffect, memo } from 'react'
 import { Link } from 'react-router-dom'
 import { FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
-import { useCart } from '../contexts/CartContext'
+import { useCart } from '../contexts/CartContext';
+import { API_URL } from "../../config";
+
 
 function ProductCard({ id, name, price, rating, priceNum, image_url, discount_price, discount_percent, is_deal, ml_prices }) {
   const { addToCart, addToWishlist, removeFromWishlist, wishlistItems } = useCart()
@@ -10,7 +12,7 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
   const [selectedMl, setSelectedMl] = useState(3) // ✅ Default 3ml
   const [selectedPrice, setSelectedPrice] = useState(priceNum)
 
-  const APP_URL = 'http://127.0.0.1:8000'
+  // const API_URL = 'http://127.0.0.1:8000'
 
   // ✅ Parse ml_prices
   const mlPrices = ml_prices && typeof ml_prices === 'object' ? ml_prices : {}
@@ -54,11 +56,11 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
     }
     
     if (image_url.startsWith('/images/')) {
-      return `${APP_URL}${image_url}`
+      return `${API_URL}${image_url}`
     }
     
     if (image_url.startsWith('/storage/')) {
-      return `${APP_URL}${image_url}`
+      return `${API_URL}${image_url}`
     }
     
     if (image_url.startsWith('/assets/')) {

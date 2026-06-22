@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { API_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/HeroSettings.css'
 
 function HeroSettings() {
@@ -19,10 +20,10 @@ function HeroSettings() {
     try {
       const token = localStorage.getItem('admin_token')
       const [heroRes, statsRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/admin/hero-sliders', {
+        axios.get(`${API_URL}/admin/hero-sliders`, {  // ✅ USING API_URL
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:8000/api/admin/hero-stats', {
+        axios.get(`${API_URL}/admin/hero-stats`, {  // ✅ USING API_URL
           headers: { Authorization: `Bearer ${token}` }
         })
       ])
@@ -64,7 +65,7 @@ function HeroSettings() {
         formData.append('image', image)
       }
       
-      await axios.post(`http://localhost:8000/api/admin/hero-sliders/${hero.slider_id}?_method=PUT`, formData, {
+      await axios.post(`${API_URL}/admin/hero-sliders/${hero.slider_id}?_method=PUT`, formData, {  // ✅ USING API_URL
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -97,7 +98,7 @@ function HeroSettings() {
       
       for (let i = 0; i < stats.length; i++) {
         const stat = stats[i]
-        await axios.put(`http://localhost:8000/api/admin/hero-stats/${stat.stat_id}`, {
+        await axios.put(`${API_URL}/admin/hero-stats/${stat.stat_id}`, {  // ✅ USING API_URL
           stat_value: stat.stat_value,
           stat_label: stat.stat_label,
           display_order: stat.display_order || i + 1,

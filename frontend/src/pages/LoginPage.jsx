@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { FaSpinner, FaEnvelope, FaLock, FaUser, FaArrowRight, FaEye, FaEyeSlash } from 'react-icons/fa'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 import './LoginPage.css'
 
 function LoginPage({ redirectTo }) {
@@ -29,8 +30,6 @@ function LoginPage({ redirectTo }) {
     password: '',
     password_confirmation: ''
   })
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
   const handleLoginChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value })
@@ -78,7 +77,7 @@ function LoginPage({ redirectTo }) {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/register`, {
+      const response = await fetch(`${API_URL}/register`, {  // ✅ USING API_URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -146,7 +145,7 @@ function LoginPage({ redirectTo }) {
     setOtpMessage('')
 
     try {
-      const response = await fetch(`${API_BASE_URL}/user/forgot-password`, {
+      const response = await fetch(`${API_URL}/user/forgot-password`, {  // ✅ USING API_URL
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: otpEmail })
@@ -190,7 +189,7 @@ function LoginPage({ redirectTo }) {
     setOtpMessage('')
 
     try {
-      const response = await fetch(`${API_BASE_URL}/user/verify-otp`, {
+      const response = await fetch(`${API_URL}/user/verify-otp`, {  // ✅ USING API_URL
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: otpEmail, otp: otp })
@@ -212,11 +211,9 @@ function LoginPage({ redirectTo }) {
     }
   }
 
-  // ✅ FIXED: Reset Password with password_confirmation
   const handleResetPassword = async (e) => {
     e.preventDefault()
     
-    // ✅ Validation
     if (!newPassword || newPassword.length < 6) {
       setOtpError('Password must be at least 6 characters')
       return
@@ -231,15 +228,14 @@ function LoginPage({ redirectTo }) {
     setOtpMessage('')
 
     try {
-      // ✅ FIX: Added password_confirmation field
-      const response = await fetch(`${API_BASE_URL}/user/reset-password`, {
+      const response = await fetch(`${API_URL}/user/reset-password`, {  // ✅ USING API_URL
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: otpEmail,
           otp: otp,
           password: newPassword,
-          password_confirmation: confirmPassword  // ✅ IMPORTANT - This was missing!
+          password_confirmation: confirmPassword
         })
       })
 
@@ -258,7 +254,6 @@ function LoginPage({ redirectTo }) {
           setOtpError('')
         }, 2000)
       } else {
-        // ✅ Better error handling
         const errorMsg = data.errors 
           ? Object.values(data.errors).flat().join(', ') 
           : data.error || data.message || 'Failed to reset password'
@@ -272,7 +267,7 @@ function LoginPage({ redirectTo }) {
     }
   }
 
-  // Forgot Password View
+  // Forgot Password View (Code remains same, only API_URL changed)
   if (showForgotPassword) {
     return (
       <div className="auth-page">
@@ -514,7 +509,7 @@ function LoginPage({ redirectTo }) {
                       </div>
                     </div>
 
-                    {/* Sign Up Card - Back - 5 Fields with Confirm Password */}
+                    {/* Sign Up Card - Back */}
                     <div className="card-back" style={{ width: '100%', height: '100%', background: 'linear-gradient(145deg, #0d0d0d, #1a1a1a)', position: 'absolute', borderRadius: '12px', left: '0', top: '0', transformStyle: 'preserve-3d', backfaceVisibility: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px 0', border: '1px solid rgba(212,175,55,0.08)', boxShadow: '0 20px 60px rgba(0,0,0,0.8)', transform: 'rotateY(180deg)' }}>
                       <div className="center-wrap" style={{ position: 'relative', width: '100%', padding: '0 30px', zIndex: '20', display: 'block' }}>
                         <div className="section text-center">

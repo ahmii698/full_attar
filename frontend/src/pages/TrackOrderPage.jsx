@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { FaSearch, FaCheckCircle, FaBox, FaTruck, FaShippingFast, FaClipboardList, FaExclamationTriangle } from 'react-icons/fa'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 import './TrackOrderPage.css'
 
 function TrackOrderPage() {
@@ -8,8 +9,6 @@ function TrackOrderPage() {
   const [searched, setSearched] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
   
   const trackOrder = async (e) => {
     e.preventDefault()
@@ -26,7 +25,7 @@ function TrackOrderPage() {
     try {
       const token = localStorage.getItem('token')
       
-      const response = await fetch(`${API_BASE_URL}/orders/track/${orderId.trim()}`, {
+      const response = await fetch(`${API_URL}/orders/track/${orderId.trim()}`, {  // ✅ USING API_URL
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +45,7 @@ function TrackOrderPage() {
       }
       
       if (token) {
-        const userOrdersRes = await fetch(`${API_BASE_URL}/orders`, {
+        const userOrdersRes = await fetch(`${API_URL}/orders`, {  // ✅ USING API_URL
           headers: {
             'Authorization': `Bearer ${token}`
           }

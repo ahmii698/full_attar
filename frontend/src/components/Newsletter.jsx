@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 import './Newsletter.css'
 
 function Newsletter() {
@@ -6,9 +7,6 @@ function Newsletter() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
-
-  const API_BASE_URL =
-    import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -31,7 +29,7 @@ function Newsletter() {
     setMessage('')
 
     try {
-      const response = await fetch(`${API_BASE_URL}/newsletter`, {
+      const response = await fetch(`${API_URL}/newsletter`, {  // ✅ USING API_URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

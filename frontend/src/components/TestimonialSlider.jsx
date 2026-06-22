@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FaStar, FaUser, FaMapMarkerAlt, FaTimes } from 'react-icons/fa'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function TestimonialSlider() {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -17,8 +18,6 @@ function TestimonialSlider() {
     review: ''
   })
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-
   useEffect(() => {
     fetchTestimonials()
   }, [])
@@ -26,7 +25,7 @@ function TestimonialSlider() {
   const fetchTestimonials = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/testimonials`)
+      const response = await fetch(`${API_URL}/testimonials`)  // ✅ USING API_URL
       
       if (!response.ok) {
         throw new Error('Failed to fetch testimonials')
@@ -58,7 +57,7 @@ function TestimonialSlider() {
     setFormMessage('')
     
     try {
-      const response = await fetch(`${API_BASE_URL}/testimonials`, {
+      const response = await fetch(`${API_URL}/testimonials`, {  // ✅ USING API_URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

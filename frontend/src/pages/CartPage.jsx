@@ -3,6 +3,7 @@ import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa'
 import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
 import LoginPage from './LoginPage'
+import { API_URL, STORAGE_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function CartPage() {
   const { user } = useAuth()

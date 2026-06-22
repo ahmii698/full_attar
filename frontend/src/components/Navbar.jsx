@@ -7,6 +7,7 @@ import {
 import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
 import raLogo from '../assets/ra.png'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function Navbar() {
   const navigate = useNavigate()
@@ -25,8 +26,6 @@ function Navbar() {
   
   const cartCount = getCartCount()
   const wishlistCount = wishlistItems.length
-  
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
   
   const categories = {
     premium: [
@@ -70,7 +69,7 @@ function Navbar() {
     
     setSearchLoading(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/products`)
+      const response = await fetch(`${API_URL}/products`)  // ✅ USING API_URL
       const products = await response.json()
       
       const searchTerm = query.toLowerCase().trim()

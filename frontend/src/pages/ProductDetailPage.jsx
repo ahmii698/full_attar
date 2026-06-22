@@ -5,6 +5,7 @@ import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { API_URL, STORAGE_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function ProductDetailPage() {
   const { id } = useParams()
@@ -17,13 +18,13 @@ function ProductDetailPage() {
   const [error, setError] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
-  const [selectedMl, setSelectedMl] = useState(50)
+  const [selectedMl, setSelectedMl] = useState(3) // ✅ Default 3ml
   const [selectedPrice, setSelectedPrice] = useState(0)
   const [showAllHighlights, setShowAllHighlights] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-  const APP_URL = 'http://127.0.0.1:8000'
+  // ✅ USING CONFIG
+  const APP_URL = STORAGE_URL.replace('/storage', '') || 'http://127.0.0.1:8000'
   const FRONTEND_URL = 'http://localhost:5173'
 
   // ✅ Check window resize for mobile detection
@@ -47,7 +48,8 @@ function ProductDetailPage() {
 
   useEffect(() => {
     if (product) {
-      const defaultPrice = getPriceForMl(50)
+      // ✅ Default 3ml select karo
+      const defaultPrice = getPriceForMl(3)
       setSelectedPrice(defaultPrice)
     }
   }, [product])
@@ -55,7 +57,7 @@ function ProductDetailPage() {
   const fetchProduct = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/products/${id}`)
+      const response = await fetch(`${API_URL}/products/${id}`)  // ✅ USING API_URL
       
       if (!response.ok) {
         throw new Error('Failed to fetch product')
@@ -92,9 +94,9 @@ function ProductDetailPage() {
   }
 
   const isMlAvailable = (ml) => {
-    if (ml === 50) return true
+    if (ml === 3) return true // ✅ 3ml always available
     const mlPrices = getMlPrices()
-    return !!mlPrices[ml]
+    return !!(mlPrices[ml])
   }
 
   const handleMlChange = (ml) => {
@@ -253,7 +255,8 @@ function ProductDetailPage() {
     )
   }
 
-  const mlOptions = [50, 60, 70, 80, 90, 100]
+  // ✅ SIRF 3, 6, 12 ML OPTIONS
+  const mlOptions = [3, 6, 12]
   const mlPrices = getMlPrices()
   const discountPercent = product.discount_price ? Math.round(((product.price_num - product.discount_price) / product.price_num) * 100) : 0
   const displayPrice = `Rs. ${selectedPrice.toLocaleString()}`
@@ -350,23 +353,27 @@ function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* ML SELECTOR */}
+              {/* ✅ ML SELECTOR - SIRF 3, 6, 12 */}
               <div className="ml-selector-section">
                 <span className="ml-label">Select Size:</span>
                 <div className="ml-options">
-                  {mlOptions.map(ml => (
-                    <button
-                      key={ml}
-                      className={`ml-btn ${selectedMl === ml ? 'active' : ''} ${!isMlAvailable(ml) ? 'disabled' : ''}`}
-                      onClick={() => isMlAvailable(ml) && handleMlChange(ml)}
-                      disabled={!isMlAvailable(ml)}
-                    >
-                      {ml}ml
-                      <span className="ml-price">
-                        {getDisplayPriceForMl(ml)}
-                      </span>
-                    </button>
-                  ))}
+                  {mlOptions.map(ml => {
+                    const available = isMlAvailable(ml)
+                    return (
+                      <button
+                        key={ml}
+                        className={`ml-btn ${selectedMl === ml && available ? 'active' : ''} ${!available ? 'disabled' : ''}`}
+                        onClick={() => available && handleMlChange(ml)}
+                        disabled={!available}
+                        title={available ? `${ml}ml - ${getDisplayPriceForMl(ml)}` : `${ml}ml - Not Available`}
+                      >
+                        {ml}ml
+                        <span className="ml-price">
+                          {getDisplayPriceForMl(ml)}
+                        </span>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
               
@@ -394,7 +401,7 @@ function ProductDetailPage() {
           {/* ✅ TOP HIGHLIGHTS SECTION - VIEW ALL ONLY ON MOBILE */}
           {topHighlights.length > 0 && (
             <div className="top-highlights-section">
-              <h3 className="highlights-title"> Top Highlights</h3>
+              <h3 className="highlights-title">⭐ Top Highlights</h3>
               <div className={`highlights-grid ${isMobile ? 'mobile-grid' : 'desktop-grid'}`}>
                 {displayHighlights.map((highlight, index) => (
                   <div key={index} className="highlight-item">
@@ -420,14 +427,19 @@ function ProductDetailPage() {
             </div>
           )}
 
-          {/* ✅ DESCRIPTION SECTION - SCROLLABLE WITH HTML RENDERING */}
+          {/* ✅ DESCRIPTION SECTION - SCROLLABLE WITH HTML RENDERING - NO WHITE BACKGROUND */}
           <div className="description-section">
-            <h3 className="description-title">Description</h3>
+            <h3 className="description-title">📝 Description</h3>
             <div className="description-content">
               {product.description ? (
                 <div 
                   className="description-scroll"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
+                  dangerouslySetInnerHTML={{ 
+                    __html: product.description
+                      .replace(/<p><br><\/p>/g, '') // Remove empty paragraphs
+                      .replace(/&nbsp;/g, ' ') // Remove &nbsp;
+                      .trim() 
+                  }}
                 />
               ) : (
                 <p className="no-description">No description available for this product.</p>
@@ -565,6 +577,7 @@ function ProductDetailPage() {
             font-weight: 500;
           }
 
+          /* ✅ ML SELECTOR - SIRF 3, 6, 12 */
           .ml-selector-section {
             margin-bottom: 25px;
             padding: 18px 20px;
@@ -615,13 +628,23 @@ function ProductDetailPage() {
             opacity: 1;
           }
           .ml-btn.disabled {
-            opacity: 0.3;
+            opacity: 0.25;
             cursor: not-allowed;
+            transform: none !important;
+          }
+          .ml-btn.disabled:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.5);
+            transform: none;
           }
           .ml-price {
             font-size: 12px;
             font-weight: 400;
             opacity: 0.6;
+          }
+          .ml-btn.disabled .ml-price {
+            opacity: 0.3;
           }
 
           .quantity-section {
@@ -817,57 +840,60 @@ function ProductDetailPage() {
             }
           }
 
-          /* ✅ DESCRIPTION SECTION - SCROLLABLE */
+          /* ✅ DESCRIPTION SECTION - NO WHITE BACKGROUND */
           .description-section {
-            background: rgba(255,255,255,0.02);
-            border-radius: 16px;
-            padding: 30px 35px;
-            margin-top: 25px;
-            border: 1px solid rgba(212,175,55,0.1);
-            max-height: 400px;
-            display: flex;
-            flex-direction: column;
+            background: rgba(255,255,255,0.02) !important;
+            border-radius: 16px !important;
+            padding: 30px 35px !important;
+            margin-top: 25px !important;
+            border: 1px solid rgba(212,175,55,0.1) !important;
+            max-height: 400px !important;
+            display: flex !important;
+            flex-direction: column !important;
           }
 
           .description-title {
-            color: #d4af37;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(212,175,55,0.2);
-            flex-shrink: 0;
+            color: #d4af37 !important;
+            font-size: 22px !important;
+            font-weight: 700 !important;
+            margin-bottom: 18px !important;
+            padding-bottom: 12px !important;
+            border-bottom: 1px solid rgba(212,175,55,0.2) !important;
+            flex-shrink: 0 !important;
           }
 
           .description-content {
-            flex: 1;
-            overflow-y: auto;
-            padding-right: 10px;
+            flex: 1 !important;
+            overflow-y: auto !important;
+            padding-right: 10px !important;
           }
 
           .description-content::-webkit-scrollbar {
-            width: 6px;
+            width: 6px !important;
           }
 
           .description-content::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.03);
-            border-radius: 3px;
+            background: rgba(255,255,255,0.03) !important;
+            border-radius: 3px !important;
           }
 
           .description-content::-webkit-scrollbar-thumb {
-            background: #d4af37;
-            border-radius: 3px;
+            background: #d4af37 !important;
+            border-radius: 3px !important;
           }
 
-          .description-content::-webkit-scrollbar-thumb:hover {
-            background: #b8960c;
-          }
-
-          /* ✅ DESCRIPTION HTML CONTENT STYLING */
+          /* ✅ FORCE ALL TEXT WHITE AND TRANSPARENT BACKGROUND */
           .description-scroll {
-            color: #ffffff;
-            line-height: 1.9;
-            font-size: 16px;
+            color: #ffffff !important;
+            line-height: 1.9 !important;
+            font-size: 16px !important;
+            background: transparent !important;
+          }
+
+          .description-scroll,
+          .description-scroll * {
+            background: transparent !important;
+            color: #ffffff !important;
           }
 
           .description-scroll h1,
@@ -875,80 +901,80 @@ function ProductDetailPage() {
           .description-scroll h3,
           .description-scroll h4,
           .description-scroll h5,
-          .description-scroll h6 {
-            color: #d4af37;
-            margin-top: 18px;
-            margin-bottom: 12px;
-            font-weight: 600;
-          }
-
-          .description-scroll h1 { font-size: 28px; }
-          .description-scroll h2 { font-size: 24px; }
-          .description-scroll h3 { font-size: 20px; }
-          .description-scroll h4 { font-size: 18px; }
-          .description-scroll h5 { font-size: 16px; }
-          .description-scroll h6 { font-size: 14px; }
-
-          .description-scroll p {
-            margin-bottom: 14px;
-            line-height: 1.8;
-          }
-
+          .description-scroll h6,
           .description-scroll strong,
           .description-scroll b {
-            color: #d4af37;
-            font-weight: 700;
+            color: #d4af37 !important;
+            background: transparent !important;
+          }
+
+          .description-scroll h1 { font-size: 28px !important; margin: 18px 0 12px !important; font-weight: 600 !important; }
+          .description-scroll h2 { font-size: 24px !important; margin: 16px 0 10px !important; font-weight: 600 !important; }
+          .description-scroll h3 { font-size: 20px !important; margin: 14px 0 8px !important; font-weight: 600 !important; }
+          .description-scroll h4 { font-size: 18px !important; margin: 12px 0 8px !important; font-weight: 600 !important; }
+
+          .description-scroll p {
+            margin-bottom: 14px !important;
+            line-height: 1.8 !important;
+            color: #ffffff !important;
+            background: transparent !important;
           }
 
           .description-scroll ul,
           .description-scroll ol {
-            padding-left: 24px;
-            margin-bottom: 14px;
+            padding-left: 24px !important;
+            margin-bottom: 14px !important;
+            color: #ffffff !important;
+            background: transparent !important;
           }
 
           .description-scroll li {
-            margin-bottom: 6px;
-            line-height: 1.6;
+            margin-bottom: 6px !important;
+            line-height: 1.6 !important;
+            color: #ffffff !important;
+            background: transparent !important;
           }
 
           .description-scroll blockquote {
-            border-left: 4px solid #d4af37;
-            padding-left: 16px;
-            margin: 14px 0;
-            color: rgba(255,255,255,0.8);
-            font-style: italic;
+            border-left: 4px solid #d4af37 !important;
+            padding-left: 16px !important;
+            margin: 14px 0 !important;
+            color: rgba(255,255,255,0.8) !important;
+            font-style: italic !important;
+            background: transparent !important;
           }
 
           .description-scroll a {
-            color: #d4af37;
-            text-decoration: underline;
+            color: #d4af37 !important;
+            text-decoration: underline !important;
+            background: transparent !important;
           }
 
           .description-scroll code {
-            background: rgba(255,255,255,0.05);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 14px;
+            background: rgba(255,255,255,0.05) !important;
+            padding: 2px 8px !important;
+            border-radius: 4px !important;
+            font-family: monospace !important;
+            font-size: 14px !important;
           }
 
           .description-scroll img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin: 10px 0;
+            max-width: 100% !important;
+            border-radius: 8px !important;
+            margin: 10px 0 !important;
           }
 
           .description-scroll br {
-            display: block;
-            content: "";
-            margin: 5px 0;
+            display: block !important;
+            content: "" !important;
+            margin: 5px 0 !important;
           }
 
           .no-description {
-            color: rgba(255,255,255,0.4);
-            font-style: italic;
-            text-align: center;
-            padding: 20px 0;
+            color: rgba(255,255,255,0.4) !important;
+            font-style: italic !important;
+            text-align: center !important;
+            padding: 20px 0 !important;
           }
 
           .loading-container, .error-container {
@@ -994,8 +1020,8 @@ function ProductDetailPage() {
               padding: 20px;
             }
             .description-section {
-              padding: 20px;
-              max-height: 300px;
+              padding: 20px !important;
+              max-height: 300px !important;
             }
             .ml-options {
               justify-content: center;
@@ -1010,11 +1036,11 @@ function ProductDetailPage() {
               padding: 8px 18px;
             }
             .description-scroll {
-              font-size: 15px;
+              font-size: 15px !important;
             }
-            .description-scroll h1 { font-size: 24px; }
-            .description-scroll h2 { font-size: 20px; }
-            .description-scroll h3 { font-size: 18px; }
+            .description-scroll h1 { font-size: 24px !important; }
+            .description-scroll h2 { font-size: 20px !important; }
+            .description-scroll h3 { font-size: 18px !important; }
           }
 
           @media (max-width: 480px) {
@@ -1047,8 +1073,8 @@ function ProductDetailPage() {
               font-size: 10px;
             }
             .description-section {
-              padding: 15px;
-              max-height: 250px;
+              padding: 15px !important;
+              max-height: 250px !important;
             }
             .ml-btn {
               padding: 4px 10px;
@@ -1075,11 +1101,11 @@ function ProductDetailPage() {
               justify-content: center;
             }
             .description-scroll {
-              font-size: 14px;
+              font-size: 14px !important;
             }
-            .description-scroll h1 { font-size: 20px; }
-            .description-scroll h2 { font-size: 18px; }
-            .description-scroll h3 { font-size: 16px; }
+            .description-scroll h1 { font-size: 20px !important; }
+            .description-scroll h2 { font-size: 18px !important; }
+            .description-scroll h3 { font-size: 16px !important; }
           }
         `}</style>
       </div>

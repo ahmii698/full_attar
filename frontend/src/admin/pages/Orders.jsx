@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getOrders, updateOrderStatus } from '../services/adminApi'
 import { FaEye, FaImage, FaSpinner, FaCheckCircle, FaTimesCircle, FaInfoCircle, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import { API_URL, STORAGE_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 import '../styles/Orders.css'
 
 function Orders() {
@@ -18,8 +19,8 @@ function Orders() {
   const [itemsPerPage] = useState(8)
   const [totalItems, setTotalItems] = useState(0)
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-  const APP_URL = 'http://127.0.0.1:8000'
+  // ✅ USING CONFIG - NO HARDCODED URLS
+  const APP_URL = STORAGE_URL?.replace('/storage', '') || 'http://127.0.0.1:8000'
   const token = localStorage.getItem('admin_token')
 
   useEffect(() => {
@@ -43,7 +44,7 @@ function Orders() {
   const fetchOrders = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/admin/orders`, {
+      const response = await fetch(`${API_URL}/admin/orders`, {  // ✅ USING API_URL
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
@@ -82,7 +83,7 @@ function Orders() {
   const updateStatus = async (id, newStatus) => {
     setUpdating(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/orders/${id}/status`, {
+      const response = await fetch(`${API_URL}/admin/orders/${id}/status`, {  // ✅ USING API_URL
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +116,7 @@ function Orders() {
   const updatePaymentStatus = async (id, newPaymentStatus) => {
     setUpdating(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/orders/${id}/payment-status`, {
+      const response = await fetch(`${API_URL}/admin/orders/${id}/payment-status`, {  // ✅ USING API_URL
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -156,7 +157,7 @@ function Orders() {
 
   const viewPaymentProof = async (orderId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/orders/${orderId}/payment-proof`, {
+      const response = await fetch(`${API_URL}/admin/orders/${orderId}/payment-proof`, {  // ✅ USING API_URL
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'

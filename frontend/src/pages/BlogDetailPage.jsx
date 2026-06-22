@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { FaArrowLeft, FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin, FaRegBookmark, FaShareAlt } from 'react-icons/fa'
+import { API_URL, STORAGE_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function BlogDetailPage() {
   const { id } = useParams()
@@ -8,8 +9,8 @@ function BlogDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-  const APP_URL = 'http://127.0.0.1:8000'
+  // ✅ USING CONFIG
+  const APP_URL = STORAGE_URL.replace('/storage', '') || 'http://127.0.0.1:8000'
 
   useEffect(() => {
     fetchBlog()
@@ -18,7 +19,7 @@ function BlogDetailPage() {
   const fetchBlog = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/blogs/${id}`)
+      const response = await fetch(`${API_URL}/blogs/${id}`)  // ✅ USING API_URL
       
       if (!response.ok) {
         throw new Error('Failed to fetch blog')

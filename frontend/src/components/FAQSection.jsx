@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
 import { FaPlus, FaMinus } from 'react-icons/fa'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null)
   const [faqs, setFaqs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
 
   useEffect(() => {
     fetchFAQs()
@@ -16,7 +15,7 @@ function FAQSection() {
   const fetchFAQs = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/faqs`)
+      const response = await fetch(`${API_URL}/faqs`)  // ✅ USING API_URL
       
       if (!response.ok) {
         throw new Error('Failed to fetch FAQs')

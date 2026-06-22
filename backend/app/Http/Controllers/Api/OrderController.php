@@ -28,7 +28,8 @@ class OrderController extends Controller
                 'items.*.product_id' => 'required|exists:products,product_id',
                 'items.*.product_name' => 'required|string',
                 'items.*.quantity' => 'required|integer|min:1',
-                'items.*.ml' => 'nullable|integer|in:50,60,70,80,90,100',
+                // ✅ YAHAN CHANGE KARO - SIRF 3, 6, 12 VALID HAIN
+                'items.*.ml' => 'nullable|integer|in:3,6,12',
                 'items.*.price' => 'required|numeric|min:0',
                 'shipping_amount' => 'nullable|numeric|min:0'
             ]);
@@ -67,7 +68,8 @@ class OrderController extends Controller
                     'product_id' => $item['product_id'],
                     'product_name' => $item['product_name'],
                     'quantity' => $item['quantity'],
-                    'ml' => $item['ml'] ?? 50,
+                    // ✅ YAHAN BHI DEFAULT 3 KARO
+                    'ml' => $item['ml'] ?? 3,
                     'price' => $item['price']
                 ]);
             }

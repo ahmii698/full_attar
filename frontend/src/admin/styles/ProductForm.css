@@ -491,7 +491,7 @@ textarea.form-control {
 }
 
 /* =========================
-   RICH TEXT EDITOR - QUILL
+   RICH TEXT EDITOR - QUILL - DARK THEME FIX
 ========================= */
 
 .description-editor-section {
@@ -511,109 +511,154 @@ textarea.form-control {
   font-weight: 400;
 }
 
-.quill-editor {
-  background: #1a1a1a;
+/* ✅ Quill Wrapper - Force Dark Background */
+.quill-wrapper {
+  background: #1a1a1a !important;
   border-radius: 8px;
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  overflow: hidden;
+}
+
+.quill-editor {
+  background: #1a1a1a !important;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.15) !important;
   overflow: hidden;
   margin-top: 5px;
 }
 
+/* ✅ Quill Toolbar - Dark */
 .quill-editor .ql-toolbar {
-  background: #222222;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-  border-radius: 8px 8px 0 0;
-  padding: 8px 12px;
+  background: #222222 !important;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1) !important;
+  border-radius: 8px 8px 0 0 !important;
+  padding: 8px 12px !important;
 }
 
 .quill-editor .ql-toolbar .ql-stroke {
-  stroke: #c4c3ca;
+  stroke: #c4c3ca !important;
 }
 
 .quill-editor .ql-toolbar .ql-fill {
-  fill: #c4c3ca;
+  fill: #c4c3ca !important;
 }
 
 .quill-editor .ql-toolbar .ql-picker {
-  color: #c4c3ca;
+  color: #c4c3ca !important;
 }
 
 .quill-editor .ql-toolbar .ql-picker-options {
-  background: #1a1a1a;
-  border: 1px solid rgba(212, 175, 55, 0.1);
+  background: #1a1a1a !important;
+  border: 1px solid rgba(212, 175, 55, 0.1) !important;
 }
 
 .quill-editor .ql-toolbar button:hover {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(212, 175, 55, 0.1) !important;
 }
 
 .quill-editor .ql-toolbar button.ql-active {
-  background: rgba(212, 175, 55, 0.15);
-  color: #d4af37;
+  background: rgba(212, 175, 55, 0.15) !important;
+  color: #d4af37 !important;
 }
 
+/* ✅ Quill Container - Force Dark Background */
 .quill-editor .ql-container {
   min-height: 200px;
   font-size: 14px;
-  color: #ffffff;
-  background: #1a1a1a;
+  color: #ffffff !important;
+  background: #1a1a1a !important;
 }
 
+/* ✅ Quill Editor - Force Dark Background */
 .quill-editor .ql-editor {
   min-height: 200px;
   padding: 16px;
   font-family: inherit;
+  background: #1a1a1a !important;
+  color: #ffffff !important;
 }
 
-.quill-editor .ql-editor.ql-blank::before {
-  color: rgba(255, 255, 255, 0.3);
-  font-style: italic;
+/* ✅ Force all text in editor to be white with transparent background */
+.quill-editor .ql-editor * {
+  color: #ffffff !important;
+  background: transparent !important;
 }
 
+/* ✅ Headings in editor - Golden */
 .quill-editor .ql-editor h1,
 .quill-editor .ql-editor h2,
 .quill-editor .ql-editor h3,
 .quill-editor .ql-editor h4,
 .quill-editor .ql-editor h5,
 .quill-editor .ql-editor h6 {
-  color: #ffffff;
+  color: #d4af37 !important;
+  background: transparent !important;
 }
 
+/* ✅ Bold text in editor - Golden */
 .quill-editor .ql-editor strong,
 .quill-editor .ql-editor b {
-  font-weight: 700;
+  color: #d4af37 !important;
+  background: transparent !important;
 }
 
+/* ✅ Italic text */
 .quill-editor .ql-editor em,
 .quill-editor .ql-editor i {
-  font-style: italic;
+  color: #ffffff !important;
+  background: transparent !important;
 }
 
+/* ✅ Placeholder text */
+.quill-editor .ql-editor.ql-blank::before {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-style: italic !important;
+}
+
+/* ✅ Lists */
 .quill-editor .ql-editor ul,
 .quill-editor .ql-editor ol {
-  padding-left: 24px;
+  padding-left: 24px !important;
+  color: #ffffff !important;
+  background: transparent !important;
 }
 
+.quill-editor .ql-editor li {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+/* ✅ Blockquote */
 .quill-editor .ql-editor blockquote {
-  border-left: 3px solid #d4af37;
-  padding-left: 16px;
-  margin: 8px 0;
-  color: rgba(255, 255, 255, 0.7);
+  border-left: 3px solid #d4af37 !important;
+  padding-left: 16px !important;
+  margin: 8px 0 !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  background: transparent !important;
 }
 
+/* ✅ Code */
 .quill-editor .ql-editor code {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-family: monospace;
+  background: rgba(255, 255, 255, 0.05) !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+  font-family: monospace !important;
+  color: #ffffff !important;
 }
 
+/* ✅ Links */
 .quill-editor .ql-editor a {
-  color: #d4af37;
-  text-decoration: underline;
+  color: #d4af37 !important;
+  text-decoration: underline !important;
+  background: transparent !important;
 }
 
-/* Quill scrollbar */
+/* ✅ Images */
+.quill-editor .ql-editor img {
+  max-width: 100% !important;
+  border-radius: 4px !important;
+}
+
+/* ✅ Quill scrollbar */
 .quill-editor .ql-editor::-webkit-scrollbar {
   width: 6px;
 }
@@ -693,7 +738,6 @@ textarea.form-control {
     gap: 15px;
   }
   
-  /* ✅ Mobile par 3, 6, 12 ek column mein */
   .ml-prices-grid {
     grid-template-columns: 1fr;
   }

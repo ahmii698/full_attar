@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 import { FiSearch, FiFilter, FiX } from 'react-icons/fi'
+import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function ShopPage() {
   const location = useLocation()
@@ -22,8 +23,6 @@ function ShopPage() {
   const [genders, setGenders] = useState(["All", "Male", "Female", "Unisex"])
   const [fragranceNotes, setFragranceNotes] = useState(["Oud", "Amber", "Musk", "Rose", "Saffron", "Vanilla"])
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-
   useEffect(() => {
     fetchProducts()
   }, [])
@@ -31,7 +30,7 @@ function ShopPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/products`)
+      const response = await fetch(`${API_URL}/products`)  // ✅ USING API_URL
       
       if (!response.ok) {
         throw new Error('Failed to fetch products')

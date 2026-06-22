@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { API_URL, STORAGE_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
 
 function BlogsPage() {
   const navigate = useNavigate()
@@ -11,8 +12,8 @@ function BlogsPage() {
   const [activeCategory, setActiveCategory] = useState("all")
   const [activeTag, setActiveTag] = useState(null)
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'
-  const APP_URL = 'http://127.0.0.1:8000'
+  // ✅ USING CONFIG
+  const APP_URL = STORAGE_URL.replace('/storage', '') || 'http://127.0.0.1:8000'
 
   useEffect(() => {
     fetchBlogs()
@@ -21,7 +22,7 @@ function BlogsPage() {
   const fetchBlogs = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/blogs`)
+      const response = await fetch(`${API_URL}/blogs`)  // ✅ USING API_URL
       
       if (!response.ok) {
         throw new Error('Failed to fetch blogs')
@@ -69,12 +70,12 @@ function BlogsPage() {
       return imagePath
     }
     
-    // ✅ New - Images from public/images/blogs folder
+    // Images from public/images/blogs folder
     if (imagePath.startsWith('/images/')) {
       return `${APP_URL}${imagePath}`
     }
     
-    // Old - Uploaded image from admin panel (starts with /storage/)
+    // Uploaded image from admin panel (starts with /storage/)
     if (imagePath.startsWith('/storage/')) {
       return `${APP_URL}${imagePath}`
     }

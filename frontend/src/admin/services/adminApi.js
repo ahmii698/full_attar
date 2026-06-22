@@ -1,7 +1,8 @@
 import axios from 'axios'
+import { API_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
 
 // ========== ADMIN API ==========
-const ADMIN_API_URL = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8000/api/admin'
+const ADMIN_API_URL = `${API_URL}/admin`  // ✅ USING API_URL FROM CONFIG
 
 const API = axios.create({
   baseURL: ADMIN_API_URL,
@@ -21,10 +22,9 @@ API.interceptors.request.use((config) => {
 })
 
 // ========== PUBLIC API ==========
-const PUBLIC_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
-
+// ✅ USING API_URL FROM CONFIG (same for admin and public)
 export const publicAPI = axios.create({
-  baseURL: PUBLIC_API_URL,
+  baseURL: API_URL,  // ✅ USING API_URL
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
