@@ -12,8 +12,6 @@ function BlogsPage() {
   const [activeCategory, setActiveCategory] = useState("all")
   const [activeTag, setActiveTag] = useState(null)
 
-  // ✅ USING CONFIG
-  const APP_URL = STORAGE_URL.replace('/storage', '') || 'http://127.0.0.1:8000'
 
   useEffect(() => {
     fetchBlogs()
@@ -23,15 +21,15 @@ function BlogsPage() {
     try {
       setLoading(true)
       const response = await fetch(`${API_URL}/blogs`)  // ✅ USING API_URL
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch blogs')
       }
-      
+
       const data = await response.json()
       console.log('Blogs from DB:', data)
       setBlogs(data)
-      
+
       const uniqueCategories = [...new Set(data.map(blog => blog.category).filter(Boolean))]
       const categoryList = [
         { name: "All Posts", slug: "all", count: data.length },
@@ -42,7 +40,7 @@ function BlogsPage() {
         }))
       ]
       setCategories(categoryList)
-      
+
       const tagsSet = new Set()
       data.forEach(blog => {
         if (blog.tags) {
@@ -51,7 +49,7 @@ function BlogsPage() {
         }
       })
       setAllTags([...tagsSet])
-      
+
     } catch (err) {
       setError(err.message)
       console.error('Error fetching blogs:', err)
@@ -60,34 +58,41 @@ function BlogsPage() {
     }
   }
 
-  // ✅ FINAL - Handle all image path types
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) {
-      return '/assets/at1.jpg'
-    }
-    
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath
-    }
-    
-    // Images from public/images/blogs folder
-    if (imagePath.startsWith('/images/')) {
-      return `${APP_URL}${imagePath}`
-    }
-    
-    // Uploaded image from admin panel (starts with /storage/)
-    if (imagePath.startsWith('/storage/')) {
-      return `${APP_URL}${imagePath}`
-    }
-    
-    // Local asset (starts with /assets/)
-    if (imagePath.startsWith('/assets/')) {
-      const filename = imagePath.split('/').pop()
-      return `/assets/${filename}`
-    }
-    
+const getImageUrl = (imagePath) => {
+  if (!imagePath) {
+    console.log("IMAGE DEBUG → empty path, using default")
     return '/assets/at1.jpg'
   }
+
+  if (imagePath.startsWith('http')) {
+    console.log("IMAGE DEBUG → full URL:", imagePath)
+    return imagePath
+  }
+
+  // Clean leading slash
+  let cleanPath = imagePath.replace(/^\/+/, '')
+
+  // Remove "storage/" prefix since STORAGE_URL already ends in /storage
+  cleanPath = cleanPath.replace(/^storage\//, '')
+
+  // Fix wrong "images/blogs/" prefix → actual folder is just "blogs/"
+  cleanPath = cleanPath.replace(/^images\/blogs\//, 'blogs/')
+
+  // Build final URL with exactly one slash
+  const finalUrl = `${STORAGE_URL.replace(/\/+$/, '')}/${cleanPath}`
+
+  console.log("IMAGE DEBUG → built URL:", {
+    imagePath,
+    cleanPath,
+    STORAGE_URL,
+    finalUrl
+  })
+
+  return finalUrl
+}
+
+
+
 
   const parseTags = (tagsStr) => {
     if (!tagsStr) return []
@@ -156,15 +161,15 @@ function BlogsPage() {
         <h1>Royal Attar Blogs</h1>
         <p>Fragrance insights, tips, and stories from Royal Attar</p>
       </div>
-      
+
       <div className="blogs-layout">
         <div className="blogs-sidebar">
           <div className="sidebar-category">
             <h3>Categories</h3>
             <ul>
               {categories.map(cat => (
-                <li 
-                  key={cat.slug} 
+                <li
+                  key={cat.slug}
                   className={activeCategory === cat.slug ? 'active' : ''}
                   onClick={() => handleCategoryClick(cat.slug)}
                 >
@@ -174,7 +179,7 @@ function BlogsPage() {
               ))}
             </ul>
           </div>
-          
+
           <div className="sidebar-recent">
             <h3>Recent Posts</h3>
             <ul>
@@ -186,14 +191,14 @@ function BlogsPage() {
               ))}
             </ul>
           </div>
-          
+
           {allTags.length > 0 && (
             <div className="sidebar-tags">
               <h3>Popular Tags</h3>
               <div className="tags-cloud">
                 {allTags.map(tag => (
-                  <span 
-                    key={tag} 
+                  <span
+                    key={tag}
                     className={`tag-item ${activeTag === tag ? 'active' : ''}`}
                     onClick={() => handleTagClick(tag)}
                   >
@@ -203,7 +208,7 @@ function BlogsPage() {
               </div>
             </div>
           )}
-          
+
           {(activeCategory !== "all" || activeTag) && (
             <div className="sidebar-clear">
               <button className="clear-filters-btn" onClick={clearFilters}>
@@ -212,14 +217,14 @@ function BlogsPage() {
             </div>
           )}
         </div>
-        
+
         <div className="blogs-main">
           <div className="filter-info">
             {activeTag && <span className="active-filter">Tag: #{activeTag}</span>}
             {activeCategory !== "all" && <span className="active-filter">Category: {categories.find(c => c.slug === activeCategory)?.name}</span>}
             <span className="results-count">{filteredBlogs.length} posts found</span>
           </div>
-          
+
           {filteredBlogs.length === 0 ? (
             <div className="no-blogs">
               <p>No blogs found in this category/tag.</p>
@@ -230,12 +235,12 @@ function BlogsPage() {
               {filteredBlogs.map(blog => {
                 const blogTags = parseTags(blog.tags)
                 const imageUrl = getImageUrl(blog.image_url)
-                
+
                 return (
                   <div key={blog.blog_id} className="blog-card">
                     <div className="blog-image">
-                      <img 
-                        src={imageUrl} 
+                      <img
+                        src={imageUrl}
                         alt={blog.title}
                         onError={(e) => {
                           console.error('Image failed:', imageUrl)

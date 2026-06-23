@@ -2,7 +2,7 @@ import { useState, useEffect, memo } from 'react'
 import { Link } from 'react-router-dom'
 import { FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
 import { useCart } from '../contexts/CartContext';
-import { API_URL } from "../../config";
+import { API_URL, STORAGE_URL  } from "../../config";
 
 
 function ProductCard({ id, name, price, rating, priceNum, image_url, discount_price, discount_percent, is_deal, ml_prices }) {
@@ -46,30 +46,32 @@ function ProductCard({ id, name, price, rating, priceNum, image_url, discount_pr
     setIsWishlisted(wishlistItems.some(item => item.id === id))
   }, [wishlistItems, id])
 
-  const getImageUrl = () => {
-    if (!image_url) {
-      return 'https://via.placeholder.com/300x300/8B4513/white?text=No+Image'
-    }
-    
-    if (image_url.startsWith('http://') || image_url.startsWith('https://')) {
-      return image_url
-    }
-    
-    if (image_url.startsWith('/images/')) {
-      return `${API_URL}${image_url}`
-    }
-    
-    if (image_url.startsWith('/storage/')) {
-      return `${API_URL}${image_url}`
-    }
-    
-    if (image_url.startsWith('/assets/')) {
-      const filename = image_url.split('/').pop()
-      return `/assets/${filename}`
-    }
-    
+const getImageUrl = () => {
+  if (!image_url) {
     return 'https://via.placeholder.com/300x300/8B4513/white?text=No+Image'
   }
+
+  // Already a full URL
+  if (image_url.startsWith('http://') || image_url.startsWith('https://')) {
+    return image_url
+  }
+
+  // Static frontend asset — serve as-is, don't touch
+  if (image_url.startsWith('/assets/')) {
+    return image_url
+  }
+
+  // Clean leading slash
+  let cleanPath = image_url.replace(/^\/+/, '')
+
+  // Remove "storage/" prefix since STORAGE_URL already ends in /storage
+  cleanPath = cleanPath.replace(/^storage\//, '')
+
+  // Fix wrong "images/blogs/" or "images/products/" prefix from old DB rows
+  cleanPath = cleanPath.replace(/^images\/(blogs|products)\//, '$1/')
+
+  return `${STORAGE_URL.replace(/\/+$/, '')}/${cleanPath}`
+}
   
   const calculatedDiscountPercent = discount_percent || (priceNum && discount_price ? Math.round(((priceNum - discount_price) / priceNum) * 100) : 0)
   

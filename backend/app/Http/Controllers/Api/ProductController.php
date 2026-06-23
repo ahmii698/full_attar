@@ -38,7 +38,7 @@ class ProductController extends Controller
                 // Image URL fix
                 if ($product->image_url) {
                     if (strpos($product->image_url, '/images/') === 0) {
-                        $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                        $product->image_url = env('APP_URL') . $product->image_url;
                     }
                 }
                 
@@ -70,7 +70,7 @@ class ProductController extends Controller
             $product = Product::findOrFail($id);
             
             if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
-                $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                $product->image_url = env('APP_URL') . $product->image_url;
             }
             
             // ✅ FIX: Decode ml_prices if it's a string
@@ -96,7 +96,7 @@ class ProductController extends Controller
             
             foreach ($products as $product) {
                 if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
-                    $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                    $product->image_url = env('APP_URL') . $product->image_url;
                 }
                 
                 // ✅ FIX: Decode ml_prices if it's a string
@@ -123,7 +123,7 @@ class ProductController extends Controller
             
             foreach ($products as $product) {
                 if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
-                    $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                    $product->image_url = env('APP_URL') . $product->image_url;
                 }
                 
                 // ✅ FIX: Decode ml_prices if it's a string
@@ -150,7 +150,7 @@ class ProductController extends Controller
             
             foreach ($products as $product) {
                 if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
-                    $product->image_url = 'http://127.0.0.1:8000' . $product->image_url;
+                    $product->image_url = env('APP_URL') . $product->image_url;
                 }
                 
                 // ✅ FIX: Decode ml_prices if it's a string

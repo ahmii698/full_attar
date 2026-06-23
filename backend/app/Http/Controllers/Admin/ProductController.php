@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -60,17 +61,28 @@ class ProductController extends Controller
             }
 
             // ✅ Handle image upload
+            // if ($request->hasFile('image')) {
+            //     $image = $request->file('image');
+            //     $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
+                
+            //     $destinationPath = public_path('images/products');
+            //     if (!file_exists($destinationPath)) {
+            //         mkdir($destinationPath, 0777, true);
+            //     }
+                
+            //     $image->move($destinationPath, $filename);
+            //     $product->image_url = '/images/products/' . $filename;
+            // } else if ($request->image_url) {
+            //     $product->image_url = $request->image_url;
+            // }
+
+
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
-                
-                $destinationPath = public_path('images/products');
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
-                }
-                
-                $image->move($destinationPath, $filename);
-                $product->image_url = '/images/products/' . $filename;
+
+                $path = $image->store('products', 'public');
+
+                $product->image_url = Storage::url($path);
             } else if ($request->image_url) {
                 $product->image_url = $request->image_url;
             }
@@ -132,21 +144,43 @@ class ProductController extends Controller
             }
 
             // ✅ Handle image upload
+            // if ($request->hasFile('image')) {
+            //     if ($product->image_url && file_exists(public_path($product->image_url))) {
+            //         unlink(public_path($product->image_url));
+            //     }
+                
+            //     $image = $request->file('image');
+            //     $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
+                
+            //     $destinationPath = public_path('images/products');
+            //     if (!file_exists($destinationPath)) {
+            //         mkdir($destinationPath, 0777, true);
+            //     }
+                
+            //     $image->move($destinationPath, $filename);
+            //     $product->image_url = '/images/products/' . $filename;
+            // } else if ($request->image_url) {
+            //     $product->image_url = $request->image_url;
+            // }
+
+
+
             if ($request->hasFile('image')) {
-                if ($product->image_url && file_exists(public_path($product->image_url))) {
-                    unlink(public_path($product->image_url));
+
+                // Old image delete
+                if ($product->image_url) {
+
+                    $oldPath = str_replace('/storage/', '', $product->image_url);
+
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
                 }
-                
-                $image = $request->file('image');
-                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
-                
-                $destinationPath = public_path('images/products');
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
-                }
-                
-                $image->move($destinationPath, $filename);
-                $product->image_url = '/images/products/' . $filename;
+
+                $path = $request->file('image')->store('products', 'public');
+
+                $product->image_url = Storage::url($path);
+
             } else if ($request->image_url) {
                 $product->image_url = $request->image_url;
             }
@@ -178,4 +212,6 @@ class ProductController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+
 }

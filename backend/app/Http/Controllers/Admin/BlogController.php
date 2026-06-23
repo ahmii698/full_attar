@@ -40,19 +40,26 @@ class BlogController extends Controller
             $blog->read_time = $request->read_time;
 
             // ✅ DIRECT PUBLIC FOLDER - No storage symlink needed
+            // if ($request->hasFile('image')) {
+            //     $image = $request->file('image');
+            //     $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
+                
+            //     $destinationPath = public_path('images/blogs');
+            //     if (!file_exists($destinationPath)) {
+            //         mkdir($destinationPath, 0777, true);
+            //     }
+                
+            //     $image->move($destinationPath, $filename);
+            //     $blog->image_url = '/images/blogs/' . $filename;
+            // } else if ($request->image_url) {
+            //     $blog->image_url = $request->image_url;
+            // }
+
             if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
-                
-                $destinationPath = public_path('images/blogs');
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
-                }
-                
-                $image->move($destinationPath, $filename);
-                $blog->image_url = '/images/blogs/' . $filename;
-            } else if ($request->image_url) {
-                $blog->image_url = $request->image_url;
+
+                $path = $request->file('image')->store('blogs', 'public');
+
+                $blog->image_url = Storage::url($path);
             }
 
             $blog->save();
@@ -88,23 +95,31 @@ class BlogController extends Controller
             if ($request->has('image_url')) $blog->image_url = $request->image_url;
 
             // ✅ DIRECT PUBLIC FOLDER
+            // if ($request->hasFile('image')) {
+            //     // Delete old image if exists
+            //     if ($blog->image_url && file_exists(public_path($blog->image_url))) {
+            //         unlink(public_path($blog->image_url));
+            //     }
+                
+            //     $image = $request->file('image');
+            //     $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
+                
+            //     $destinationPath = public_path('images/blogs');
+            //     if (!file_exists($destinationPath)) {
+            //         mkdir($destinationPath, 0777, true);
+            //     }
+                
+            //     $image->move($destinationPath, $filename);
+            //     $blog->image_url = '/images/blogs/' . $filename;
+            // }
+
+
             if ($request->hasFile('image')) {
-                // Delete old image if exists
-                if ($blog->image_url && file_exists(public_path($blog->image_url))) {
-                    unlink(public_path($blog->image_url));
+
+                    $path = $request->file('image')->store('blogs', 'public');
+
+                    $blog->image_url = Storage::url($path);
                 }
-                
-                $image = $request->file('image');
-                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $image->getClientOriginalName());
-                
-                $destinationPath = public_path('images/blogs');
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
-                }
-                
-                $image->move($destinationPath, $filename);
-                $blog->image_url = '/images/blogs/' . $filename;
-            }
             
             $blog->save();
             
@@ -134,4 +149,6 @@ class BlogController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    
 }

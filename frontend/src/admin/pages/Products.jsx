@@ -36,29 +36,38 @@ function Products() {
     }
   }
 
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) {
-      return 'https://placehold.co/50x50/1a1a2a/d4af37?text=No+Image'
-    }
-    
-    if (imagePath.startsWith('http')) {
-      return imagePath
-    }
-    
-    if (imagePath.startsWith('/images/')) {
-      return `${APP_URL}${imagePath}`
-    }
-    
-    if (imagePath.startsWith('/storage/')) {
-      return `${APP_URL}${imagePath}`
-    }
-    
-    if (imagePath.startsWith('/assets/')) {
-      return `${FRONTEND_URL}${imagePath}`
-    }
-    
-    return 'https://placehold.co/50x50/1a1a2a/d4af37?text=No+Image'
+const getImageUrl = (imagePath) => {
+  if (!imagePath) {
+    console.log("IMAGE DEBUG → empty path, using default")
+    return '/assets/at1.jpg'
   }
+
+  if (imagePath.startsWith('http')) {
+    console.log("IMAGE DEBUG → full URL:", imagePath)
+    return imagePath
+  }
+
+  // Clean leading slash
+  let cleanPath = imagePath.replace(/^\/+/, '')
+
+  // Remove "storage/" prefix since STORAGE_URL already ends in /storage
+  cleanPath = cleanPath.replace(/^storage\//, '')
+
+  // Fix wrong "images/blogs/" prefix → actual folder is just "blogs/"
+  cleanPath = cleanPath.replace(/^images\/blogs\//, 'blogs/')
+
+  // Build final URL with exactly one slash
+  const finalUrl = `${STORAGE_URL.replace(/\/+$/, '')}/${cleanPath}`
+
+  console.log("IMAGE DEBUG → built URL:", {
+    imagePath,
+    cleanPath,
+    STORAGE_URL,
+    finalUrl
+  })
+
+  return finalUrl
+}
 
   // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage
