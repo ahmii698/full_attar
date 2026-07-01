@@ -1,31 +1,31 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { FaUpload, FaTimes, FaTag, FaBox, FaStar, FaCheck, FaImage, FaPlus, FaMinus, FaArrowLeft } from 'react-icons/fa'
-import { getProduct, createProduct, updateProduct } from '../services/adminApi'
+import { getProduct, createProduct, updateProduct, getCategories } from '../services/adminApi'
 // React Quill imports
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
-import { API_URL, STORAGE_URL } from '../../../config'  // ✅ IMPORT FROM CONFIG
+import { API_URL, STORAGE_URL } from '../../../config'
 import '../styles/ProductForm.css'
 
-// ✅ Clean text function - removes unwanted characters and formatting
+// ✅ Clean text function
 const cleanDescription = (text) => {
   if (!text) return '';
   
   let cleaned = text
-    .replace(/[\u2018\u2019]/g, "'")  // Smart quotes to straight
-    .replace(/[\u201C\u201D]/g, '"')  // Smart double quotes to straight
-    .replace(/[\u2013\u2014]/g, '-')  // Em/En dashes to hyphen
-    .replace(/\u2026/g, '...')        // Ellipsis to three dots
-    .replace(/\u00A0/g, ' ')          // Non-breaking space to space
-    .replace(/\r\n/g, '\n')           // Windows line breaks
-    .replace(/\r/g, '\n')             // Mac line breaks
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/\u2026/g, '...')
+    .replace(/\u00A0/g, ' ')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
     .trim();
   
   return cleaned;
 };
 
-// ✅ Quill modules configuration - SIMPLIFIED FOR CLEAN TEXT
+// ✅ Quill modules configuration
 const quillModules = {
   toolbar: [
     [{ header: [1, 2, 3, false] }],
@@ -45,8 +45,14 @@ function ProductForm() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [loadingCategories, setLoadingCategories] = useState(true)
+  const [categories, setCategories] = useState([])
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState('')
+  
+  // ✅ selectedCategories - Array for multiple categories
+  const [selectedCategories, setSelectedCategories] = useState([])
+  
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -55,7 +61,6 @@ function ProductForm() {
     discount_percent: '',
     is_deal: false,
     rating: '',
-    category: '',
     gender: '',
     notes: '',
     image_url: '',
@@ -72,9 +77,12 @@ function ProductForm() {
   })
   const [isEdit, setIsEdit] = useState(false)
 
-  // ✅ USING CONFIG - NO HARDCODED URLS
   const APP_URL = STORAGE_URL?.replace('/storage', '') || 'http://localhost:8000'
   const FRONTEND_URL = window.location.origin || 'http://localhost:5173'
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])
 
   useEffect(() => {
     if (id) {
@@ -82,6 +90,32 @@ function ProductForm() {
       fetchProduct()
     }
   }, [id])
+
+  // ✅ Fetch ALL categories from API (Saari categories)
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true)
+      const response = await getCategories()
+      
+      let categoryData = []
+      if (response.data && response.data.success && Array.isArray(response.data.data)) {
+        categoryData = response.data.data
+      } else if (Array.isArray(response.data)) {
+        categoryData = response.data
+      } else {
+        setCategories([])
+        return
+      }
+      
+      // ✅ SAARI CATEGORIES SHOW KARO - Chahe show_in_navbar = 0 ho ya 1
+      setCategories(categoryData)
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      setCategories([])
+    } finally {
+      setLoadingCategories(false)
+    }
+  }
 
   const fetchProduct = async () => {
     try {
@@ -122,7 +156,6 @@ function ProductForm() {
         discount_percent: product.discount_percent || '',
         is_deal: product.is_deal === 1,
         rating: product.rating || '',
-        category: product.category || '',
         gender: product.gender || '',
         notes: product.notes || '',
         image_url: product.image_url || '',
@@ -133,6 +166,15 @@ function ProductForm() {
         top_highlights: topHighlights,
         ml_prices: mlPrices
       })
+      
+      // ✅ Set selected categories from product
+      if (product.categories && Array.isArray(product.categories)) {
+        setSelectedCategories(product.categories.map(c => c.category_id))
+      } else if (product.category_id) {
+        setSelectedCategories([product.category_id])
+      } else {
+        setSelectedCategories([])
+      }
       
       if (product.image_url) {
         if (product.image_url.startsWith('/images/')) {
@@ -160,7 +202,12 @@ function ProductForm() {
     }))
   }
 
-  // ✅ Handle description change from Quill - WITH CLEANING
+  // ✅ Handle multiple category selection
+  const handleCategoryChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions, option => option.value)
+    setSelectedCategories(selected)
+  }
+
   const handleDescriptionChange = (value) => {
     const cleaned = cleanDescription(value);
     setFormData(prev => ({
@@ -233,6 +280,11 @@ function ProductForm() {
           }
         }
       })
+      
+      // ✅ Send selected categories as JSON
+      if (selectedCategories && selectedCategories.length > 0) {
+        submitData.append('category_ids', JSON.stringify(selectedCategories))
+      }
       
       if (imageFile) {
         submitData.append('image', imageFile)
@@ -333,20 +385,56 @@ function ProductForm() {
             />
           </div>
 
-          <div className="form-group">
-            <label>Category *</label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="form-control"
-              required
-            >
-              <option value="">Select Category</option>
-              <option value="Premium">Premium</option>
-              <option value="Western">Western</option>
-              <option value="Eastern">Eastern</option>
-            </select>
+          {/* ✅ MULTIPLE CATEGORY SELECT - Saari categories, sirf name show */}
+          <div className="form-group full-width">
+            <label>Categories * (Select multiple)</label>
+            <div className="category-select-wrapper">
+              <select
+                multiple
+                value={selectedCategories}
+                onChange={handleCategoryChange}
+                className="form-control category-multi-select"
+                required
+              >
+                {loadingCategories ? (
+                  <option value="" disabled>Loading categories...</option>
+                ) : (
+                  categories.map(cat => (
+                    <option key={cat.category_id} value={cat.category_id}>
+                      {cat.category_name}
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+            <div className="selected-categories-display">
+              {selectedCategories.length > 0 ? (
+                <div className="selected-categories-tags">
+                  {selectedCategories.map(id => {
+                    const cat = categories.find(c => c.category_id === parseInt(id))
+                    return cat ? (
+                      <span key={id} className="category-tag">
+                        {cat.category_name}
+                        <button 
+                          type="button" 
+                          className="remove-category-tag"
+                          onClick={() => {
+                            setSelectedCategories(selectedCategories.filter(c => c !== id))
+                          }}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ) : null
+                  })}
+                </div>
+              ) : (
+                <span className="no-categories-selected">No categories selected</span>
+              )}
+            </div>
+            <small className="helper-text">
+              Hold <strong>Ctrl</strong> (Windows) or <strong>Cmd</strong> (Mac) to select multiple categories
+            </small>
           </div>
 
           <div className="form-group">
@@ -402,7 +490,7 @@ function ProductForm() {
             />
           </div>
 
-          {/* ==================== ML PRICES SECTION - SIRF 3, 6, 12 ==================== */}
+          {/* ML PRICES SECTION */}
           <div className="form-group full-width ml-prices-section">
             <label className="ml-prices-label">
               <FaTag /> ML Prices (3ml, 6ml, 12ml)
@@ -446,7 +534,7 @@ function ProductForm() {
             </div>
           </div>
 
-          {/* ==================== TOP HIGHLIGHTS SECTION ==================== */}
+          {/* TOP HIGHLIGHTS SECTION */}
           <div className="form-group full-width top-highlights-section">
             <label className="highlights-label">
               <FaStar /> Top Highlights
@@ -594,7 +682,7 @@ function ProductForm() {
             </label>
           </div>
 
-          {/* ✅ RICH TEXT EDITOR FOR DESCRIPTION - NO WHITE BACKGROUND */}
+          {/* RICH TEXT EDITOR */}
           <div className="form-group full-width description-editor-section">
             <label>Description <span className="editor-hint">(Format your text with the toolbar below)</span></label>
             <div className="quill-wrapper">

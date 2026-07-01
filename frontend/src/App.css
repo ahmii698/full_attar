@@ -49,6 +49,7 @@
 @import './admin/styles/Subscribers.css';
 @import './admin/styles/FAQs.css';
 @import './admin/styles/Outlets.css';
+@import './admin/styles/AdminCategories.css';
 
 /* =========================
    APP LOADING STATE (For Lazy Loading)

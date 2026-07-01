@@ -22,9 +22,8 @@ API.interceptors.request.use((config) => {
 })
 
 // ========== PUBLIC API ==========
-// ✅ USING API_URL FROM CONFIG (same for admin and public)
 export const publicAPI = axios.create({
-  baseURL: API_URL,  // ✅ USING API_URL
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -35,9 +34,31 @@ export const publicAPI = axios.create({
 export const adminLogin = (email, password) => API.post('/login', { email, password })
 export const getDashboard = () => API.get('/dashboard')
 
+// ========== ADMIN CATEGORIES ==========
+export const getCategories = () => API.get('/categories')
+export const getCategory = (id) => API.get(`/categories/${id}`)
+export const createCategory = (data) => API.post('/categories', data)
+
+// ✅ FIX: updateCategory - Support both FormData and JSON
+export const updateCategory = (id, data) => {
+  if (data instanceof FormData) {
+    return API.post(`/categories/${id}?_method=PUT`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  } else {
+    return API.put(`/categories/${id}`, data)
+  }
+}
+
+export const deleteCategory = (id) => API.delete(`/categories/${id}`)
+export const getCategoryProducts = (id) => API.get(`/categories/${id}/products`)
+
 // ========== ADMIN PRODUCTS ==========
 export const getProducts = () => API.get('/products')
 export const getProduct = (id) => API.get(`/products/${id}`)
+export const getProductsByCategory = (categoryId) => API.get(`/categories/${categoryId}/products`)
 
 export const createProduct = (data) => {
   return API.post('/products', data, {
@@ -48,11 +69,19 @@ export const createProduct = (data) => {
 }
 
 export const updateProduct = (id, data) => {
-  return API.post(`/products/${id}?_method=PUT`, data, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
+  if (data instanceof FormData) {
+    return API.post(`/products/${id}?_method=PUT`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  } else {
+    return API.post(`/products/${id}?_method=PUT`, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  }
 }
 
 export const deleteProduct = (id) => API.delete(`/products/${id}`)
@@ -192,4 +221,14 @@ export const publicAPIEndpoints = {
   getTestimonials: () => publicAPI.get('/testimonials'),
   getHeroSliders: () => publicAPI.get('/hero-sliders'),
   getSocialLinks: () => publicAPI.get('/social-links'),
+  getCategories: () => publicAPI.get('/categories'),
+  getNavbarCategories: () => publicAPI.get('/navbar-categories'),
 }
+
+// ========== DIRECT PUBLIC API FUNCTIONS ==========
+export const getPublicCategories = () => publicAPI.get('/categories')
+export const getPublicNavbarCategories = () => publicAPI.get('/navbar-categories')
+export const getPublicProducts = () => publicAPI.get('/products')
+export const getPublicProduct = (id) => publicAPI.get(`/products/${id}`)
+export const getPublicTopSellers = () => publicAPI.get('/top-sellers')
+export const getPublicDeals = () => publicAPI.get('/deals')

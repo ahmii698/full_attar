@@ -680,3 +680,17 @@
     padding: 8px 12px;
   }
 }
+/* No notes message */
+.no-notes {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  padding: 5px 0;
+  font-style: italic;
+}
+
+/* Active dot for selected items */
+.active-dot {
+  color: #d4af37;
+  font-size: 10px;
+  margin-left: 6px;
+}

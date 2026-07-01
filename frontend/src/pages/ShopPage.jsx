@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 import { FiSearch, FiFilter, FiX } from 'react-icons/fi'
-import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
+import { API_URL } from '../../config'
 
 function ShopPage() {
   const location = useLocation()
@@ -19,18 +19,20 @@ function ShopPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   
+  // ✅ Dynamic categories from database
   const [categories, setCategories] = useState(["All"])
   const [genders, setGenders] = useState(["All", "Male", "Female", "Unisex"])
-  const [fragranceNotes, setFragranceNotes] = useState(["Oud", "Amber", "Musk", "Rose", "Saffron", "Vanilla"])
+  const [fragranceNotes, setFragranceNotes] = useState([])
 
   useEffect(() => {
     fetchProducts()
+    fetchCategories()
   }, [])
 
   const fetchProducts = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_URL}/products`)  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/products`)
       
       if (!response.ok) {
         throw new Error('Failed to fetch products')
@@ -40,14 +42,54 @@ function ShopPage() {
       
       setAllProducts(data)
       
-      const uniqueCategories = ["All", ...new Set(data.map(p => p.category).filter(Boolean))]
-      setCategories(uniqueCategories)
+      // ✅ Dynamic fragrance notes from products
+      const allNotes = []
+      data.forEach(product => {
+        if (product.notes) {
+          const notes = product.notes.split(',').map(n => n.trim()).filter(Boolean)
+          notes.forEach(note => {
+            if (!allNotes.includes(note)) {
+              allNotes.push(note)
+            }
+          })
+        }
+      })
+      setFragranceNotes(allNotes)
       
     } catch (err) {
       setError(err.message)
       console.error('Error fetching products:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // ✅ Fetch categories from database - SAARI CATEGORIES (NO FILTER)
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${API_URL}/categories`)
+      const result = await response.json()
+      
+      let categoryData = []
+      if (result.success && result.data) {
+        categoryData = result.data
+      } else if (Array.isArray(result)) {
+        categoryData = result
+      } else if (result.data && Array.isArray(result.data)) {
+        categoryData = result.data
+      }
+      
+      // ✅ SAARI CATEGORIES - NO FILTER
+      const categoryNames = ["All", ...categoryData.map(cat => cat.category_name || cat.name)]
+      setCategories(categoryNames)
+      
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      // ✅ Fallback: Products se categories generate karo
+      if (allProducts.length > 0) {
+        const uniqueCategories = ["All", ...new Set(allProducts.map(p => p.category).filter(Boolean))]
+        setCategories(uniqueCategories)
+      }
     }
   }
 
@@ -177,9 +219,19 @@ function ShopPage() {
     return notesStr.split(',').map(n => n.trim())
   }
   
+  // ✅ Updated filter - Check multiple categories
   const filteredProducts = allProducts.filter(product => {
-    if (selectedCategory !== "All" && product.category !== selectedCategory) {
-      return false
+    // ✅ Check if product has selected category (Many-to-Many)
+    if (selectedCategory !== "All") {
+      const productCategories = product.categories?.map(c => c.category_name || c.name) || []
+      // ✅ Also check old category field for backward compatibility
+      const allProductCategories = [...productCategories]
+      if (product.category && !allProductCategories.includes(product.category)) {
+        allProductCategories.push(product.category)
+      }
+      if (!allProductCategories.includes(selectedCategory)) {
+        return false
+      }
     }
     
     if (selectedGender !== "All" && product.gender !== selectedGender) return false
@@ -287,6 +339,7 @@ function ShopPage() {
             />
           </div>
           
+          {/* ✅ ALL CATEGORIES - NO FILTER */}
           <div className="sidebar-section">
             <h4>Categories</h4>
             <ul>
@@ -305,6 +358,7 @@ function ShopPage() {
             </ul>
           </div>
           
+          {/* ✅ GENDER */}
           <div className="sidebar-section">
             <h4>Gender</h4>
             <ul>
@@ -340,20 +394,25 @@ function ShopPage() {
             </div>
           </div>
           
+          {/* ✅ DYNAMIC FRAGRANCE NOTES */}
           <div className="sidebar-section">
             <h4>Fragrance Notes</h4>
-            <div className="notes-grid">
-              {fragranceNotes.map(note => (
-                <label key={note} className={`checkbox-label ${selectedNotes.includes(note) ? 'active' : ''}`}>
-                  <input 
-                    type="checkbox" 
-                    checked={selectedNotes.includes(note)}
-                    onChange={() => handleNoteChange(note)}
-                  /> 
-                  <span>{note}</span>
-                </label>
-              ))}
-            </div>
+            {fragranceNotes.length === 0 ? (
+              <p className="no-notes">No fragrance notes available</p>
+            ) : (
+              <div className="notes-grid">
+                {fragranceNotes.map(note => (
+                  <label key={note} className={`checkbox-label ${selectedNotes.includes(note) ? 'active' : ''}`}>
+                    <input 
+                      type="checkbox" 
+                      checked={selectedNotes.includes(note)}
+                      onChange={() => handleNoteChange(note)}
+                    /> 
+                    <span>{note}</span>
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
           
           {hasActiveFilters && (
@@ -401,6 +460,7 @@ function ShopPage() {
                   image_url={product.image_url}
                   description={product.description}
                   ml_prices={product.ml_prices}
+                  categories={product.categories}
                 />
               ))}
             </div>

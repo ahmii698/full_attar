@@ -9,41 +9,67 @@ function AdminSidebar() {
         <p>Admin Panel</p>
       </div>
       <nav className="sidebar-nav">
+        {/* Dashboard */}
+        <NavLink to="/admin/dashboard" className="nav-item">
+          <i className="fas fa-chart-line"></i> Dashboard
+        </NavLink>
+        
+        {/* Products */}
         <NavLink to="/admin/products" className="nav-item">
           <i className="fas fa-box"></i> Products
         </NavLink>
+        
+        {/* ✅ CATEGORIES - NEW */}
+        <NavLink to="/admin/categories" className="nav-item">
+          <i className="fas fa-tags"></i> Categories
+        </NavLink>
+        
+        {/* Blogs */}
         <NavLink to="/admin/blogs" className="nav-item">
           <i className="fas fa-newspaper"></i> Blogs
         </NavLink>
+        
+        {/* Orders */}
         <NavLink to="/admin/orders" className="nav-item">
           <i className="fas fa-shopping-cart"></i> Orders
         </NavLink>
-        {/* <NavLink to="/admin/users" className="nav-item">
+        
+        {/* Users */}
+        <NavLink to="/admin/users" className="nav-item">
           <i className="fas fa-users"></i> Users
-        </NavLink> */}
+        </NavLink>
+        
+        {/* Testimonials */}
         <NavLink to="/admin/testimonials" className="nav-item">
           <i className="fas fa-star"></i> Testimonials
         </NavLink>
+        
+        {/* Contacts */}
         <NavLink to="/admin/contacts" className="nav-item">
           <i className="fas fa-envelope"></i> Contacts
         </NavLink>
+        
+        {/* Subscribers */}
         <NavLink to="/admin/subscribers" className="nav-item">
           <i className="fas fa-bell"></i> Subscribers
         </NavLink>
         
-        {/* ❌ Outlets LINK REMOVED */}
-        
-        {/* FAQ LINK */}
+        {/* FAQs */}
         <NavLink to="/admin/faqs" className="nav-item">
           <i className="fas fa-question-circle"></i> FAQs
         </NavLink>
         
+        {/* Hero Settings */}
         <NavLink to="/admin/hero-settings" className="nav-item">
           <i className="fas fa-image"></i> Hero Settings
         </NavLink>
+        
+        {/* Banners */}
         <NavLink to="/admin/banners" className="nav-item">
           <i className="fas fa-flag"></i> Banners
         </NavLink>
+        
+        {/* Site Settings */}
         <NavLink to="/admin/site-settings" className="nav-item">
           <i className="fas fa-cog"></i> Site Settings
         </NavLink>

@@ -130,6 +130,106 @@ textarea.form-control {
 }
 
 /* =========================
+   MULTIPLE CATEGORY SELECT
+========================= */
+
+/* ✅ Multiple select wrapper */
+.category-select-wrapper {
+  margin-bottom: 8px;
+}
+
+/* ✅ Multiple select styling */
+.category-multi-select {
+  height: auto !important;
+  min-height: 120px;
+  padding: 8px;
+  background: #1a1a1a;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.category-multi-select:focus {
+  border-color: #d4af37;
+  background: #222222;
+}
+
+.category-multi-select option {
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 2px 0;
+  cursor: pointer;
+  background: #1a1a1a;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s;
+}
+
+.category-multi-select option:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.category-multi-select option:checked {
+  background: #d4af37;
+  color: #000000;
+  font-weight: 600;
+}
+
+/* ✅ Selected categories display */
+.selected-categories-display {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(212, 175, 55, 0.15);
+  border-radius: 8px;
+  min-height: 44px;
+}
+
+.selected-categories-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 12px;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 20px;
+  color: #d4af37;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.remove-category-tag {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.remove-category-tag:hover {
+  color: #ff4444;
+  transform: scale(1.2);
+}
+
+.no-categories-selected {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* =========================
    CHECKBOX GROUP
 ========================= */
 
@@ -730,6 +830,10 @@ textarea.form-control {
   .quill-editor .ql-editor {
     min-height: 150px;
   }
+  
+  .category-multi-select {
+    min-height: 80px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -780,5 +884,25 @@ textarea.form-control {
   
   .quill-editor .ql-toolbar {
     flex-wrap: wrap;
+  }
+  
+  .category-multi-select {
+    min-height: 60px;
+    font-size: 13px;
+  }
+  
+  .category-multi-select option {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+  
+  .selected-categories-display {
+    padding: 8px 10px;
+    min-height: 36px;
+  }
+  
+  .category-tag {
+    font-size: 12px;
+    padding: 3px 8px 3px 10px;
   }
 }

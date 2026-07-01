@@ -5,11 +5,12 @@ import Hero from '../components/Hero'
 import SectionHeading from '../components/SectionHeading'
 import ProductCard from '../components/ProductCard'
 import CategoryBanner from '../components/CategoryBanner'
+import CategorySection from './CategorySection'  // ✅ IMPORT CategorySection
 import FAQSection from '../components/FAQSection'
 import TestimonialSlider from '../components/TestimonialSlider'
 import ContactPage from './ContactPage'
 import Newsletter from '../components/Newsletter'
-import { API_URL, STORAGE_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
+import { API_URL, STORAGE_URL } from '../../config'
 
 function HomePage() {
   const [topSellers, setTopSellers] = useState([])
@@ -18,7 +19,6 @@ function HomePage() {
   const [dataLoaded, setDataLoaded] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
-  // ✅ Check if data is already in sessionStorage
   useEffect(() => {
     const cachedData = sessionStorage.getItem('homepage_data')
     if (cachedData) {
@@ -41,12 +41,11 @@ function HomePage() {
       console.log('🔄 Fetching data from:', API_URL)
       
       const [topRes, dealsRes, bannersRes] = await Promise.all([
-        fetch(`${API_URL}/top-sellers`),  // ✅ USING API_URL
+        fetch(`${API_URL}/top-sellers`),
         fetch(`${API_URL}/deals`),
         fetch(`${API_URL}/banners`)
       ])
       
-      // ✅ Check if responses are OK
       if (!topRes.ok) throw new Error(`top-sellers: ${topRes.status}`)
       if (!dealsRes.ok) throw new Error(`deals: ${dealsRes.status}`)
       if (!bannersRes.ok) throw new Error(`banners: ${bannersRes.status}`)
@@ -55,7 +54,6 @@ function HomePage() {
       const dealsData = await dealsRes.json()
       const bannersData = await bannersRes.json()
       
-      // ✅ Cache data in sessionStorage
       try {
         sessionStorage.setItem('homepage_data', JSON.stringify({
           topSellers: topData,
@@ -86,11 +84,9 @@ function HomePage() {
     }
   }, [dataLoaded, fetchData])
 
-  // ✅ Fix image URL - using STORAGE_URL
   const getImageUrl = useCallback((imagePath) => {
     if (!imagePath) return null
     if (imagePath.startsWith('http')) return imagePath
-    // Remove /storage/ prefix if present to avoid duplication
     const cleanPath = imagePath.replace(/^\/storage\//, '')
     return `${STORAGE_URL}/${cleanPath}`
   }, [STORAGE_URL])
@@ -173,7 +169,6 @@ function HomePage() {
     ))
   ), [banners, dataLoaded, getImageUrl])
 
-  // ✅ WhatsApp Floating Button
   const WhatsAppButton = useMemo(() => (
     <a
       href="https://wa.me/923197753774"
@@ -198,6 +193,10 @@ function HomePage() {
   return (
     <div className="homepage">
       <Hero />
+      
+      {/* ✅ Category Section - 3 Categories (Premium, Western, Eastern) */}
+      <CategorySection />
+      
       {BestSellersSection}
       {BannersSection}
       {DealsSection}
@@ -209,7 +208,6 @@ function HomePage() {
       <ContactPage />
       <Newsletter />
 
-      {/* ✅ WhatsApp Floating Button - Sirf Home Page par show hoga */}
       {WhatsAppButton}
 
       <style>{`
@@ -224,7 +222,6 @@ function HomePage() {
         .no-products { grid-column: 1 / -1; text-align: center; padding: 40px; color: rgba(255,255,255,0.4); font-size: 16px; }
         .products-grid { gap: 12px !important; }
         
-        /* ✅ WhatsApp Floating Button Styles */
         .whatsapp-float {
           position: fixed;
           bottom: 30px;
@@ -255,7 +252,6 @@ function HomePage() {
           transform: scale(0.95);
         }
 
-        /* ✅ Tooltip */
         .whatsapp-tooltip {
           position: absolute;
           right: 80px;
@@ -289,17 +285,11 @@ function HomePage() {
           right: 85px;
         }
 
-        /* ✅ Pulse Animation */
         @keyframes whatsappPulse {
-          0%, 100% {
-            box-shadow: 0 6px 30px rgba(37, 211, 102, 0.4);
-          }
-          50% {
-            box-shadow: 0 6px 50px rgba(37, 211, 102, 0.7);
-          }
+          0%, 100% { box-shadow: 0 6px 30px rgba(37, 211, 102, 0.4); }
+          50% { box-shadow: 0 6px 50px rgba(37, 211, 102, 0.7); }
         }
 
-        /* ✅ Notification Badge */
         .whatsapp-float::after {
           content: '1';
           position: absolute;
@@ -320,12 +310,8 @@ function HomePage() {
         }
 
         @keyframes badgePulse {
-          0%, 100% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.15);
-          }
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.15); }
         }
 
         @media (max-width: 768px) {
@@ -340,9 +326,7 @@ function HomePage() {
             right: 20px;
           }
           
-          .whatsapp-tooltip {
-            display: none;
-          }
+          .whatsapp-tooltip { display: none; }
           
           .whatsapp-float::after {
             width: 18px;

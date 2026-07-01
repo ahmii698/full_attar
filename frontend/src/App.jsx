@@ -40,13 +40,14 @@ import Users from './admin/pages/Users'
 import Testimonials from './admin/pages/Testimonials'
 import Contacts from './admin/pages/Contacts'
 import Subscribers from './admin/pages/Subscribers'
-
-// ========== NEW ADMIN IMPORTS ==========
 import HeroSettings from './admin/pages/HeroSettings'
 import Banners from './admin/pages/Banners'
 import SiteSettings from './admin/pages/SiteSettings'
 import FAQs from './admin/pages/FAQs'
 import Outlets from './admin/pages/Outlets'
+
+// ✅ ADD THIS - Categories import
+import AdminCategories from './admin/pages/AdminCategories'
 
 function App() {
   return (
@@ -54,7 +55,6 @@ function App() {
       <CartProvider>
         <div className="app">
           <Navbar />
-          {/* ✅ Sab pages ko page-content mein wrap karo */}
           <main className="page-content">
             <Routes>
               {/* Main Pages */}
@@ -75,7 +75,6 @@ function App() {
               <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               
-              {/* ✅ Payment Routes with Order ID */}
               <Route path="/payment/:id" element={<PaymentPage />} />
               <Route path="/payment-confirmation/:id" element={<UploadProofPage />} />
               
@@ -100,7 +99,7 @@ function App() {
   )
 }
 
-// ========== SEPARATE ADMIN APP (outside main app) ==========
+// ========== SEPARATE ADMIN APP ==========
 export function AdminApp() {
   return (
     <AdminAuthProvider>
@@ -110,13 +109,18 @@ export function AdminApp() {
         
         {/* Admin pages with layout */}
         <Route path="/" element={<AdminLayout />}>
-          {/* INDEX ROUTE - NOW GOES TO PRODUCTS, NOT DASHBOARD */}
           <Route index element={<Navigate to="products" />} />
+          
+          {/* ✅ DASHBOARD */}
+          <Route path="dashboard" element={<Dashboard />} />
           
           {/* Products */}
           <Route path="products" element={<Products />} />
           <Route path="products/create" element={<ProductForm />} />
           <Route path="products/edit/:id" element={<ProductForm />} />
+          
+          {/* ✅ CATEGORIES - NEW */}
+          <Route path="categories" element={<AdminCategories />} />
           
           {/* Blogs */}
           <Route path="blogs" element={<Blogs />} />
