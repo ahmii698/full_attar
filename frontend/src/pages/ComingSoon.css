@@ -1,0 +1,548 @@
+/* src/pages/ComingSoon.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+.coming-soon-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  padding: 20px;
+  margin-top: -80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background Glow Effects */
+.coming-soon-page::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
+  animation: glowPulse 8s ease-in-out infinite;
+}
+
+.coming-soon-page::after {
+  content: '';
+  position: absolute;
+  bottom: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 70% 50%, rgba(212, 175, 55, 0.04) 0%, transparent 60%);
+  animation: glowPulse 8s ease-in-out infinite reverse;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Wrapper */
+.coming-soon-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 60px;
+  max-width: 1200px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 24px;
+  padding: 50px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== LEFT SIDE - DECORATIVE WITH REAL IMAGE ===== */
+.coming-soon-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.coming-soon-decoration {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animated Circles */
+.deco-circle {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 50%;
+  animation: spin 20s linear infinite;
+}
+
+.deco-circle-2 {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  border: 1px solid rgba(212, 175, 55, 0.08);
+  border-radius: 50%;
+  animation: spin 15s linear infinite reverse;
+}
+
+.deco-circle-3 {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border: 1px solid rgba(212, 175, 55, 0.05);
+  border-radius: 50%;
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ✅ Real Shoe Image Wrapper */
+.deco-shoe-image-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 60px rgba(212, 175, 55, 0.1);
+  animation: floatImage 4s ease-in-out infinite;
+}
+
+@keyframes floatImage {
+  0%, 100% { 
+    transform: translateY(0) scale(1);
+  }
+  50% { 
+    transform: translateY(-12px) scale(1.02);
+  }
+}
+
+.deco-shoe-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.deco-shoe-image-wrapper:hover .deco-shoe-image {
+  transform: scale(1.08);
+}
+
+/* Shoe Glow Effect */
+.shoe-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* ===== RIGHT SIDE - CONTENT ===== */
+.coming-soon-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Badge */
+.coming-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 50px;
+  padding: 8px 20px;
+  width: fit-content;
+  font-size: 13px;
+  font-weight: 600;
+  color: #d4af37;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.badge-icon {
+  font-size: 16px;
+}
+
+/* Title */
+.coming-soon-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 52px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.5px;
+  animation: fadeInUp 0.6s ease 0.1s forwards;
+  opacity: 0;
+}
+
+.coming-soon-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: #d4af37;
+  margin-top: 12px;
+  border-radius: 2px;
+}
+
+/* Subtitle */
+.coming-soon-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(212, 175, 55, 0.8);
+  margin: 0;
+  animation: fadeInUp 0.6s ease 0.2s forwards;
+  opacity: 0;
+}
+
+/* Text */
+.coming-soon-text {
+  font-family: 'Inter', sans-serif;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0;
+  max-width: 90%;
+  animation: fadeInUp 0.6s ease 0.3s forwards;
+  opacity: 0;
+}
+
+/* Features */
+.coming-soon-features {
+  display: flex;
+  gap: 30px;
+  margin-top: 6px;
+  animation: fadeInUp 0.6s ease 0.4s forwards;
+  opacity: 0;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.feature-icon {
+  font-size: 20px;
+  color: #d4af37;
+}
+
+/* Progress Loader */
+.coming-soon-loader-wrapper {
+  margin-top: 10px;
+  animation: fadeInUp 0.6s ease 0.5s forwards;
+  opacity: 0;
+}
+
+.coming-soon-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-bar {
+  width: 100%;
+  max-width: 350px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(90deg, #d4af37, #f5e56b);
+  border-radius: 4px;
+  animation: progressFill 2s ease-in-out infinite;
+}
+
+@keyframes progressFill {
+  0% { width: 45%; }
+  50% { width: 75%; }
+  100% { width: 45%; }
+}
+
+.progress-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Buttons */
+.coming-soon-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  animation: fadeInUp 0.6s ease 0.6s forwards;
+  opacity: 0;
+}
+
+.coming-soon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 30px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.coming-soon-btn .btn-icon {
+  font-size: 18px;
+}
+
+/* Primary Button */
+.coming-soon-btn.primary {
+  background: #d4af37;
+  color: #000000;
+  border: none;
+}
+
+.coming-soon-btn.primary:hover {
+  background: #c4a030;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(212, 175, 55, 0.3);
+}
+
+/* Secondary Button */
+.coming-soon-btn.secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.coming-soon-btn.secondary:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+  transform: translateY(-3px);
+}
+
+/* Notification */
+.coming-soon-notify {
+  margin-top: 8px;
+  animation: fadeInUp 0.6s ease 0.7s forwards;
+  opacity: 0;
+}
+
+.notify-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 18px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .coming-soon-wrapper {
+    grid-template-columns: 1fr;
+    padding: 40px;
+    gap: 40px;
+    max-width: 600px;
+  }
+
+  .coming-soon-left {
+    order: -1;
+  }
+
+  .deco-shoe-image-wrapper {
+    width: 220px;
+    height: 220px;
+  }
+
+  .deco-circle {
+    width: 260px;
+    height: 260px;
+  }
+
+  .deco-circle-2 {
+    width: 200px;
+    height: 200px;
+  }
+
+  .deco-circle-3 {
+    width: 140px;
+    height: 140px;
+  }
+
+  .coming-soon-title {
+    font-size: 40px;
+  }
+
+  .coming-soon-features {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .coming-soon-text {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .coming-soon-wrapper {
+    padding: 30px 24px;
+    gap: 30px;
+    border-radius: 16px;
+  }
+
+  .coming-soon-title {
+    font-size: 32px;
+  }
+
+  .coming-soon-subtitle {
+    font-size: 17px;
+  }
+
+  .coming-soon-text {
+    font-size: 15px;
+  }
+
+  .coming-soon-features {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .coming-soon-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .coming-soon-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .deco-shoe-image-wrapper {
+    width: 180px;
+    height: 180px;
+  }
+
+  .deco-circle {
+    width: 220px;
+    height: 220px;
+  }
+
+  .deco-circle-2 {
+    width: 170px;
+    height: 170px;
+  }
+
+  .deco-circle-3 {
+    width: 120px;
+    height: 120px;
+  }
+
+  .coming-soon-badge {
+    font-size: 11px;
+    padding: 6px 16px;
+  }
+
+  .coming-soon-page {
+    margin-top: -60px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .coming-soon-wrapper {
+    padding: 24px 16px;
+    gap: 24px;
+  }
+
+  .coming-soon-title {
+    font-size: 26px;
+  }
+
+  .coming-soon-title::after {
+    width: 40px;
+    height: 2px;
+  }
+
+  .coming-soon-subtitle {
+    font-size: 15px;
+  }
+
+  .coming-soon-text {
+    font-size: 14px;
+  }
+
+  .coming-soon-btn {
+    font-size: 14px;
+    padding: 12px 24px;
+  }
+
+  .deco-shoe-image-wrapper {
+    width: 150px;
+    height: 150px;
+  }
+
+  .deco-circle {
+    width: 180px;
+    height: 180px;
+  }
+
+  .deco-circle-2 {
+    width: 140px;
+    height: 140px;
+  }
+
+  .deco-circle-3 {
+    width: 100px;
+    height: 100px;
+  }
+
+  .coming-soon-page {
+    margin-top: -40px;
+    padding: 10px;
+  }
+}

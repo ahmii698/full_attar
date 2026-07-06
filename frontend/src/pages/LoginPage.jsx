@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { FaSpinner, FaEnvelope, FaLock, FaUser, FaArrowRight, FaEye, FaEyeSlash } from 'react-icons/fa'
-import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
+import { API_URL } from '../../config'
 import './LoginPage.css'
 
 function LoginPage({ redirectTo }) {
@@ -63,7 +63,6 @@ function LoginPage({ redirectTo }) {
     setError('')
     setSignupSuccess(false)
     
-    // ✅ Client-side validation
     if (signupData.password !== signupData.password_confirmation) {
       setError('Passwords do not match')
       setLoading(false)
@@ -77,7 +76,7 @@ function LoginPage({ redirectTo }) {
     }
 
     try {
-      const response = await fetch(`${API_URL}/register`, {  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -145,7 +144,7 @@ function LoginPage({ redirectTo }) {
     setOtpMessage('')
 
     try {
-      const response = await fetch(`${API_URL}/user/forgot-password`, {  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/user/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: otpEmail })
@@ -189,7 +188,7 @@ function LoginPage({ redirectTo }) {
     setOtpMessage('')
 
     try {
-      const response = await fetch(`${API_URL}/user/verify-otp`, {  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/user/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: otpEmail, otp: otp })
@@ -228,7 +227,7 @@ function LoginPage({ redirectTo }) {
     setOtpMessage('')
 
     try {
-      const response = await fetch(`${API_URL}/user/reset-password`, {  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/user/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -267,7 +266,7 @@ function LoginPage({ redirectTo }) {
     }
   }
 
-  // Forgot Password View (Code remains same, only API_URL changed)
+  // Forgot Password View
   if (showForgotPassword) {
     return (
       <div className="auth-page">
@@ -431,7 +430,7 @@ function LoginPage({ redirectTo }) {
                   <div className={`toggle-slider ${isLogin ? 'left' : 'right'}`} style={{ position: 'absolute', top: '4px', left: '4px', height: 'calc(100% - 8px)', width: 'calc(50% - 4px)', background: 'linear-gradient(135deg, #d4af37, #b8960c)', borderRadius: '50px', transition: 'all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)', zIndex: '1', transform: isLogin ? 'translateX(0)' : 'translateX(100%)' }}></div>
                 </div>
 
-                <div className={`card-3d-wrap mx-auto ${!isLogin ? 'show-signup' : ''}`} style={{ position: 'relative', width: '440px', maxWidth: '100%', height: '470px', transformStyle: 'preserve-3d', perspective: '800px', margin: '2px auto 0', transition: 'all 0.6s ease' }}>
+                <div className={`card-3d-wrap mx-auto ${!isLogin ? 'show-signup' : ''}`} style={{ position: 'relative', width: '440px', maxWidth: '100%', height: '500px', transformStyle: 'preserve-3d', perspective: '800px', margin: '2px auto 0', transition: 'all 0.6s ease' }}>
                   <div className="card-3d-wrapper" style={{ width: '100%', height: '100%', position: 'absolute', top: '0', left: '0', transformStyle: 'preserve-3d', transition: 'all 600ms ease-out', transform: !isLogin ? 'rotateY(180deg)' : 'rotateY(0deg)' }}>
                     
                     {/* Login Card - Front */}
@@ -517,39 +516,39 @@ function LoginPage({ redirectTo }) {
                           {error && <div className="auth-error" style={{ background: 'rgba(255,0,0,0.08)', color: '#ff6b6b', padding: '6px 10px', borderRadius: '6px', fontSize: '12px', width: '100%', marginBottom: '8px', textAlign: 'center', border: '1px solid rgba(255,0,0,0.08)' }}>{error}</div>}
                           {signupSuccess && <div className="auth-success" style={{ background: 'rgba(76,175,80,0.08)', color: '#4caf50', padding: '6px 10px', borderRadius: '6px', fontSize: '12px', width: '100%', marginBottom: '8px', textAlign: 'center', border: '1px solid rgba(76,175,80,0.08)' }}>✅ Account created! Please login.</div>}
                           
-                          {/* First Name */}
-                          <div className="form-group" style={{ marginBottom: '8px' }}>
-                            <label className="form-label" style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '12px', fontWeight: '500', marginBottom: '4px', textAlign: 'left', letterSpacing: '0.3px' }}>First Name</label>
-                            <div className="input-icon-wrapper" style={{ position: 'relative', width: '100%' }}>
-                              <FaUser className="input-icon" style={{ position: 'absolute', top: '50%', left: '14px', transform: 'translateY(-50%)', fontSize: '16px', color: '#d4af37', zIndex: '2', pointerEvents: 'none' }} />
-                              <input
-                                type="text"
-                                name="first_name"
-                                className="form-style"
-                                placeholder="John"
-                                value={signupData.first_name}
-                                onChange={handleSignupChange}
-                                required
-                                style={{ padding: '10px 16px 10px 42px', height: '40px', width: '100%', fontWeight: '500', borderRadius: '8px', fontSize: '13px', lineHeight: '22px', letterSpacing: '0.5px', outline: 'none', color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', transition: 'all 200ms linear', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', boxSizing: 'border-box' }}
-                              />
+                          {/* ✅ First Name & Last Name - SIDE BY SIDE */}
+                          <div className="form-row" style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
+                            <div className="form-group" style={{ flex: '1', marginBottom: '0' }}>
+                              <label className="form-label" style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '12px', fontWeight: '500', marginBottom: '4px', textAlign: 'left', letterSpacing: '0.3px' }}>First Name</label>
+                              <div className="input-icon-wrapper" style={{ position: 'relative', width: '100%' }}>
+                                <FaUser className="input-icon" style={{ position: 'absolute', top: '50%', left: '14px', transform: 'translateY(-50%)', fontSize: '16px', color: '#d4af37', zIndex: '2', pointerEvents: 'none' }} />
+                                <input
+                                  type="text"
+                                  name="first_name"
+                                  className="form-style"
+                                  placeholder="John"
+                                  value={signupData.first_name}
+                                  onChange={handleSignupChange}
+                                  required
+                                  style={{ padding: '10px 16px 10px 42px', height: '40px', width: '100%', fontWeight: '500', borderRadius: '8px', fontSize: '13px', lineHeight: '22px', letterSpacing: '0.5px', outline: 'none', color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', transition: 'all 200ms linear', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', boxSizing: 'border-box' }}
+                                />
+                              </div>
                             </div>
-                          </div>
-
-                          {/* Last Name */}
-                          <div className="form-group" style={{ marginBottom: '8px' }}>
-                            <label className="form-label" style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '12px', fontWeight: '500', marginBottom: '4px', textAlign: 'left', letterSpacing: '0.3px' }}>Last Name</label>
-                            <div className="input-icon-wrapper" style={{ position: 'relative', width: '100%' }}>
-                              <FaUser className="input-icon" style={{ position: 'absolute', top: '50%', left: '14px', transform: 'translateY(-50%)', fontSize: '16px', color: '#d4af37', zIndex: '2', pointerEvents: 'none' }} />
-                              <input
-                                type="text"
-                                name="last_name"
-                                className="form-style"
-                                placeholder="Doe"
-                                value={signupData.last_name}
-                                onChange={handleSignupChange}
-                                required
-                                style={{ padding: '10px 16px 10px 42px', height: '40px', width: '100%', fontWeight: '500', borderRadius: '8px', fontSize: '13px', lineHeight: '22px', letterSpacing: '0.5px', outline: 'none', color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', transition: 'all 200ms linear', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', boxSizing: 'border-box' }}
-                              />
+                            <div className="form-group" style={{ flex: '1', marginBottom: '0' }}>
+                              <label className="form-label" style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '12px', fontWeight: '500', marginBottom: '4px', textAlign: 'left', letterSpacing: '0.3px' }}>Last Name</label>
+                              <div className="input-icon-wrapper" style={{ position: 'relative', width: '100%' }}>
+                                <FaUser className="input-icon" style={{ position: 'absolute', top: '50%', left: '14px', transform: 'translateY(-50%)', fontSize: '16px', color: '#d4af37', zIndex: '2', pointerEvents: 'none' }} />
+                                <input
+                                  type="text"
+                                  name="last_name"
+                                  className="form-style"
+                                  placeholder="Doe"
+                                  value={signupData.last_name}
+                                  onChange={handleSignupChange}
+                                  required
+                                  style={{ padding: '10px 16px 10px 42px', height: '40px', width: '100%', fontWeight: '500', borderRadius: '8px', fontSize: '13px', lineHeight: '22px', letterSpacing: '0.5px', outline: 'none', color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', transition: 'all 200ms linear', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', boxSizing: 'border-box' }}
+                                />
+                              </div>
                             </div>
                           </div>
 

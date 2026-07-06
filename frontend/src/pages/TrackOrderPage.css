@@ -7,7 +7,7 @@
 }
 
 .track-order-container {
-  max-width: 700px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -30,19 +30,22 @@
 
 /* Search Form */
 .track-search-form {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  margin-bottom: 20px !important;
 }
 
 .track-input {
-  flex: 1;
-  padding: 14px 20px;
+  flex: 5 1 0% !important;
+  min-width: 0 !important;
+  width: auto !important;
+  padding: 16px 24px !important;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(212,175,55,0.2);
   border-radius: 12px;
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
   transition: 0.3s;
 }
 
@@ -54,10 +57,14 @@
 
 .track-input::placeholder {
   color: rgba(255,255,255,0.3);
+  font-size: 15px;
 }
 
 .track-btn {
-  padding: 14px 28px;
+  flex: 0 0 auto !important;
+  width: max-content !important;
+  min-width: unset !important;
+  padding: 0 24px !important;
   background: linear-gradient(135deg, #d4af37, #b8960c);
   border: none;
   border-radius: 12px;
@@ -67,6 +74,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   transition: 0.3s;
   white-space: nowrap;
@@ -297,7 +305,6 @@
   color: #ffc107;
 }
 
-/* ✅ GRAND TOTAL STYLES */
 .detail-row.grand-total {
   border-top: 1px solid rgba(212, 175, 55, 0.2);
   padding-top: 10px;
@@ -316,7 +323,6 @@
   font-size: 16px;
 }
 
-/* Subtotal and Shipping row style */
 .detail-row.subtotal span:last-child {
   color: rgba(255,255,255,0.9);
   font-weight: 500;
@@ -460,7 +466,9 @@
   }
 
   .track-btn {
+    width: 100% !important;
     justify-content: center;
+    padding: 14px 20px !important;
   }
 
   .details-grid {
@@ -509,6 +517,16 @@
 
   .track-order-header h1 {
     font-size: 24px;
+  }
+
+  .track-input {
+    padding: 14px 18px !important;
+    font-size: 14px;
+  }
+
+  .track-btn {
+    font-size: 12px;
+    padding: 12px 16px !important;
   }
 
   .order-status-card {

@@ -26,6 +26,9 @@ import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import FAQPage from './pages/FAQPage'
 
+// ✅ Coming Soon Page Import
+import ComingSoon from './pages/ComingSoon'
+
 // ========== ADMIN PANEL IMPORTS ==========
 import { AdminAuthProvider } from './admin/contexts/AdminAuthContext'
 import AdminLayout from './admin/components/AdminLayout'
@@ -90,6 +93,9 @@ function App() {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/faq" element={<FAQPage />} />
+              
+              {/* ✅ Coming Soon Page */}
+              <Route path="/coming-soon" element={<ComingSoon />} />
             </Routes>
           </main>
           <Footer />

@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'  // ✅ useLocation add kiya
 import { 
   FiSearch, FiUser, FiShoppingCart, FiMenu, FiX, FiHeart, FiLogOut,
-  FiGrid, FiWind, FiTag, FiStar, FiUsers, FiHome, FiAward, FiTrendingUp,
-  FiBook, FiTruck
+  FiGrid, FiWind, FiTag, FiStar, FiUsers
 } from 'react-icons/fi'
 import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
@@ -12,6 +11,7 @@ import { API_URL } from '../../config'
 
 function Navbar() {
   const navigate = useNavigate()
+  const location = useLocation()  // ✅ current page check karne ke liye
   const { user, logout } = useAuth()
   const { getCartCount, wishlistItems } = useCart()
   
@@ -22,7 +22,6 @@ function Navbar() {
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [searchLoading, setSearchLoading] = useState(false)
@@ -56,23 +55,19 @@ function Navbar() {
       
       if (result.success && result.data) {
         const data = result.data
-        
         setCategories(data)
         
-        // ✅ Headings dynamic with GENDER fix
         const newHeadings = {}
         Object.keys(data).forEach(key => {
           if (key === 'gender') {
-            newHeadings[key] = 'GENDER'  // ✅ Always show GENDER
+            newHeadings[key] = 'GENDER'
           } else if (data[key] && data[key].length > 0) {
             newHeadings[key] = data[key][0].name.toUpperCase()
           } else {
             newHeadings[key] = key.toUpperCase()
           }
         })
-        
         setHeadings(newHeadings)
-        
       } else {
         useFallbackCategories()
       }
@@ -140,7 +135,6 @@ function Navbar() {
       const products = await response.json()
       
       const searchTerm = query.toLowerCase().trim()
-      
       const matched = products.filter(product => 
         product.name.toLowerCase().includes(searchTerm)
       )
@@ -171,28 +165,24 @@ function Navbar() {
         setSearchResults([])
       }
     }, 300)
-    
     return () => clearTimeout(delayDebounce)
   }, [searchQuery])
   
   useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
+    if (searchInputRef.current) {
       setTimeout(() => searchInputRef.current.focus(), 100)
     }
-  }, [isSearchOpen])
+  }, [])
   
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target) && isSearchOpen) {
-        setIsSearchOpen(false)
-        setSearchQuery('')
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
         setSearchResults([])
       }
     }
-    
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isSearchOpen])
+  }, [])
   
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
@@ -223,7 +213,6 @@ function Navbar() {
   }
   
   const handleResultClick = (productName) => {
-    setIsSearchOpen(false)
     setSearchQuery('')
     setSearchResults([])
     navigate(`/shop?category=${encodeURIComponent(productName)}`)
@@ -235,17 +224,127 @@ function Navbar() {
     }
   }, [])
 
+  // ✅ Check if current page is home
+  const isHomePage = location.pathname === '/'
+
   return (
     <>
+      {/* ===== TOP NAVBAR ===== */}
       <nav className="navbar">
+        {/* LEFT: Logo */}
         <div className="logo">
           <Link to="/" className="logo-link">
             <img src={raLogo} alt="Royal Attar" className="logo-img" />
           </Link>
         </div>
         
-        <div className="nav-links">
-          <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+        {/* CENTER: Search Bar */}
+        <div className="search-wrapper" ref={searchContainerRef}>
+          <div className="search-bar-container">
+            <FiSearch className="search-icon" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search for products, flavours & more..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input-field"
+            />
+            {searchQuery && (
+              <button 
+                className="search-clear-btn"
+                onClick={() => setSearchQuery('')}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          
+          {/* Search Results */}
+          {searchResults.length > 0 && (
+            <div className="search-results-dropdown">
+              {searchLoading ? (
+                <div className="search-loading">Searching...</div>
+              ) : (
+                <>
+                  <div className="search-results-count">
+                    Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
+                  </div>
+                  {searchResults.map((product) => (
+                    <div
+                      key={product.product_id}
+                      className="search-result-item"
+                      onClick={() => handleResultClick(product.name)}
+                    >
+                      <div className="search-result-name">{product.name}</div>
+                      <div className="search-result-price">Rs. {product.price}</div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+        
+        {/* RIGHT: Icons */}
+        <div className="nav-icons">
+          {/* Wishlist */}
+          <div onClick={() => !user && navigate('/login')} style={{ cursor: 'pointer' }}>
+            <Link to={user ? "/wishlist" : "#"} className="icon-btn wishlist-link" onClick={(e) => !user && e.preventDefault()}>
+              <FiHeart />
+              {wishlistCount > 0 && <span className="cart-count">{wishlistCount}</span>}
+            </Link>
+          </div>
+          
+          {/* Cart */}
+          <div onClick={() => !user && navigate('/login')} style={{ cursor: 'pointer' }}>
+            <Link to={user ? "/cart" : "#"} className="icon-btn cart-icon" onClick={(e) => !user && e.preventDefault()}>
+              <FiShoppingCart />
+              {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+            </Link>
+          </div>
+          
+          {/* User/Account */}
+          <div className="user-menu-container">
+            {user ? (
+              <>
+                <button className="icon-btn user-btn" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
+                  <FiUser />
+                </button>
+                {isUserMenuOpen && (
+                  <div className="user-dropdown">
+                    <div className="user-info">
+                      <span className="user-name">{user.name}</span>
+                      <span className="user-email">{user.email}</span>
+                    </div>
+                    <Link to="/profile" onClick={() => setIsUserMenuOpen(false)}>My Profile</Link>
+                    <Link to="/orders" onClick={() => setIsUserMenuOpen(false)}>My Orders</Link>
+                    <Link to="/wishlist" onClick={() => setIsUserMenuOpen(false)}>Wishlist</Link>
+                    <Link to="/cart" onClick={() => setIsUserMenuOpen(false)}>Cart</Link>
+                    <button onClick={handleLogout} className="logout-btn">
+                      <FiLogOut /> Logout
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <Link to="/login" className="icon-btn">
+                <FiUser />
+              </Link>
+            )}
+          </div>
+        </div>
+        
+        {/* Mobile Menu Toggle */}
+        <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? <FiX /> : <FiMenu />}
+        </button>
+      </nav>
+      
+      {/* ===== BOTTOM NAV LINKS ===== */}
+      <div className="bottom-nav">
+        <div className="bottom-nav-content">
+          <NavLink to="/" className={({ isActive }) => isActive ? 'bottom-nav-link active' : 'bottom-nav-link'}>
             HOME
           </NavLink>
           
@@ -254,7 +353,7 @@ function Navbar() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <Link to="/shop" className="nav-link mega-trigger">
+            <Link to="/shop" className="bottom-nav-link mega-trigger">
               SHOP ▾
             </Link>
             
@@ -307,131 +406,28 @@ function Navbar() {
             )}
           </div>
           
-          <NavLink to="/best-sellers" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+          <NavLink to="/best-sellers" className={({ isActive }) => isActive ? 'bottom-nav-link active' : 'bottom-nav-link'}>
             BEST SELLERS
           </NavLink>
           
-          <NavLink to="/deals" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-           DEALS
+          <NavLink to="/deals" className={({ isActive }) => isActive ? 'bottom-nav-link active' : 'bottom-nav-link'}>
+            DEALS
           </NavLink>
           
-          <NavLink to="/blogs" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          BLOGS
+          <NavLink to="/blogs" className={({ isActive }) => isActive ? 'bottom-nav-link active' : 'bottom-nav-link'}>
+            BLOGS
           </NavLink>
           
-          <NavLink to="/track-order" className="nav-link">
-           TRACK ORDER
+          <NavLink to="/track-order" className={({ isActive }) => isActive ? 'bottom-nav-link active' : 'bottom-nav-link'}>
+            TRACK ORDER
           </NavLink>
         </div>
-        
-        <div className="nav-icons">
-          <div className="search-wrapper" ref={searchContainerRef}>
-            <button className="icon-btn" onClick={() => setIsSearchOpen(!isSearchOpen)}>
-              <FiSearch />
-            </button>
-            
-            {isSearchOpen && (
-              <div className="search-dropdown">
-                <div className="search-dropdown-header">
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="search-dropdown-input"
-                  />
-                  <button className="search-dropdown-close" onClick={() => {
-                    setIsSearchOpen(false)
-                    setSearchQuery('')
-                    setSearchResults([])
-                  }}>
-                    ✕
-                  </button>
-                </div>
-                
-                <div className="search-dropdown-results">
-                  {searchLoading ? (
-                    <div className="search-dropdown-loading">Searching...</div>
-                  ) : searchResults.length > 0 ? (
-                    <>
-                      <div className="search-dropdown-count">
-                        Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
-                      </div>
-                      {searchResults.map((product) => (
-                        <div
-                          key={product.product_id}
-                          className="search-dropdown-item"
-                          onClick={() => handleResultClick(product.name)}
-                        >
-                          <div className="search-dropdown-name">{product.name}</div>
-                          <div className="search-dropdown-price">{product.price}</div>
-                        </div>
-                      ))}
-                    </>
-                  ) : searchQuery ? (
-                    <div className="search-dropdown-empty">
-                      No products found for "{searchQuery}"
-                    </div>
-                  ) : (
-                    <div className="search-dropdown-empty">
-                      Type to search products
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-          
-          <div className="user-menu-container">
-            {user ? (
-              <>
-                <button className="icon-btn user-btn" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
-                  <FiUser />
-                </button>
-                {isUserMenuOpen && (
-                  <div className="user-dropdown">
-                    <div className="user-info">
-                      <span className="user-name">{user.name}</span>
-                      <span className="user-email">{user.email}</span>
-                    </div>
-                    <Link to="/profile" onClick={() => setIsUserMenuOpen(false)}>My Profile</Link>
-                    <Link to="/orders" onClick={() => setIsUserMenuOpen(false)}>My Orders</Link>
-                    <Link to="/wishlist" onClick={() => setIsUserMenuOpen(false)}>Wishlist</Link>
-                    <Link to="/cart" onClick={() => setIsUserMenuOpen(false)}>Cart</Link>
-                    <button onClick={handleLogout} className="logout-btn">
-                      <FiLogOut /> Logout
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <Link to="/login" className="icon-btn">
-                <FiUser />
-              </Link>
-            )}
-          </div>
-          
-          <div onClick={() => !user && navigate('/login')} style={{ cursor: 'pointer' }}>
-            <Link to={user ? "/wishlist" : "#"} className="icon-btn wishlist-link" onClick={(e) => !user && e.preventDefault()}>
-              <FiHeart />
-              {wishlistCount > 0 && <span className="cart-count">{wishlistCount}</span>}
-            </Link>
-          </div>
-          
-          <div onClick={() => !user && navigate('/login')} style={{ cursor: 'pointer' }}>
-            <Link to={user ? "/cart" : "#"} className="icon-btn cart-icon" onClick={(e) => !user && e.preventDefault()}>
-              <FiShoppingCart />
-              {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
-            </Link>
-          </div>
-        </div>
-        
-        <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          {isMobileMenuOpen ? <FiX /> : <FiMenu />}
-        </button>
-      </nav>
+      </div>
+
+      {/* ✅ SPACER - ONLY ON NON-HOME PAGES */}
+      {!isHomePage && <div className="navbar-spacer"></div>}
       
+      {/* ===== MOBILE MENU ===== */}
       {isMobileMenuOpen && (
         <div className="mobile-menu">
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>HOME</Link>

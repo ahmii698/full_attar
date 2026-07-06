@@ -23,19 +23,8 @@
   margin-left: auto;
 }
 
-.banner-overlay-full {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 100%);
-  z-index: 1;
-}
-
-.category-banner-full.text-right .banner-overlay-full {
-  background: linear-gradient(270deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 100%);
-}
+/* ✅ OVERLAY COMPLETELY REMOVED */
+/* .banner-overlay-full { ... } */
 
 .banner-content-full {
   position: relative;
@@ -44,10 +33,19 @@
   padding: 40px;
 }
 
+/* ✅ Text ke liye shadow add kiya taake image par clear dikhe */
+.banner-content-full h2,
+.banner-content-full p,
+.banner-content-full .banner-tag-full,
+.banner-content-full .banner-btn-full {
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+}
+
 .banner-tag-full {
   display: inline-block;
-  background: rgba(212,175,55,0.15);
-  border: 1px solid rgba(212,175,55,0.3);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
   padding: 6px 18px;
   border-radius: 50px;
   font-size: 12px;
@@ -61,6 +59,7 @@
   margin-bottom: 15px;
   line-height: 1.2;
   color: #ffffff;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
 }
 
 .banner-content-full .gold {
@@ -71,15 +70,17 @@
 }
 
 .banner-content-full p {
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 16px;
   line-height: 1.6;
   margin-bottom: 25px;
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
 }
 
 .banner-btn-full {
-  background: transparent;
-  border: 1px solid rgba(212,175,55,0.5);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 175, 55, 0.5);
   padding: 12px 32px;
   border-radius: 50px;
   font-size: 14px;
@@ -87,10 +88,12 @@
   color: #d4af37;
   cursor: pointer;
   transition: 0.3s;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .banner-btn-full:hover {
-  background: rgba(212,175,55,0.1);
+  background: rgba(212, 175, 55, 0.2);
   border-color: #d4af37;
   transform: translateX(5px);
 }
@@ -135,11 +138,11 @@
   }
   
   .banner-content-full h2 {
-    font-size: 24px;
+    font-size: 28px;
   }
   
   .banner-content-full p {
-    font-size: 12px;
+    font-size: 13px;
   }
   
   .banner-tag-full {
@@ -156,13 +159,40 @@
 @media (max-width: 480px) {
   .category-banner-full {
     height: 220px;
+    margin: 15px 0;
+  }
+  
+  .category-banner-full.text-left .banner-content-full {
+    margin-left: 12px;
+  }
+  
+  .category-banner-full.text-right .banner-content-full {
+    margin-right: 12px;
+  }
+  
+  .banner-content-full {
+    max-width: 95%;
+    padding: 12px;
   }
   
   .banner-content-full h2 {
     font-size: 20px;
+    margin-bottom: 6px;
   }
   
   .banner-content-full p {
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  
+  .banner-tag-full {
+    font-size: 9px;
+    padding: 3px 10px;
+    margin-bottom: 10px;
+  }
+  
+  .banner-btn-full {
+    padding: 6px 16px;
     font-size: 10px;
   }
 }

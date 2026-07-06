@@ -39,7 +39,7 @@ function DealsPage() {
     return (
       <div className="shop-page">
         <div className="shop-header">
-          <h1>Hot Deals 🔥</h1>
+          <h1>Hot Deals </h1>
           <p>Limited time offers. Up to 40% off on selected attars!</p>
         </div>
         <div className="loading-container">
@@ -55,7 +55,7 @@ function DealsPage() {
     return (
       <div className="shop-page">
         <div className="shop-header">
-          <h1>Hot Deals 🔥</h1>
+          <h1>Hot Deals </h1>
           <p>Limited time offers. Up to 40% off on selected attars!</p>
         </div>
         <div className="error-container">
@@ -69,7 +69,7 @@ function DealsPage() {
   return (
     <div className="shop-page">
       <div className="shop-header">
-        <h1>Hot Deals 🔥</h1>
+        <h1>Hot Deals </h1>
         <p>Limited time offers. Up to 40% off on selected attars!</p>
       </div>
       

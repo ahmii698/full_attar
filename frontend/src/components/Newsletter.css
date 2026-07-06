@@ -98,17 +98,19 @@
 }
 
 /* =========================
-   SUBSCRIBE BUTTON - SMALL
+   SUBSCRIBE BUTTON - SMALL & CENTERED
 ========================= */
 
 .subscribe-btn {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
+  align-self: center !important;   /* ✅ Button ab center mein aayega */
   gap: 8px;
 
-  width: auto;
-  padding: 10px 24px;
+  width: fit-content !important;
+  flex: 0 0 auto !important;
+  padding: 10px 24px !important;
 
   border: none;
   border-radius: 50px;
@@ -182,6 +184,10 @@
     align-items: center;
   }
 
+  .subscribe-btn {
+    align-self: center !important;
+  }
+
   .newsletter-content h2 {
     font-size: 40px;
   }
@@ -217,7 +223,8 @@
   }
 
   .subscribe-btn {
-    padding: 8px 20px;
+    align-self: center !important;
+    padding: 8px 20px !important;
     font-size: 13px;
   }
 

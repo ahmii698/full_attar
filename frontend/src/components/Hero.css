@@ -1,328 +1,199 @@
 /* =========================
-   HERO SECTION - SIRF TEXT BARA
+   HERO SLIDER - DOTS LEFT SIDE
 ========================= */
 
-.hero-wrapper {
-  min-height: calc(100vh - 65px);
-  display: flex;
-  align-items: center;
-  padding: 0 60px;
+.hero-slider-wrapper {
+  width: 100%;
+  height: calc(100vh - 120px);
+  min-height: 400px;
+  max-height: 700px;
+  overflow: hidden;
+  position: relative;
   background: #000000;
   margin-top: 0 !important;
   padding-top: 0 !important;
-}
-
-.main-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 50px;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding-top: 0 !important;
+  margin-bottom: 0 !important;
   padding-bottom: 0 !important;
 }
 
-.left-content {
-  flex: 1;
-  max-width: 600px;
-  padding: 0 !important;
+.hero-slider-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(212,175,55,0.25);
-  padding: 8px 20px;          /* ✅ 6px 16px se 8px 20px kiya */
+.hero-slider-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.8s ease;
+}
+
+/* ============================================
+   HORIZONTAL DOTS - LEFT SIDE
+   ============================================ */
+.hero-slider-dots {
+  position: absolute;
+  bottom: 60px;
+  left: 40px;  /* ✅ Center se Left kar diya */
+  transform: none;  /* ✅ Center se hata diya */
+  display: flex;
+  gap: 16px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  padding: 12px 24px;
   border-radius: 50px;
-  margin-bottom: 25px;
+  border: 1px solid rgba(212, 175, 55, 0.15);
 }
 
-.badge-dot {
-  width: 8px;
-  height: 8px;
-  background: #d4af37;
+.hero-dot {
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  animation: pulse 1.5s infinite;
-  box-shadow: 0 0 8px #d4af37;
-}
-
-@keyframes pulse {
-  0%,100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-
-/* ✅ MAIN TITLE - BARA */
-.main-title {
-  font-size: 54px;            /* ✅ 48px se 54px kiya */
-  font-weight: 800;           /* ✅ 700 se 800 kiya */
-  line-height: 1.2;
-  color: #fff;
-  margin-bottom: 20px;
-}
-
-.gold {
-  color: #d4af37;
-}
-
-/* ✅ DESCRIPTION - BARA */
-.description {
-  color: rgba(255,255,255,0.75);
-  font-size: 17px;            /* ✅ 15px se 17px kiya */
-  line-height: 1.7;           /* ✅ 1.6 se 1.7 kiya */
-  margin-bottom: 16px;
-}
-
-.stats {
-  display: flex;
-  justify-content: flex-start;
-  gap: 40px;
-  margin: 30px 0;
-  padding: 15px 0;
-  border-top: 1px solid rgba(212,175,55,0.15);
-  border-bottom: 1px solid rgba(212,175,55,0.15);
-}
-
-.stat {
-  text-align: center;
-}
-
-/* ✅ STAT NUMBER - BARA */
-.stat h3 {
-  font-size: 32px;            /* ✅ 28px se 32px kiya */
-  color: #d4af37;
-  margin-bottom: 4px;
-}
-
-/* ✅ STAT LABEL - BARA */
-.stat p {
-  font-size: 14px;            /* ✅ 12px se 14px kiya */
-  color: rgba(255,255,255,0.6);
-}
-
-.button-group {
-  display: flex;
-  justify-content: flex-start;
-  width: 100%;
-}
-
-/* ✅ EXPLORE BUTTON - BARA */
-.explore-btn {
-  background: linear-gradient(135deg, #d4af37, #b8960c);
-  border: none;
-  color: #000000;
-  font-size: 18px;            /* ✅ 16px se 18px kiya */
-  font-weight: 700;           /* ✅ 600 se 700 kiya */
-  padding: 14px 32px;         /* ✅ 12px 28px se 14px 32px kiya */
-  border-radius: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
   cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 0;
 }
 
-.explore-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
-  gap: 15px;
+.hero-dot:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  transform: scale(1.2);
 }
 
-/* Right Side - Bottle Image */
-.right-content {
-  flex: 0.8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 !important;
+.hero-dot.active {
+  background: #d4af37;
+  border-color: #d4af37;
+  transform: scale(1.4);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
 }
 
-.bottle-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* ============================================
+   BOTTOM - PROGRESS BAR
+   ============================================ */
+.hero-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  z-index: 10;
 }
 
-.bottle-img {
-  width: 100%;
-  max-width: 550px;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.4));
-  animation: gentleFloat 3s ease-in-out infinite;
-  will-change: transform;
+.hero-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d4af37, #f5e56b);
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
 }
 
-@keyframes gentleFloat {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
-  100% { transform: translateY(0px); }
-}
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 
-/* ========== RESPONSIVE STYLES ========== */
-
-/* Tablet Landscape (1024px - 1200px) */
-@media (max-width: 1200px) {
-  .hero-wrapper {
-    padding: 0 40px;
-  }
-  
-  .main-content {
-    gap: 40px;
-  }
-  
-  .left-content {
-    max-width: 500px;
-  }
-  
-  .main-title {
-    font-size: 44px;          /* ✅ 40px se 44px kiya */
-  }
-  
-  .description {
-    font-size: 15px;          /* ✅ 14px se 15px kiya */
-  }
-  
-  .stats {
-    gap: 30px;
-  }
-  
-  .stat h3 {
-    font-size: 28px;          /* ✅ 24px se 28px kiya */
-  }
-  
-  .bottle-img {
-    max-width: 450px;
-  }
-}
-
-/* Tablet Portrait (768px - 1024px) */
 @media (max-width: 1024px) {
-  .hero-wrapper {
-    min-height: auto;
-    padding: 40px 40px;
+  .hero-slider-wrapper {
+    height: calc(100vh - 110px);
+    min-height: 350px;
+    max-height: 600px;
   }
   
-  .main-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 40px;
+  .hero-slider-dots {
+    bottom: 50px;
+    left: 30px;  /* ✅ Responsive left */
+    padding: 10px 20px;
+    gap: 14px;
   }
   
-  .left-content {
-    max-width: 100%;
-    text-align: center;
-  }
-  
-  .badge {
-    margin: 0 auto 25px auto;
-  }
-  
-  .stats {
-    justify-content: center;
-  }
-  
-  .button-group {
-    justify-content: center;
-  }
-  
-  .right-content {
-    width: 100%;
-    max-width: 450px;
-    margin: 0 auto;
-  }
-  
-  .bottle-img {
-    max-width: 400px;
+  .hero-dot {
+    width: 12px;
+    height: 12px;
   }
 }
 
-/* Mobile (up to 768px) */
 @media (max-width: 768px) {
-  .hero-wrapper {
-    padding: 30px 20px;
+  .hero-slider-wrapper {
+    height: calc(100vh - 100px);
+    min-height: 300px;
+    max-height: 500px;
   }
   
-  .main-title {
-    font-size: 36px;          /* ✅ 32px se 36px kiya */
+  .hero-slider-dots {
+    bottom: 40px;
+    left: 20px;  /* ✅ Responsive left */
+    padding: 8px 16px;
+    gap: 12px;
   }
   
-  .description {
-    font-size: 15px;          /* ✅ 13px se 15px kiya */
+  .hero-dot {
+    width: 10px;
+    height: 10px;
+    border-width: 1.5px;
   }
   
-  .stats {
-    gap: 25px;
-    flex-wrap: wrap;
-    justify-content: center;
+  .hero-dot.active {
+    transform: scale(1.3);
   }
   
-  .stat h3 {
-    font-size: 26px;          /* ✅ 22px se 26px kiya */
-  }
-  
-  .stat p {
-    font-size: 13px;          /* ✅ 11px se 13px kiya */
-  }
-  
-  .explore-btn {
-    font-size: 16px;          /* ✅ 14px se 16px kiya */
-    padding: 12px 28px;       /* ✅ 10px 24px se 12px 28px kiya */
-  }
-  
-  .right-content {
-    max-width: 350px;
-  }
-  
-  .bottle-img {
-    max-width: 320px;
+  .hero-progress-bar {
+    height: 3px;
   }
 }
 
-/* Mobile Small (up to 480px) */
 @media (max-width: 480px) {
-  .hero-wrapper {
-    padding: 20px 15px;
+  .hero-slider-wrapper {
+    height: calc(100vh - 90px);
+    min-height: 250px;
+    max-height: 400px;
   }
   
-  .main-title {
-    font-size: 30px;          /* ✅ 28px se 30px kiya */
+  .hero-slider-dots {
+    bottom: 30px;
+    left: 15px;  /* ✅ Responsive left */
+    padding: 6px 14px;
+    gap: 10px;
   }
   
-  .description {
-    font-size: 14px;          /* ✅ 12px se 14px kiya */
+  .hero-dot {
+    width: 8px;
+    height: 8px;
+    border-width: 1.5px;
   }
   
-  .badge span {
-    font-size: 12px;          /* ✅ 11px se 12px kiya */
+  .hero-dot.active {
+    transform: scale(1.3);
   }
   
-  .stats {
-    gap: 15px;
+  .hero-progress-bar {
+    height: 2px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-slider-wrapper {
+    height: calc(100vh - 85px);
+    min-height: 200px;
+    max-height: 350px;
   }
   
-  .stat h3 {
-    font-size: 22px;          /* ✅ 18px se 22px kiya */
+  .hero-slider-dots {
+    bottom: 25px;
+    left: 12px;  /* ✅ Responsive left */
+    padding: 5px 12px;
+    gap: 8px;
   }
   
-  .stat p {
-    font-size: 11px;          /* ✅ 9px se 11px kiya */
-  }
-  
-  .explore-btn {
-    font-size: 14px;          /* ✅ 13px se 14px kiya */
-    padding: 10px 24px;       /* ✅ 8px 20px se 10px 24px kiya */
-  }
-  
-  .right-content {
-    max-width: 280px;
-  }
-  
-  .bottle-img {
-    max-width: 260px;
+  .hero-dot {
+    width: 7px;
+    height: 7px;
+    border-width: 1px;
   }
 }

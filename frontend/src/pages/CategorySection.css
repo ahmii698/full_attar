@@ -8,9 +8,10 @@
   margin: 0 auto;
 }
 
+/* ✅ 4 columns grid */
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 28px;
 }
 
@@ -47,7 +48,6 @@
   transition: border-color 0.45s ease, transform 0.45s ease;
 }
 
-/* ✅ Image is now its own layer so we can brighten it independently of the overlay */
 .category-card-image {
   position: absolute;
   inset: 0;
@@ -63,7 +63,6 @@
   filter: brightness(1.35) contrast(1.08) saturate(1.15);
 }
 
-/* ✅ Much lighter overlay — only darkens the bottom third where text sits */
 .category-card-overlay {
   position: absolute;
   inset: 0;
@@ -210,9 +209,10 @@
   font-family: 'Inter', sans-serif;
 }
 
+/* ✅ Responsive: 4 columns se 3 columns */
 @media (max-width: 1024px) {
   .category-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 18px;
   }
 
@@ -233,6 +233,15 @@
   }
 }
 
+/* ✅ Tablet: 4 columns se 2 columns */
+@media (max-width: 900px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+}
+
+/* ✅ Mobile: 2 columns se 1 column */
 @media (max-width: 768px) {
   .category-section-wrapper {
     padding: 56px 16px 40px;
@@ -294,8 +303,7 @@
   }
 }
 
-/* Add these styles at the end of your CSS file */
-
+/* Error and Empty States */
 .category-error {
   text-align: center;
   padding: 60px 20px;
