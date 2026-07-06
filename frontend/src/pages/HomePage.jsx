@@ -5,7 +5,7 @@ import Hero from '../components/Hero'
 import SectionHeading from '../components/SectionHeading'
 import ProductCard from '../components/ProductCard'
 import CategoryBanner from '../components/CategoryBanner'
-import CategorySection from './CategorySection'  // ✅ IMPORT CategorySection
+import CategorySection from './CategorySection'
 import FAQSection from '../components/FAQSection'
 import TestimonialSlider from '../components/TestimonialSlider'
 import ContactPage from './ContactPage'
@@ -17,8 +17,9 @@ function HomePage() {
   const [deals, setDeals] = useState([])
   const [banners, setBanners] = useState([])
   const [dataLoaded, setDataLoaded] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [pageReady, setPageReady] = useState(true) // Always ready
 
+  // Cache se data load karo immediately
   useEffect(() => {
     const cachedData = sessionStorage.getItem('homepage_data')
     if (cachedData) {
@@ -28,61 +29,47 @@ function HomePage() {
         setDeals(parsed.deals || [])
         setBanners(parsed.banners || [])
         setDataLoaded(true)
-        setIsLoading(false)
-        console.log('✅ Homepage data loaded from cache')
-      } catch (e) {
-        console.error('Cache parse error:', e)
-      }
+      } catch (e) {}
     }
   }, [])
 
-  const fetchData = useCallback(async () => {
-    try {
-      console.log('🔄 Fetching data from:', API_URL)
-      
-      const [topRes, dealsRes, bannersRes] = await Promise.all([
-        fetch(`${API_URL}/top-sellers`),
-        fetch(`${API_URL}/deals`),
-        fetch(`${API_URL}/banners`)
-      ])
-      
-      if (!topRes.ok) throw new Error(`top-sellers: ${topRes.status}`)
-      if (!dealsRes.ok) throw new Error(`deals: ${dealsRes.status}`)
-      if (!bannersRes.ok) throw new Error(`banners: ${bannersRes.status}`)
-      
-      const topData = await topRes.json()
-      const dealsData = await dealsRes.json()
-      const bannersData = await bannersRes.json()
-      
-      try {
-        sessionStorage.setItem('homepage_data', JSON.stringify({
-          topSellers: topData,
-          deals: dealsData,
-          banners: bannersData
-        }))
-        console.log('✅ Homepage data cached')
-      } catch (e) {
-        console.error('Cache save error:', e)
-      }
-      
-      setTopSellers(topData)
-      setDeals(dealsData)
-      setBanners(bannersData)
-      setDataLoaded(true)
-      
-    } catch (err) {
-      console.error('❌ Error fetching data:', err)
-      setDataLoaded(true)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
-
+  // Background mein data fetch karo
   useEffect(() => {
-    if (!dataLoaded) {
-      fetchData()
+    const fetchData = async () => {
+      try {
+        const [topRes, dealsRes, bannersRes] = await Promise.all([
+          fetch(`${API_URL}/top-sellers`),
+          fetch(`${API_URL}/deals`),
+          fetch(`${API_URL}/banners`)
+        ])
+        
+        if (topRes.ok && dealsRes.ok && bannersRes.ok) {
+          const [topData, dealsData, bannersData] = await Promise.all([
+            topRes.json(),
+            dealsRes.json(),
+            bannersRes.json()
+          ])
+          
+          try {
+            sessionStorage.setItem('homepage_data', JSON.stringify({
+              topSellers: topData,
+              deals: dealsData,
+              banners: bannersData
+            }))
+          } catch (e) {}
+          
+          setTopSellers(topData)
+          setDeals(dealsData)
+          setBanners(bannersData)
+          setDataLoaded(true)
+        }
+      } catch (err) {
+        setDataLoaded(true)
+      }
     }
-  }, [dataLoaded, fetchData])
+
+    fetchData()
+  }, [])
 
   const getImageUrl = useCallback((imagePath) => {
     if (!imagePath) return null
@@ -98,7 +85,7 @@ function HomePage() {
     <section className="products-section">
       <SectionHeading title="Best Sellers" subtitle="Our most loved fragrances" />
       <div className="products-grid">
-        {dataLoaded && displayTopSellers.length === 0 ? (
+        {displayTopSellers.length === 0 ? (
           <div className="no-products">No top sellers found.</div>
         ) : (
           displayTopSellers.map(product => (
@@ -122,13 +109,13 @@ function HomePage() {
         <Link to="/best-sellers" className="view-all-btn">View All →</Link>
       </div>
     </section>
-  ), [displayTopSellers, dataLoaded, getImageUrl])
+  ), [displayTopSellers, getImageUrl])
 
   const DealsSection = useMemo(() => (
     <section className="products-section">
       <SectionHeading title="Hot Deals" subtitle="Limited time offers" />
       <div className="products-grid">
-        {dataLoaded && displayDeals.length === 0 ? (
+        {displayDeals.length === 0 ? (
           <div className="no-products">No active deals at the moment. Check back soon!</div>
         ) : (
           displayDeals.map(product => (
@@ -152,7 +139,7 @@ function HomePage() {
         <Link to="/deals" className="view-all-btn">View All →</Link>
       </div>
     </section>
-  ), [displayDeals, dataLoaded, getImageUrl])
+  ), [displayDeals, getImageUrl])
 
   const BannersSection = useMemo(() => (
     dataLoaded && banners.length > 0 && banners.map((banner, index) => (
@@ -182,19 +169,11 @@ function HomePage() {
     </a>
   ), [])
 
-  if (isLoading && !dataLoaded) {
-    return (
-      <div className="homepage">
-        <Hero />
-      </div>
-    )
-  }
-
+  // ✅ Page instantly open with Hero + Categories
   return (
     <div className="homepage">
       <Hero />
       
-      {/* ✅ Category Section - 3 Categories (Premium, Western, Eastern) */}
       <CategorySection />
       
       {BestSellersSection}

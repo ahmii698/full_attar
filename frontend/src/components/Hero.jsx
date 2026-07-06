@@ -1,14 +1,27 @@
 import { useState, useEffect } from 'react'
 import BottleImage from './BottleImage'
-import { API_URL, STORAGE_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
+import { API_URL, STORAGE_URL } from '../../config'
+
+// ✅ Direct fallback image - instantly visible
+const FALLBACK_HERO = {
+  title: 'The Royal Essence',
+  subtitle: 'of Pure Oud',
+  description: 'Handcrafted with ancient techniques passed down through generations, our Royal Oud Attar is aged for 12 months in traditional copper vessels.',
+  badge_text: 'Premium Attar Since 1985',
+  button_text: 'Explore Collection',
+  button_link: '/shop',
+  image_url: '/images/hero/1781205304_a3.png' // Direct path
+}
 
 function Hero() {
-  const [heroData, setHeroData] = useState(null)
-  const [stats, setStats] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [heroData, setHeroData] = useState(FALLBACK_HERO) // ✅ Immediately show fallback
+  const [stats, setStats] = useState([
+    { stat_value: '60', stat_label: 'Natural Ingredients' },
+    { stat_value: '24', stat_label: 'Hours Longevity' },
+    { stat_value: '50', stat_label: 'Premium Blends' }
+  ])
+  const [loading, setLoading] = useState(false)
 
-  // ✅ USING CONFIG
   const APP_URL = STORAGE_URL.replace('/storage', '') || 'http://127.0.0.1:8000'
 
   useEffect(() => {
@@ -18,22 +31,18 @@ function Hero() {
 
   const fetchHeroData = async () => {
     try {
-      const response = await fetch(`${API_URL}/hero`)  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/hero`)
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
       
-      // ✅ RAW TEXT LO - Handle `//` issue
       let text = await response.text()
-      console.log('Raw hero response:', text)
       
-      // ✅ Remove leading '//' if present
       if (text.startsWith('//')) {
         text = text.substring(2).trim()
       }
       
-      // ✅ Parse JSON
       const data = JSON.parse(text)
       
       let activeSlider = null
@@ -44,31 +53,28 @@ function Hero() {
         activeSlider = data
       }
       
-      setHeroData(activeSlider)
+      if (activeSlider) {
+        setHeroData(activeSlider)
+      }
     } catch (err) {
-      setError(err.message)
-      console.error('Hero fetch error:', err)
+      // Fallback already set, so silent fail
     }
   }
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${API_URL}/hero-stats`)  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/hero-stats`)
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
       
-      // ✅ RAW TEXT LO - Handle `//` issue
       let text = await response.text()
-      console.log('Raw stats response:', text)
       
-      // ✅ Remove leading '//' if present
       if (text.startsWith('//')) {
         text = text.substring(2).trim()
       }
       
-      // ✅ Parse JSON
       const data = JSON.parse(text)
       
       if (Array.isArray(data)) {
@@ -79,12 +85,9 @@ function Hero() {
           stat_label: label
         }))
         setStats(statsArray)
-      } else {
-        setStats([])
       }
     } catch (err) {
-      setStats([])
-      console.error('Stats fetch error:', err)
+      // Fallback stats already set
     } finally {
       setLoading(false)
     }
@@ -109,40 +112,9 @@ function Hero() {
     return `${APP_URL}/${cleanPath}`
   }
 
-  if (loading) {
-    return (
-      <div className="hero-wrapper">
-        <div className="main-content">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Loading...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !heroData) {
-    return (
-      <div className="hero-wrapper">
-        <div className="main-content">
-          <div className="error-message">
-            <p>⚠️ Error: {error || 'No hero data found'}</p>
-            <button onClick={() => {
-              setLoading(true)
-              fetchHeroData()
-              fetchStats()
-            }}>Try Again</button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const imageUrl = getImageUrl(heroData.image_url)
 
   return (
-    // ✅ Sirf marginTop -25px kiya hai gap hataane ke liye, baaki sab original
     <div className="hero-wrapper" style={{ marginTop: '-25px', paddingTop: '0' }}>
       <div className="main-content" style={{ paddingTop: '0', paddingBottom: '0' }}>
         <div className="left-content">
@@ -205,8 +177,8 @@ function Hero() {
                 src={imageUrl} 
                 alt={heroData.title || 'Hero Image'}
                 className="bottle-img"
+                loading="eager"
                 onError={(e) => {
-                  console.error('Image failed:', imageUrl)
                   e.target.style.display = 'none'
                   if (e.target.nextSibling) {
                     e.target.nextSibling.style.display = 'flex'

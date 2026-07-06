@@ -23,7 +23,7 @@ body {
   min-height: auto;
 }
 
-/* Logo - original size */
+/* Logo - BARA SIZE */
 .logo {
   display: flex;
   align-items: center;
@@ -38,9 +38,9 @@ body {
 }
 
 .logo-img {
-  height: 120px;
+  height: 150px;
   width: auto;
-  max-width: 240px;
+  max-width: 300px;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
@@ -367,7 +367,7 @@ body {
   border-top: 1px solid rgba(212, 175, 55, 0.2);
   border-bottom: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 0;
-  padding: 30px 60px;           /* ✅ 25px se 30px kiya */
+  padding: 30px 60px;
   z-index: 999;
   box-shadow: 0 20px 40px rgba(0,0,0,0.5);
   margin-top: 0;
@@ -380,9 +380,9 @@ body {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(212, 175, 55, 0.3);
   color: #d4af37;
-  font-size: 18px;              /* ✅ 16px se 18px kiya */
-  width: 36px;                  /* ✅ 32px se 36px kiya */
-  height: 36px;                 /* ✅ 32px se 36px kiya */
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -405,18 +405,18 @@ body {
 .mega-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 30px;                    /* ✅ 25px se 30px kiya */
+  gap: 30px;
   margin-bottom: 0;
 }
 
 /* ✅ MEGA MENU HEADING - BARA */
 .mega-col h4 {
   color: #d4af37;
-  font-size: 18px;              /* ✅ 15px se 18px kiya */
-  margin-bottom: 16px;          /* ✅ 12px se 16px kiya */
-  font-weight: 800;             /* ✅ 700 se 800 kiya */
+  font-size: 18px;
+  margin-bottom: 16px;
+  font-weight: 800;
   border-left: 3px solid #d4af37;
-  padding-left: 14px;           /* ✅ 12px se 14px kiya */
+  padding-left: 14px;
 }
 
 .mega-col ul {
@@ -424,15 +424,15 @@ body {
 }
 
 .mega-col li {
-  margin-bottom: 10px;          /* ✅ 8px se 10px kiya */
+  margin-bottom: 10px;
 }
 
 /* ✅ MEGA MENU LINKS - BARA */
 .mega-col a {
   color: rgba(255, 255, 255, 0.75);
   text-decoration: none;
-  font-size: 16px;              /* ✅ 13px se 16px kiya */
-  font-weight: 500;             /* ✅ 400 se 500 kiya */
+  font-size: 16px;
+  font-weight: 500;
   transition: 0.3s;
   cursor: pointer;
   display: block;
@@ -488,7 +488,7 @@ body {
     display: none;
   }
   .logo-img {
-    height: 90px;
+    height: 110px;
   }
   body {
     padding-top: 0 !important;
@@ -513,7 +513,7 @@ body {
     gap: 18px;
   }
   .logo-img {
-    height: 75px;
+    height: 95px;
   }
   body {
     padding-top: 0 !important;
@@ -555,7 +555,7 @@ body {
     width: 220px;
   }
   .logo-img {
-    height: 65px;
+    height: 80px;
   }
   body {
     padding-top: 0 !important;

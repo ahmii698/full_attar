@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -10,10 +11,14 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Product::query();
+            // ✅ Load categories relationship
+            $query = Product::with('categories');
             
+            // ✅ Category filter - through relationship
             if ($request->category && $request->category != 'All') {
-                $query->where('category', $request->category);
+                $query->whereHas('categories', function($q) use ($request) {
+                    $q->where('category_name', $request->category);
+                });
             }
             
             if ($request->gender && $request->gender != 'All') {
@@ -47,7 +52,6 @@ class ProductController extends Controller
                     $product->ml_prices = json_decode($product->ml_prices, true);
                 }
                 
-                // ✅ If null, set as empty array
                 if ($product->ml_prices === null) {
                     $product->ml_prices = [];
                 }
@@ -67,13 +71,13 @@ class ProductController extends Controller
     public function show($id)
     {
         try {
-            $product = Product::findOrFail($id);
+            // ✅ Load categories relationship
+            $product = Product::with('categories')->findOrFail($id);
             
             if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
                 $product->image_url = env('APP_URL') . $product->image_url;
             }
             
-            // ✅ FIX: Decode ml_prices if it's a string
             if ($product->ml_prices && is_string($product->ml_prices)) {
                 $product->ml_prices = json_decode($product->ml_prices, true);
             }
@@ -92,14 +96,14 @@ class ProductController extends Controller
     public function topSellers()
     {
         try {
-            $products = Product::where('is_top_seller', 1)->get();
+            // ✅ Load categories relationship
+            $products = Product::with('categories')->where('is_top_seller', 1)->get();
             
             foreach ($products as $product) {
                 if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
                     $product->image_url = env('APP_URL') . $product->image_url;
                 }
                 
-                // ✅ FIX: Decode ml_prices if it's a string
                 if ($product->ml_prices && is_string($product->ml_prices)) {
                     $product->ml_prices = json_decode($product->ml_prices, true);
                 }
@@ -119,14 +123,14 @@ class ProductController extends Controller
     public function newArrivals()
     {
         try {
-            $products = Product::where('is_new_arrival', 1)->get();
+            // ✅ Load categories relationship
+            $products = Product::with('categories')->where('is_new_arrival', 1)->get();
             
             foreach ($products as $product) {
                 if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
                     $product->image_url = env('APP_URL') . $product->image_url;
                 }
                 
-                // ✅ FIX: Decode ml_prices if it's a string
                 if ($product->ml_prices && is_string($product->ml_prices)) {
                     $product->ml_prices = json_decode($product->ml_prices, true);
                 }
@@ -146,14 +150,14 @@ class ProductController extends Controller
     public function deals()
     {
         try {
-            $products = Product::where('is_deal', 1)->get();
+            // ✅ Load categories relationship
+            $products = Product::with('categories')->where('is_deal', 1)->get();
             
             foreach ($products as $product) {
                 if ($product->image_url && strpos($product->image_url, '/images/') === 0) {
                     $product->image_url = env('APP_URL') . $product->image_url;
                 }
                 
-                // ✅ FIX: Decode ml_prices if it's a string
                 if ($product->ml_prices && is_string($product->ml_prices)) {
                     $product->ml_prices = json_decode($product->ml_prices, true);
                 }
@@ -172,7 +176,12 @@ class ProductController extends Controller
     
     public function categories()
     {
-        $categories = ['Premium', 'Western', 'Eastern'];
+        // ✅ Get categories from database
+        $categories = Category::where('show_in_navbar', 1)
+            ->orderBy('category_id')
+            ->pluck('category_name')
+            ->toArray();
+            
         return response()->json($categories);
     }
 }

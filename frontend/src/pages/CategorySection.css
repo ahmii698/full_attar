@@ -293,3 +293,43 @@
     font-size: 12px;
   }
 }
+
+/* Add these styles at the end of your CSS file */
+
+.category-error {
+  text-align: center;
+  padding: 60px 20px;
+  color: #ff6b6b;
+}
+
+.category-error p {
+  font-size: 16px;
+  margin-bottom: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.category-retry-btn {
+  background: #d4af37;
+  color: #000;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.category-retry-btn:hover {
+  background: #c4a030;
+  transform: scale(1.05);
+}
+
+.category-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+}

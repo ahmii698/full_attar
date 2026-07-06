@@ -10,32 +10,34 @@ class Product extends Model
     
     protected $table = 'products';
     protected $primaryKey = 'product_id';
+    
     protected $fillable = [
         'name', 
         'price', 
         'price_num', 
         'rating', 
-        'category', 
         'gender', 
         'notes', 
         'image_url', 
         'description',
-        'top_highlights',  // ✅ ADDED - Top Highlights column
+        'top_highlights',
         'stock_quantity', 
         'is_top_seller', 
         'is_new_arrival',
         'is_deal', 
         'discount_price', 
         'discount_percent',
-        'ml_prices'
+        'ml_prices',
+        'show_in_navbar',  // ✅ ADDED
     ];
     
     protected $casts = [
         'ml_prices' => 'array',
-        'top_highlights' => 'array',  // ✅ ADDED - Cast to array
+        'top_highlights' => 'array',
         'is_deal' => 'boolean',
         'is_top_seller' => 'boolean',
-        'is_new_arrival' => 'boolean'
+        'is_new_arrival' => 'boolean',
+        'show_in_navbar' => 'boolean',
     ];
     
     public $timestamps = false;
@@ -86,6 +88,42 @@ class Product extends Model
         } else {
             $this->attributes['top_highlights'] = $value;
         }
+    }
+    
+    // ✅ Many-to-Many relationship with categories
+    public function categories()
+    {
+        return $this->belongsToMany(
+            Category::class,
+            'product_categories',
+            'product_id',
+            'category_id'
+        );
+    }
+    
+    // ✅ NEW: Category Product Settings relationship
+    public function categorySettings()
+    {
+        return $this->hasMany(CategoryProductSetting::class, 'product_id', 'product_id');
+    }
+    
+    // ✅ NEW: Get navbar status for specific category
+    public function getNavbarStatus($categoryId)
+    {
+        $setting = $this->categorySettings()->where('category_id', $categoryId)->first();
+        return $setting ? (bool)$setting->show_in_navbar : false;
+    }
+    
+    // ✅ Helper to get category names as array
+    public function getCategoryNamesAttribute()
+    {
+        return $this->categories->pluck('category_name')->toArray();
+    }
+    
+    // ✅ Helper to get category ids as array
+    public function getCategoryIdsAttribute()
+    {
+        return $this->categories->pluck('category_id')->toArray();
     }
     
     // ✅ Default highlights for attar products

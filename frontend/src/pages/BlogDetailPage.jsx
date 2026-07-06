@@ -26,11 +26,11 @@ function BlogDetailPage() {
       }
       
       const data = await response.json()
-      console.log('Blog data:', data)
+      
       setBlog(data)
     } catch (err) {
       setError(err.message)
-      console.error('Error fetching blog:', err)
+      
     } finally {
       setLoading(false)
     }
@@ -122,7 +122,7 @@ function BlogDetailPage() {
             alt={blog.title}
             style={{ width: '100%', maxHeight: '400px', objectFit: 'cover' }}
             onError={(e) => {
-              console.error('Image failed:', imageUrl)
+              
               e.target.src = '/assets/at1.jpg'
             }}
           />

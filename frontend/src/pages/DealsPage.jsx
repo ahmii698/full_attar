@@ -23,12 +23,12 @@ function DealsPage() {
       }
       
       let data = await response.json()
-      console.log('Deals Data:', data)
+      
       
       setDeals(data)
     } catch (err) {
       setError(err.message)
-      console.error('Error fetching deals:', err)
+    
     } finally {
       setLoading(false)
     }

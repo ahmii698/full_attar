@@ -7,7 +7,7 @@ import {
 } from 'react-icons/fi'
 import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
-import raLogo from '../assets/ra.png'
+import raLogo from '../assets/logoo.png'
 import { API_URL } from '../../config'
 
 function Navbar() {

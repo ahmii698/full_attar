@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { API_URL, STORAGE_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
+import { API_URL, STORAGE_URL } from '../../config'
 
 function BlogsPage() {
   const navigate = useNavigate()
@@ -12,7 +12,6 @@ function BlogsPage() {
   const [activeCategory, setActiveCategory] = useState("all")
   const [activeTag, setActiveTag] = useState(null)
 
-
   useEffect(() => {
     fetchBlogs()
   }, [])
@@ -20,14 +19,13 @@ function BlogsPage() {
   const fetchBlogs = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_URL}/blogs`)  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/blogs`)
 
       if (!response.ok) {
         throw new Error('Failed to fetch blogs')
       }
 
       const data = await response.json()
-      console.log('Blogs from DB:', data)
       setBlogs(data)
 
       const uniqueCategories = [...new Set(data.map(blog => blog.category).filter(Boolean))]
@@ -52,47 +50,34 @@ function BlogsPage() {
 
     } catch (err) {
       setError(err.message)
-      console.error('Error fetching blogs:', err)
     } finally {
       setLoading(false)
     }
   }
 
-const getImageUrl = (imagePath) => {
-  if (!imagePath) {
-    console.log("IMAGE DEBUG → empty path, using default")
-    return '/assets/at1.jpg'
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) {
+      return '/assets/at1.jpg'
+    }
+
+    if (imagePath.startsWith('http')) {
+      return imagePath
+    }
+
+    // Clean leading slash
+    let cleanPath = imagePath.replace(/^\/+/, '')
+
+    // Remove "storage/" prefix since STORAGE_URL already ends in /storage
+    cleanPath = cleanPath.replace(/^storage\//, '')
+
+    // Fix wrong "images/blogs/" prefix → actual folder is just "blogs/"
+    cleanPath = cleanPath.replace(/^images\/blogs\//, 'blogs/')
+
+    // Build final URL with exactly one slash
+    const finalUrl = `${STORAGE_URL.replace(/\/+$/, '')}/${cleanPath}`
+
+    return finalUrl
   }
-
-  if (imagePath.startsWith('http')) {
-    console.log("IMAGE DEBUG → full URL:", imagePath)
-    return imagePath
-  }
-
-  // Clean leading slash
-  let cleanPath = imagePath.replace(/^\/+/, '')
-
-  // Remove "storage/" prefix since STORAGE_URL already ends in /storage
-  cleanPath = cleanPath.replace(/^storage\//, '')
-
-  // Fix wrong "images/blogs/" prefix → actual folder is just "blogs/"
-  cleanPath = cleanPath.replace(/^images\/blogs\//, 'blogs/')
-
-  // Build final URL with exactly one slash
-  const finalUrl = `${STORAGE_URL.replace(/\/+$/, '')}/${cleanPath}`
-
-  console.log("IMAGE DEBUG → built URL:", {
-    imagePath,
-    cleanPath,
-    STORAGE_URL,
-    finalUrl
-  })
-
-  return finalUrl
-}
-
-
-
 
   const parseTags = (tagsStr) => {
     if (!tagsStr) return []
@@ -243,7 +228,6 @@ const getImageUrl = (imagePath) => {
                         src={imageUrl}
                         alt={blog.title}
                         onError={(e) => {
-                          console.error('Image failed:', imageUrl)
                           e.target.src = '/assets/at1.jpg'
                         }}
                       />

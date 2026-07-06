@@ -30,6 +30,8 @@ use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\OutletController as AdminOutletController;
 use App\Http\Controllers\Admin\CartController as AdminCartController;
 use App\Http\Controllers\Admin\PaymentConfirmationController as AdminPaymentConfirmationController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Api\CategoryController as ApiCategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Mail\OrderStatusMail;
 use App\Models\Order;
@@ -49,7 +51,7 @@ use Illuminate\Support\Facades\Mail;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// ✅ User Forgot Password Routes (Public)
+// User Forgot Password Routes (Public)
 Route::post('/user/forgot-password', [AuthController::class, 'sendUserOtp']);
 Route::post('/user/verify-otp', [AuthController::class, 'verifyUserOtp']);
 Route::post('/user/reset-password', [AuthController::class, 'resetUserPassword']);
@@ -60,7 +62,12 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/top-sellers', [ProductController::class, 'topSellers']);
 Route::get('/new-arrivals', [ProductController::class, 'newArrivals']);
 Route::get('/deals', [ProductController::class, 'deals']);
-Route::get('/categories', [ProductController::class, 'categories']);
+
+// ========== CATEGORIES (PUBLIC) ==========
+Route::get('/categories', [ApiCategoryController::class, 'index']);
+Route::get('/categories/{id}', [ApiCategoryController::class, 'show']);
+Route::get('/categories/{id}/products', [ApiCategoryController::class, 'products']);
+Route::get('/navbar-categories', [ApiCategoryController::class, 'navbarCategories']);
 
 // ========== BLOGS ==========
 Route::get('/blogs', [BlogController::class, 'index']);
@@ -142,7 +149,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/orders/track/{orderNumber}', [OrderController::class, 'trackByOrderNumber']);
 
 // =====================================================
-// ✅ TEST EMAIL ROUTE (For Debugging) - FIXED
+// TEST EMAIL ROUTE (For Debugging)
 // =====================================================
 Route::get('/test-email/{id}', function ($id) {
     try {
@@ -180,7 +187,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login']);
     Route::post('/logout', [AdminAuthController::class, 'logout']);
     
-    // ✅ Admin Forgot Password Routes
+    // Admin Forgot Password Routes
     Route::post('/forgot-password', [AdminAuthController::class, 'sendOtp']);
     Route::post('/verify-otp', [AdminAuthController::class, 'verifyOtp']);
     Route::post('/reset-password', [AdminAuthController::class, 'resetPassword']);
@@ -188,12 +195,23 @@ Route::prefix('admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
     
+    // ========== ADMIN CATEGORIES ==========
+    Route::get('/categories', [AdminCategoryController::class, 'index']);
+    Route::get('/categories/{id}', [AdminCategoryController::class, 'show']);
+    Route::post('/categories', [AdminCategoryController::class, 'store']);
+    Route::put('/categories/{id}', [AdminCategoryController::class, 'update']);
+    Route::delete('/categories/{id}', [AdminCategoryController::class, 'destroy']);
+    Route::get('/categories/{id}/products', [AdminCategoryController::class, 'products']);
+    
     // Products Management
     Route::get('/products', [AdminProductController::class, 'index']);
     Route::get('/products/{id}', [AdminProductController::class, 'show']);
     Route::post('/products', [AdminProductController::class, 'store']);
     Route::put('/products/{id}', [AdminProductController::class, 'update']);
     Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
+    
+    // ✅ NEW ROUTE: Category-specific navbar toggle
+    Route::put('/products/{productId}/category/{categoryId}/navbar', [AdminProductController::class, 'toggleNavbar']);
     
     // Blogs Management
     Route::get('/blogs', [AdminBlogController::class, 'index']);

@@ -23,12 +23,12 @@ function BestSellersPage() {
       }
       
       let data = await response.json()
-      console.log('Best Sellers Data:', data)
+      
       
       setBestSellers(data)
     } catch (err) {
       setError(err.message)
-      console.error('Error fetching best sellers:', err)
+    
     } finally {
       setLoading(false)
     }
