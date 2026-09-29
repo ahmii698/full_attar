@@ -29,6 +29,9 @@ import FAQPage from './pages/FAQPage'
 // ✅ Coming Soon Page Import
 import ComingSoon from './pages/ComingSoon'
 
+// ✅ NEW - Shoes Shop Page Import
+import ShoesShop from './shoes/pages/Shop'
+
 // ========== ADMIN PANEL IMPORTS ==========
 import { AdminAuthProvider } from './admin/contexts/AdminAuthContext'
 import AdminLayout from './admin/components/AdminLayout'
@@ -69,6 +72,9 @@ function App() {
               <Route path="/outlets" element={<OutletsPage />} />
               <Route path="/blogs" element={<BlogsPage />} />
               <Route path="/blog/:id" element={<BlogDetailPage />} />
+
+              {/* ✅ NEW - Shoes Shop */}
+              <Route path="/shoes" element={<ShoesShop />} />
               
               {/* Product Detail Page */}
               <Route path="/product/:id" element={<ProductDetailPage />} />

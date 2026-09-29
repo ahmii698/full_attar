@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { FaCalendarAlt, FaClock, FaUser } from 'react-icons/fa'  // ✅ FaUserPen ki jagah FaUser
 import { API_URL, STORAGE_URL } from '../../config'
 
 function BlogsPage() {
@@ -64,16 +65,10 @@ function BlogsPage() {
       return imagePath
     }
 
-    // Clean leading slash
     let cleanPath = imagePath.replace(/^\/+/, '')
-
-    // Remove "storage/" prefix since STORAGE_URL already ends in /storage
     cleanPath = cleanPath.replace(/^storage\//, '')
-
-    // Fix wrong "images/blogs/" prefix → actual folder is just "blogs/"
     cleanPath = cleanPath.replace(/^images\/blogs\//, 'blogs/')
 
-    // Build final URL with exactly one slash
     const finalUrl = `${STORAGE_URL.replace(/\/+$/, '')}/${cleanPath}`
 
     return finalUrl
@@ -234,8 +229,12 @@ function BlogsPage() {
                     </div>
                     <div className="blog-content">
                       <div className="blog-meta">
-                        <span className="blog-date">📅 {blog.date}</span>
-                        <span className="blog-readtime">⏱️ {blog.read_time}</span>
+                        <span className="blog-date">
+                          <FaCalendarAlt className="meta-icon" /> {blog.date}
+                        </span>
+                        <span className="blog-readtime">
+                          <FaClock className="meta-icon" /> {blog.read_time}
+                        </span>
                       </div>
                       <h3>{blog.title}</h3>
                       <p>{blog.excerpt || (blog.content?.substring(0, 120) + '...')}</p>
@@ -247,7 +246,7 @@ function BlogsPage() {
                         </div>
                       )}
                       <div className="blog-author">
-                        <span>✍️ By {blog.author}</span>
+                        <FaUser className="author-icon" /> By {blog.author}
                       </div>
                       <Link to={`/blog/${blog.blog_id}`} className="read-more-btn">
                         Read More →

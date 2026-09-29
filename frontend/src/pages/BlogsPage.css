@@ -119,19 +119,21 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* ✅ TAGS - FONT BARA KIYA */
 .tags-cloud {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .tag-item {
   background: rgba(212, 175, 55, 0.08);
   border: 1px solid rgba(212, 175, 55, 0.15);
-  padding: 5px 12px;
+  padding: 7px 16px;  /* ✅ 5px 12px se 7px 16px */
   border-radius: 20px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;    /* ✅ 11px se 14px */
+  font-weight: 500;   /* ✅ Add weight */
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   transition: 0.3s;
 }
@@ -139,6 +141,7 @@
 .tag-item:hover {
   background: rgba(212, 175, 55, 0.15);
   color: #d4af37;
+  transform: translateY(-2px);
 }
 
 .tag-item.active {
@@ -234,18 +237,28 @@
   transform: scale(1.05);
 }
 
-/* Category tag removed - no badge on image */
-
 .blog-content {
   padding: 20px;
 }
 
+/* ✅ META ICONS */
 .blog-meta {
   display: flex;
   gap: 20px;
   margin-bottom: 12px;
   font-size: 12px;
   color: rgba(255, 255, 255, 0.5);
+}
+
+.blog-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-icon {
+  font-size: 12px;
+  color: #d4af37;
 }
 
 .blog-content h3 {
@@ -284,10 +297,19 @@
   background: rgba(212, 175, 55, 0.2);
 }
 
+/* ✅ AUTHOR ICON */
 .blog-author {
   margin-bottom: 12px;
   font-size: 12px;
   color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.author-icon {
+  font-size: 12px;
+  color: #d4af37;
 }
 
 .read-more-btn {
@@ -389,6 +411,12 @@
   .blog-image {
     height: 200px;
   }
+  
+  /* ✅ Mobile par tags bade */
+  .tag-item {
+    font-size: 13px;
+    padding: 6px 14px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -400,5 +428,10 @@
   }
   .blog-content p {
     font-size: 12px;
+  }
+  
+  .tag-item {
+    font-size: 12px;
+    padding: 5px 12px;
   }
 }

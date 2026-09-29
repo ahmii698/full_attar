@@ -22,6 +22,11 @@ const DISPLAY_CATEGORIES = [
   'SHOES'
 ]
 
+// ✅ Shoes page ka route
+const SHOES_ROUTE = '/shoes'
+
+const getCatName = (cat) => (cat.category_name || cat.name || '').toUpperCase().trim()
+
 function CategorySection() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
@@ -35,10 +40,10 @@ function CategorySection() {
     try {
       setLoading(true)
       setError(null)
-      
+
       const catRes = await fetch(`${API_URL}/categories`)
       const catData = await catRes.json()
-      
+
       // Handle different response structures
       let categoryList = []
       if (catData.data && Array.isArray(catData.data)) {
@@ -52,24 +57,19 @@ function CategorySection() {
       }
 
       // ✅ Filter to only show categories in DISPLAY_CATEGORIES
-      const filteredCategories = categoryList.filter(cat => {
-        const catName = (cat.category_name || cat.name || '').toUpperCase().trim()
-        return DISPLAY_CATEGORIES.includes(catName)
-      })
-
-      // ✅ Agar SHOES category API mein nahi hai toh manually add karo
-      const hasShoes = filteredCategories.some(cat => 
-        (cat.category_name || cat.name || '').toUpperCase().trim() === 'SHOES'
+      const filteredCategories = categoryList.filter(cat =>
+        DISPLAY_CATEGORIES.includes(getCatName(cat))
       )
 
+      // ✅ Agar SHOES category API mein nahi hai toh manually add karo
+      const hasShoes = filteredCategories.some(cat => getCatName(cat) === 'SHOES')
+
       if (!hasShoes) {
-        // Manually add SHOES category
         filteredCategories.push({
-          category_id: 'shoes_coming_soon',
+          category_id: 'shoes_static',
           category_name: 'Shoes',
           name: 'Shoes',
-          image_url: FALLBACK_IMAGES['SHOES'],
-          isComingSoon: true // ✅ Special flag for coming soon
+          image_url: FALLBACK_IMAGES['SHOES']
         })
       }
 
@@ -78,11 +78,9 @@ function CategorySection() {
         setCategories([])
       } else {
         // ✅ Sort categories in the order defined in DISPLAY_CATEGORIES
-        const sortedCategories = filteredCategories.sort((a, b) => {
-          const nameA = (a.category_name || a.name || '').toUpperCase().trim()
-          const nameB = (b.category_name || b.name || '').toUpperCase().trim()
-          return DISPLAY_CATEGORIES.indexOf(nameA) - DISPLAY_CATEGORIES.indexOf(nameB)
-        })
+        const sortedCategories = filteredCategories.sort((a, b) =>
+          DISPLAY_CATEGORIES.indexOf(getCatName(a)) - DISPLAY_CATEGORIES.indexOf(getCatName(b))
+        )
         setCategories(sortedCategories)
       }
     } catch (error) {
@@ -90,15 +88,6 @@ function CategorySection() {
       setCategories([])
     } finally {
       setLoading(false)
-    }
-  }
-
-  // ✅ Handle card click - check if coming soon
-  const handleCardClick = (category, e) => {
-    if (category.isComingSoon) {
-      e.preventDefault()
-      // Navigate to coming soon page
-      window.location.href = '/coming-soon'
     }
   }
 
@@ -141,13 +130,15 @@ function CategorySection() {
       <SectionHeading title="Shop by Category" subtitle="Explore our premium collections" />
       <div className="category-grid">
         {categories.map((category, index) => {
-          const catName = (category.category_name || category.name || '').toUpperCase().trim()
+          const catName = getCatName(category)
           const displayName = category.category_name || category.name || ''
           const imageUrl = category.image_url || category.image || FALLBACK_IMAGES[catName] || FALLBACK_IMAGES['ARABIC ATTAR']
-          const isComingSoon = category.isComingSoon || false
+          const isShoes = catName === 'SHOES'
 
-          // ✅ Agar SHOES hai toh coming soon link, warna normal link
-          const linkTo = isComingSoon ? '/coming-soon' : `/shop?category=${encodeURIComponent(displayName)}`
+          // ✅ SHOES -> /shoes, baaki -> /shop?category=...
+          const linkTo = isShoes
+            ? SHOES_ROUTE
+            : `/shop?category=${encodeURIComponent(displayName)}`
 
           return (
             <Link
@@ -155,7 +146,6 @@ function CategorySection() {
               to={linkTo}
               className="category-card-link"
               style={{ '--delay': `${index * 0.12}s` }}
-              onClick={(e) => handleCardClick(category, e)}
             >
               <div className="category-card" data-letter={displayName.charAt(0)}>
                 <div
@@ -164,15 +154,14 @@ function CategorySection() {
                 />
                 <div className="category-card-overlay" />
                 <div className="category-card-content">
-                 
                   <h3 className="category-name">{displayName}</h3>
                   <p className="category-description">
-                    {isComingSoon 
-                      ? 'Exciting new collection coming soon! Stay tuned.' 
+                    {isShoes
+                      ? 'Step into comfort. Explore our premium shoes collection.'
                       : `Explore our collection of ${displayName.toLowerCase()} fragrances`}
                   </p>
                   <span className="category-arrow">
-                    {isComingSoon ? 'Coming Soon' : 'Shop Now'} <FaArrowRight />
+                    Shop Now <FaArrowRight />
                   </span>
                 </div>
               </div>

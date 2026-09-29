@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500;1,600&family=Montserrat:wght@400;500;600&display=swap");
+
+.shoes-page {
+  --gold: #f5b82e;
+  --gold-soft: rgba(245, 184, 46, 0.35);
+  --bg: #050505;
+  --card: #0b0b0b;
+  --text: #e8e8e8;
+  --muted: #8a8a8a;
+
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 18px;
+  min-height: 100vh;
+  padding: 16px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Montserrat", sans-serif;
+  box-sizing: border-box;
+}
+.shoes-page *,
+.shoes-page *::before,
+.shoes-page *::after { box-sizing: border-box; }
+.shoes-page button { font-family: inherit; cursor: pointer; }
+
+/* ---------- Sidebar ---------- */
+.shoes-sidebar {
+  position: sticky;
+  top: 120px;
+  align-self: start;
+  max-height: calc(100vh - 136px);
+  overflow-y: auto;
+  padding: 18px 14px;
+  background: var(--card);
+  border: 1px solid rgba(245, 184, 46, 0.15);
+  border-radius: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-soft) transparent;
+}
+.sb-block { padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+.sb-block:last-of-type { border-bottom: none; }
+.sb-title {
+  display: flex; align-items: center; gap: 6px;
+  margin: 0 0 10px; font-size: 11px; font-weight: 600;
+  letter-spacing: 1.2px; color: #bdbdbd;
+}
+.sb-search {
+  width: 100%; padding: 9px 12px; font-size: 12px;
+  color: var(--text); background: #060606;
+  border: 1px solid var(--gold-soft); border-radius: 8px; outline: none;
+}
+.sb-search::placeholder { color: #666; }
+.sb-search:focus { border-color: var(--gold); }
+
+.sb-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.sb-item {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; font-size: 12px; color: #cfcfcf;
+  background: transparent; border: 1px solid transparent; border-radius: 8px;
+  transition: all 0.2s;
+}
+.sb-item:hover { color: var(--gold); }
+.sb-item.active {
+  color: var(--gold);
+  background: linear-gradient(90deg, rgba(245, 184, 46, 0.14), rgba(245, 184, 46, 0.03));
+  border-color: rgba(245, 184, 46, 0.25);
+}
+.sb-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+
+.sb-sizes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.sb-size {
+  padding: 7px 0; font-size: 12px; color: #cfcfcf;
+  background: #060606; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 6px;
+  transition: all 0.2s;
+}
+.sb-size:hover, .sb-size.active { color: var(--gold); border-color: var(--gold); }
+
+.sb-colors { display: flex; gap: 10px; flex-wrap: wrap; }
+.sb-color {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25); transition: transform 0.2s;
+}
+.sb-color:hover { transform: scale(1.12); }
+.sb-color.active { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.sb-clear {
+  width: 100%; padding: 11px; font-size: 11px; font-weight: 600; letter-spacing: 1px;
+  color: var(--gold); background: transparent;
+  border: 1px solid var(--gold-soft); border-radius: 8px; transition: all 0.2s;
+}
+.sb-clear:hover { background: var(--gold); color: #000; }
+
+/* ---------- Main ---------- */
+.shoes-main { min-width: 0; }
+
+/* Banner */
+.shoes-banner {
+  position: relative; height: 120px; margin-bottom: 14px;
+  display: flex; align-items: center; padding: 0 26px;
+  background-color: #0a0a0a; background-size: cover; background-position: center 60%;
+  background-repeat: no-repeat;
+  border: 1px solid rgba(245, 184, 46, 0.15); border-radius: 14px; overflow: hidden;
+}
+.shoes-banner__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.2) 100%);
+}
+.shoes-banner__text { position: relative; z-index: 1; }
+.shoes-banner h1 {
+  margin: 0; font-family: "Playfair Display", serif; font-style: italic;
+  font-weight: 600; font-size: 38px; color: var(--gold); line-height: 1.1;
+}
+.shoes-banner p { margin: 4px 0 0; font-size: 13px; color: #d4d4d4; }
+
+/* Toolbar */
+.shoes-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.shoes-views { display: flex; gap: 8px; }
+.shoes-views button {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  color: #aaa; background: transparent;
+  border: 1px solid transparent; border-radius: 8px; transition: all 0.2s;
+}
+.shoes-views button.active { color: var(--gold); border-color: var(--gold); background: rgba(245, 184, 46, 0.08); }
+.shoes-sort {
+  padding: 9px 14px; font-size: 11px; color: var(--gold);
+  background: #080808; border: 1px solid var(--gold-soft); border-radius: 8px; outline: none;
+}
+.shoes-sort option { background: #0b0b0b; color: #ddd; }
+
+/* Grid */
+.shoes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.shoes-empty { text-align: center; padding: 60px 0; color: var(--muted); font-size: 14px; }
+
+/* Card */
+.shoe-card {
+  background: var(--card);
+  border: 1px solid rgba(245, 184, 46, 0.14);
+  border-radius: 14px; overflow: hidden;
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.shoe-card:hover {
+  transform: translateY(-4px); border-color: var(--gold-soft);
+  box-shadow: 0 10px 30px rgba(245, 184, 46, 0.08);
+}
+.shoe-card__img {
+  position: relative; height: 160px; overflow: hidden;
+  background: radial-gradient(circle at 50% 70%, rgba(245, 184, 46, 0.18), #0a0a0a 70%);
+}
+.shoe-card__img::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(11, 11, 11, 0.9) 100%);
+}
+.shoe-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+.shoe-card:hover .shoe-card__img img { transform: scale(1.06); }
+.shoe-card__badge {
+  position: absolute; top: 12px; right: 12px; z-index: 2; padding: 4px 11px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.5px; color: var(--gold);
+  background: rgba(20, 15, 0, 0.85); border: 1px solid var(--gold-soft); border-radius: 8px;
+}
+.shoe-card__body { padding: 12px 14px 14px; }
+.shoe-card__name {
+  margin: 0; font-family: "Playfair Display", serif; font-style: italic;
+  font-weight: 500; font-size: 15px; color: #f2f2f2;
+}
+.shoe-card__sub { margin: 6px 0 12px; font-size: 11px; color: var(--muted); }
+.shoe-card__row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.shoe-card__price { font-size: 13px; font-weight: 600; color: var(--gold); }
+.shoe-card__heart { padding: 0; color: #aaa; background: none; border: none; transition: color 0.2s, transform 0.2s; }
+.shoe-card__heart:hover { color: var(--gold); transform: scale(1.15); }
+.shoe-card__heart.liked { color: #e0245e; }
+.shoe-card__btn {
+  width: 100%; padding: 9px; font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  color: var(--gold); background: transparent;
+  border: 1px solid var(--gold-soft); border-radius: 6px; transition: all 0.2s;
+}
+.shoe-card__btn:hover { background: var(--gold); color: #000; }
+
+/* List view */
+.shoes-grid.list { grid-template-columns: 1fr; }
+.shoes-grid.list .shoe-card { display: grid; grid-template-columns: 220px 1fr; }
+.shoes-grid.list .shoe-card__img { height: 100%; min-height: 140px; }
+.shoes-grid.list .shoe-card__body { display: flex; flex-direction: column; justify-content: center; }
+.shoes-grid.list .shoe-card__btn { max-width: 220px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1300px) { .shoes-grid:not(.list) { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1000px) {
+  .shoes-page { grid-template-columns: 1fr; }
+  .shoes-sidebar { position: static; max-height: none; }
+  .shoes-grid:not(.list) { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .shoes-grid:not(.list) { grid-template-columns: 1fr; }
+  .shoes-grid.list .shoe-card { grid-template-columns: 1fr; }
+  .shoes-banner h1 { font-size: 30px; }
+}

@@ -201,13 +201,13 @@ import { useState, useEffect, useRef } from 'react'
 import './Hero.css'
 
 // ✅ Import images from assets
-import b1 from '../assets/b1.png'
-import b3 from '../assets/b3.png'
-import b4 from '../assets/b4.png'
-import b5 from '../assets/b5.png'  // ✅ Mobile version for b3
-import b6 from '../assets/b6.png'  // ✅ Mobile version for b4
+import b1 from '../assets/45.png'
+import b3 from '../assets/46.png'
+import b4 from '../assets/47.png'
+import b5 from '../assets/b5.png'  // ✅ Add b5 import
+import b6 from '../assets/b6.png'  // ✅ Add b6 import
 
-// ✅ Desktop Images
+// ✅ Desktop Images - b1 pehle, phir b3, phir b4
 const DESKTOP_IMAGES = [
   {
     id: 1,
@@ -226,12 +226,12 @@ const DESKTOP_IMAGES = [
   }
 ]
 
-// ✅ Mobile Images (b5 = b3 ka mobile version, b6 = b4 ka mobile version)
+// ✅ Mobile Images - b1 pehle, phir b5, phir b6
 const MOBILE_IMAGES = [
   {
     id: 1,
     url: b1,
-    alt: 'Banner 1'
+    alt: 'Banner 1 Mobile'
   },
   {
     id: 2,
