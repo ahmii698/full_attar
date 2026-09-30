@@ -1,0 +1,560 @@
+/* =========================================================
+   AdminShoes.css  (sirf Shoes admin page ke liye)
+   Theme: baaki admin pages jaisi (black + gold)
+   Saari classes "ash-" se shuru hoti hain, isliye baaki
+   admin pages ki styling se takrao nahi hoga.
+   Rang badalne hon to sirf neeche wale variables badlo.
+   ========================================================= */
+
+.ash-page {
+  --ash-bg: #0a0a0a;
+  --ash-card: #0f0f0f;
+  --ash-card-2: #1a1710;
+  --ash-input: #1a1a1a;
+  --ash-border: #262626;
+  --ash-gold-border: rgba(212, 175, 55, 0.3);
+  --ash-text: #e6e6e6;
+  --ash-muted: #8a8a8a;
+  --ash-gold: #d4af37;
+  --ash-gold-dark: #b8960c;
+  --ash-gold-grad: linear-gradient(135deg, #d4af37, #b8960c);
+  --ash-danger: #e5484d;
+  --ash-ok: #d4af37;
+
+  color: var(--ash-text);
+  padding: 4px 0 40px;
+}
+
+/* ---------- Header ---------- */
+.ash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.ash-header h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ---------- Buttons ---------- */
+.ash-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: filter 0.2s, border-color 0.2s, color 0.2s, background 0.2s, transform 0.1s;
+}
+
+.ash-btn:active {
+  transform: translateY(1px);
+}
+
+.ash-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ash-btn--gold {
+  background: var(--ash-gold-grad);
+  color: #111111;
+}
+
+.ash-btn--gold:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.ash-btn--ghost {
+  background: #111111;
+  color: var(--ash-text);
+  border-color: #2e2e2e;
+}
+
+.ash-btn--ghost:hover {
+  border-color: var(--ash-gold);
+  color: var(--ash-gold);
+}
+
+.ash-btn--edit {
+  background: rgba(212, 175, 55, 0.06);
+  color: var(--ash-gold);
+  border-color: var(--ash-gold);
+  padding: 7px 14px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.ash-btn--edit:hover {
+  background: rgba(212, 175, 55, 0.16);
+}
+
+.ash-btn--danger {
+  background: rgba(229, 72, 77, 0.06);
+  color: var(--ash-danger);
+  border-color: var(--ash-danger);
+  padding: 7px 14px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.ash-btn--danger:hover {
+  background: rgba(229, 72, 77, 0.16);
+}
+
+/* ---------- Toolbar ---------- */
+.ash-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.ash-search {
+  flex: 1;
+  min-width: 220px;
+  max-width: 360px;
+  padding: 11px 16px;
+  background: var(--ash-input);
+  border: 1px solid var(--ash-gold-border);
+  border-radius: 12px;
+  color: var(--ash-text);
+  font-size: 14px;
+  outline: none;
+}
+
+.ash-search::placeholder {
+  color: #6f6f6f;
+}
+
+.ash-search:focus {
+  border-color: var(--ash-gold);
+}
+
+.ash-count {
+  color: var(--ash-muted);
+  font-size: 14px;
+}
+
+/* ---------- Table ---------- */
+.ash-table-wrap {
+  background: var(--ash-card);
+  border: 1px solid var(--ash-border);
+  border-radius: 16px;
+  overflow-x: auto;
+}
+
+.ash-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.ash-table th {
+  text-align: left;
+  padding: 16px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ash-gold);
+  background: var(--ash-card-2);
+  border-bottom: 1px solid var(--ash-border);
+  white-space: nowrap;
+}
+
+.ash-table td {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #d8d8d8;
+  border-bottom: 1px solid #1c1c1c;
+  vertical-align: middle;
+}
+
+.ash-table tbody tr:nth-child(even) {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+.ash-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ash-table tbody tr:hover {
+  background: rgba(212, 175, 55, 0.06);
+}
+
+.ash-thumb {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #1a1a1a;
+  display: block;
+}
+
+.ash-empty {
+  text-align: center;
+  color: var(--ash-muted);
+  padding: 40px 14px !important;
+}
+
+.ash-row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---------- Status pills (New / Active) ---------- */
+.ash-pill {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #1f1f22;
+  color: #7b7b82;
+  border: 1px solid #2a2a2e;
+}
+
+.ash-pill--on {
+  background: rgba(212, 175, 55, 0.12);
+  color: var(--ash-gold);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+/* ---------- Pagination ---------- */
+.ash-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.ash-pagination button {
+  min-width: 38px;
+  padding: 8px 12px;
+  background: #111111;
+  color: var(--ash-text);
+  border: 1px solid #2e2e2e;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.ash-pagination button:hover:not(:disabled) {
+  border-color: var(--ash-gold);
+  color: var(--ash-gold);
+}
+
+.ash-pagination button.active {
+  background: var(--ash-gold-grad);
+  border-color: var(--ash-gold);
+  color: #111111;
+  font-weight: 700;
+}
+
+.ash-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- Form ---------- */
+.ash-form {
+  background: var(--ash-card);
+  border: 1px solid var(--ash-border);
+  border-radius: 20px;
+  padding: 28px;
+}
+
+.ash-error {
+  background: rgba(229, 72, 77, 0.1);
+  border: 1px solid rgba(229, 72, 77, 0.45);
+  color: #ff8b8f;
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.ash-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 24px;
+}
+
+.ash-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ash-field--full {
+  grid-column: 1 / -1;
+}
+
+.ash-field > label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #cfcfcf;
+}
+
+.ash-field input:not([type='checkbox']):not([type='file']),
+.ash-field select,
+.ash-field textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--ash-input);
+  border: 1px solid var(--ash-gold-border);
+  border-radius: 14px;
+  color: var(--ash-text);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.ash-field input::placeholder,
+.ash-field textarea::placeholder {
+  color: #6f6f6f;
+}
+
+.ash-field textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.ash-field input:focus,
+.ash-field select:focus,
+.ash-field textarea:focus {
+  border-color: var(--ash-gold);
+}
+
+.ash-hint {
+  margin: -2px 0 2px;
+  font-size: 12px;
+  color: var(--ash-muted);
+}
+
+/* checkboxes */
+.ash-field--checks {
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.ash-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ash-text);
+  cursor: pointer;
+}
+
+.ash-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ash-gold);
+  cursor: pointer;
+}
+
+/* ---------- Category chips ---------- */
+.ash-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ash-chip {
+  padding: 9px 18px;
+  background: var(--ash-input);
+  color: #b5b5b5;
+  border: 1px solid var(--ash-gold-border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ash-chip:hover {
+  border-color: var(--ash-gold);
+  color: var(--ash-gold);
+}
+
+.ash-chip.active {
+  background: var(--ash-gold-grad);
+  border-color: var(--ash-gold);
+  color: #111111;
+}
+
+/* ---------- Sizes ---------- */
+.ash-sizes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.ash-size {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #121212;
+  border: 1px solid var(--ash-border);
+  border-radius: 14px;
+}
+
+.ash-size span {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ash-gold);
+  letter-spacing: 0.04em;
+}
+
+.ash-size input {
+  padding: 10px 12px !important;
+  border-radius: 10px !important;
+}
+
+/* ---------- Images ---------- */
+.ash-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 16px;
+  border: 2px dashed var(--ash-gold-border);
+  border-radius: 14px;
+}
+
+.ash-img {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--ash-border);
+  background: #111111;
+}
+
+.ash-img--new {
+  border-color: var(--ash-gold);
+}
+
+.ash-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ash-img__main {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--ash-gold);
+  border-radius: 4px;
+}
+
+.ash-img__remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ash-img__remove:hover {
+  background: var(--ash-danger);
+}
+
+.ash-upload {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--ash-gold-grad);
+  border-radius: 12px;
+  color: #111111;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.ash-upload:hover {
+  filter: brightness(1.1);
+}
+
+.ash-upload svg {
+  font-size: 20px;
+}
+
+/* ---------- Form actions ---------- */
+.ash-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--ash-border);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .ash-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ash-sizes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ash-form {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .ash-search {
+    max-width: 100%;
+  }
+
+  .ash-img,
+  .ash-upload {
+    width: 100px;
+    height: 100px;
+  }
+}

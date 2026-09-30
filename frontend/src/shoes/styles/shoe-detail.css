@@ -1,0 +1,163 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500;1,600;1,700&family=Montserrat:wght@400;500;600&display=swap");
+
+/* Footer ke upar extra gap khatam: App.css ki .page-content min-height sirf is page par hatao */
+.page-content:has(.sd-page) {
+  min-height: 0;
+}
+
+.sd-page {
+  --gold: #f5b82e;
+  --gold-soft: rgba(245, 184, 46, 0.35);
+  --bg: #050505;
+  --card: #0b0b0b;
+  --text: #e8e8e8;
+  --muted: #8a8a8a;
+
+  /* App.css ke .page-content padding-top ko cancel karta hai (header ke baad gap khatam) */
+  margin-top: -110px;
+
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Montserrat", sans-serif;
+  box-sizing: border-box;
+}
+.sd-page *,
+.sd-page *::before,
+.sd-page *::after { box-sizing: border-box; }
+.sd-page button { font-family: inherit; cursor: pointer; }
+
+.sd-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px clamp(16px, 4vw, 40px) 40px;
+}
+
+/* Breadcrumb */
+.sd-crumbs { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; font-size: 12px; color: #cfcfcf; }
+.sd-crumbs a { color: #cfcfcf; transition: color 0.2s; }
+.sd-crumbs a:hover { color: var(--gold); }
+.sd-crumbs span { color: #777; }
+.sd-crumbs .sd-crumbs__current { color: #fff; }
+
+/* Layout: dono columns ki height barabar (gallery info ke barabar tak jaye) */
+.sd-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 40px; align-items: stretch; }
+
+/* Gallery */
+.sd-gallery { display: flex; flex-direction: column; }
+.sd-main {
+  position: relative;
+  flex: 1;
+  min-height: 320px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 70%, rgba(245, 184, 46, 0.18), #0a0a0a 70%);
+  border: 1px solid rgba(245, 184, 46, 0.2);
+  border-radius: 12px;
+}
+.sd-main img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.sd-badge {
+  position: absolute; top: 14px; right: 14px; padding: 5px 12px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.6px; color: var(--gold);
+  background: rgba(20, 15, 0, 0.85); border: 1px solid var(--gold-soft); border-radius: 8px;
+}
+.sd-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 34px; height: 34px; display: grid; place-items: center;
+  color: var(--gold); background: rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--gold); border-radius: 50%; transition: all 0.2s;
+}
+.sd-arrow:hover { background: var(--gold); color: #000; }
+.sd-arrow--left { left: 12px; }
+.sd-arrow--right { right: 12px; }
+
+.sd-thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 12px; }
+.sd-thumb {
+  aspect-ratio: 4 / 3; padding: 0; overflow: hidden;
+  background: #0a0a0a; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px;
+  opacity: 0.75; transition: all 0.2s;
+}
+.sd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sd-thumb:hover { opacity: 1; }
+.sd-thumb.active { opacity: 1; border-color: var(--gold); }
+
+/* Info */
+.sd-name {
+  margin: 0; font-family: "Playfair Display", serif; font-style: italic;
+  font-weight: 700; font-size: clamp(26px, 3vw, 34px); color: #fff; line-height: 1.15;
+}
+.sd-sub { margin: 6px 0 12px; font-size: 13px; color: #b5b5b5; }
+.sd-price { margin: 0 0 16px; font-size: 26px; font-weight: 600; color: var(--gold); }
+.sd-desc { margin: 0 0 24px; max-width: 460px; font-size: 13.5px; line-height: 1.7; color: #d2d2d2; }
+
+.sd-label { margin: 0 0 12px; font-size: 12px; font-weight: 600; letter-spacing: 1.3px; color: #c8c8c8; }
+.sd-label--qty { margin: 22px 0 12px; }
+
+.sd-sizes { display: flex; flex-wrap: wrap; gap: 10px; }
+.sd-size {
+  min-width: 50px; padding: 8px 14px; font-size: 13px; color: #e5e5e5;
+  background: #060606; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 6px;
+  transition: all 0.2s;
+}
+.sd-size:hover:not(:disabled) { color: var(--gold); border-color: var(--gold); }
+.sd-size.active { color: var(--gold); border-color: var(--gold); background: rgba(245, 184, 46, 0.1); }
+.sd-size:disabled { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+.sd-error { margin: 10px 0 0; font-size: 12px; color: #ff6b6b; }
+
+.sd-qty { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; }
+.sd-qty button {
+  width: 34px; height: 34px; display: grid; place-items: center; font-size: 18px;
+  color: var(--gold); background: #060606; border: 1px solid var(--gold-soft); border-radius: 6px;
+  transition: all 0.2s;
+}
+.sd-qty button:hover { background: var(--gold); color: #000; }
+.sd-qty input {
+  width: 60px; height: 34px; text-align: center; font-size: 13px; color: #fff;
+  background: #060606; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 6px; outline: none;
+  -moz-appearance: textfield;
+}
+.sd-qty input::-webkit-outer-spin-button,
+.sd-qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sd-qty input:focus { border-color: var(--gold); }
+
+.sd-btn {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 14px; margin-bottom: 12px; font-size: 12px; font-weight: 600; letter-spacing: 1.3px;
+  border-radius: 8px; transition: all 0.25s; text-decoration: none;
+}
+.sd-btn--gold { color: var(--gold); background: linear-gradient(180deg, rgba(245, 184, 46, 0.22), rgba(245, 184, 46, 0.08)); border: 1px solid var(--gold); }
+.sd-btn--gold:hover { background: var(--gold); color: #000; }
+.sd-btn--outline { color: #fff; background: transparent; border: 1px solid var(--gold-soft); }
+.sd-btn--outline:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Wishlist button */
+.sd-btn--wish.active { color: #e0245e; border-color: #e0245e; background: rgba(224, 36, 94, 0.08); }
+.sd-btn--wish.active:hover { color: #e0245e; border-color: #e0245e; }
+
+.sd-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
+.sd-feature { display: flex; align-items: center; gap: 10px; color: var(--gold); }
+.sd-feature strong { display: block; font-size: 11px; font-weight: 600; color: #fff; }
+.sd-feature span { display: block; margin-top: 2px; font-size: 10px; color: var(--muted); }
+
+.sd-notfound { text-align: center; padding-top: 140px; padding-bottom: 80px; }
+.sd-notfound h2 { margin-bottom: 20px; font-weight: 500; }
+.sd-notfound .sd-btn { display: inline-flex; width: auto; padding: 12px 28px; }
+
+/* Responsive */
+/* App.css ke .page-content padding-top ke saath match */
+@media (max-width: 992px) {
+  .sd-page { margin-top: -90px; }
+}
+@media (max-width: 900px) {
+  .sd-grid { grid-template-columns: 1fr; gap: 28px; }
+  /* Single column mein purani 3/2 ratio wapas */
+  .sd-main { flex: none; min-height: 0; aspect-ratio: 3 / 2; }
+}
+@media (max-width: 768px) {
+  .sd-page { margin-top: -80px; }
+}
+@media (max-width: 520px) {
+  .sd-features { grid-template-columns: 1fr; }
+  .sd-thumbs { gap: 6px; }
+}
+@media (max-width: 480px) {
+  .sd-page { margin-top: -70px; }
+}

@@ -32,6 +32,8 @@ use App\Http\Controllers\Admin\CartController as AdminCartController;
 use App\Http\Controllers\Admin\PaymentConfirmationController as AdminPaymentConfirmationController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\CategoryController as ApiCategoryController;
+use App\Http\Controllers\Api\ShoeController;
+use App\Http\Controllers\Admin\ShoeController as AdminShoeController;
 use Illuminate\Support\Facades\Route;
 use App\Mail\OrderStatusMail;
 use App\Models\Order;
@@ -62,6 +64,11 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/top-sellers', [ProductController::class, 'topSellers']);
 Route::get('/new-arrivals', [ProductController::class, 'newArrivals']);
 Route::get('/deals', [ProductController::class, 'deals']);
+
+// ========== SHOES (PUBLIC) ==========
+Route::get('/shoe-categories', [ShoeController::class, 'categories']);
+Route::get('/shoes', [ShoeController::class, 'index']);
+Route::get('/shoes/{slug}', [ShoeController::class, 'show']);
 
 // ========== CATEGORIES (PUBLIC) ==========
 Route::get('/categories', [ApiCategoryController::class, 'index']);
@@ -212,6 +219,14 @@ Route::prefix('admin')->group(function () {
     
     // ✅ NEW ROUTE: Category-specific navbar toggle
     Route::put('/products/{productId}/category/{categoryId}/navbar', [AdminProductController::class, 'toggleNavbar']);
+
+    // ========== SHOES MANAGEMENT ==========
+    Route::get('/shoes', [AdminShoeController::class, 'index']);
+    Route::get('/shoes/{id}', [AdminShoeController::class, 'show']);
+    Route::post('/shoes', [AdminShoeController::class, 'store']);
+    Route::put('/shoes/{id}', [AdminShoeController::class, 'update']);
+    Route::delete('/shoes/{id}', [AdminShoeController::class, 'destroy']);
+    Route::delete('/shoes/{id}/images/{imageId}', [AdminShoeController::class, 'destroyImage']);
     
     // Blogs Management
     Route::get('/blogs', [AdminBlogController::class, 'index']);

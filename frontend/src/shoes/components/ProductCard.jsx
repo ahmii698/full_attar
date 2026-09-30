@@ -1,17 +1,21 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function ProductCard({ shoe, onAddToCart }) {
   const [liked, setLiked] = useState(false);
+  const to = `/shoes/${shoe.id}`;
 
   return (
     <article className="shoe-card">
-      <div className="shoe-card__img">
+      <Link to={to} className="shoe-card__img" style={{ display: "block" }}>
         <img src={shoe.image} alt={shoe.name} loading="lazy" onError={(e) => (e.currentTarget.style.opacity = 0)} />
         {shoe.isNew && <span className="shoe-card__badge">NEW</span>}
-      </div>
+      </Link>
 
       <div className="shoe-card__body">
-        <h3 className="shoe-card__name">{shoe.name}</h3>
+        <Link to={to}>
+          <h3 className="shoe-card__name">{shoe.name}</h3>
+        </Link>
         <p className="shoe-card__sub">{shoe.sub}</p>
 
         <div className="shoe-card__row">

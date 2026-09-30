@@ -29,8 +29,9 @@ import FAQPage from './pages/FAQPage'
 // ✅ Coming Soon Page Import
 import ComingSoon from './pages/ComingSoon'
 
-// ✅ NEW - Shoes Shop Page Import
+// ✅ Shoes Pages Import
 import ShoesShop from './shoes/pages/Shop'
+import ShoeDetail from './shoes/pages/ShoeDetail'
 
 // ========== ADMIN PANEL IMPORTS ==========
 import { AdminAuthProvider } from './admin/contexts/AdminAuthContext'
@@ -55,6 +56,9 @@ import Outlets from './admin/pages/Outlets'
 // ✅ ADD THIS - Categories import
 import AdminCategories from './admin/pages/AdminCategories'
 
+// ✅ Shoes admin page import
+import AdminShoes from './admin/pages/AdminShoes'
+
 function App() {
   return (
     <AuthProvider>
@@ -73,8 +77,9 @@ function App() {
               <Route path="/blogs" element={<BlogsPage />} />
               <Route path="/blog/:id" element={<BlogDetailPage />} />
 
-              {/* ✅ NEW - Shoes Shop */}
+              {/* ✅ Shoes Shop + Detail */}
               <Route path="/shoes" element={<ShoesShop />} />
+              <Route path="/shoes/:id" element={<ShoeDetail />} />
               
               {/* Product Detail Page */}
               <Route path="/product/:id" element={<ProductDetailPage />} />
@@ -130,6 +135,9 @@ export function AdminApp() {
           <Route path="products" element={<Products />} />
           <Route path="products/create" element={<ProductForm />} />
           <Route path="products/edit/:id" element={<ProductForm />} />
+
+          {/* ✅ SHOES */}
+          <Route path="shoes" element={<AdminShoes />} />
           
           {/* ✅ CATEGORIES - NEW */}
           <Route path="categories" element={<AdminCategories />} />

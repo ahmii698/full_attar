@@ -18,6 +18,11 @@ function AdminSidebar() {
         <NavLink to="/admin/products" className="nav-item">
           <i className="fas fa-box"></i> Products
         </NavLink>
+
+        {/* Shoes */}
+        <NavLink to="/admin/shoes" className="nav-item">
+          <i className="fas fa-shoe-prints"></i> Shoes
+        </NavLink>
         
         {/* ✅ CATEGORIES - NEW */}
         <NavLink to="/admin/categories" className="nav-item">

@@ -39,8 +39,10 @@
   margin-bottom: 15px;
 }
 
-.stat-icon i {
+.stat-icon svg {
   font-size: 24px;
+  width: 24px;
+  height: 24px;
   color: #d4af37;
 }
 
@@ -87,6 +89,7 @@
   color: #d4af37;
   font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .data-table td {
@@ -94,42 +97,47 @@
   border-bottom: 1px solid rgba(212, 175, 55, 0.05);
   color: rgba(255, 255, 255, 0.8);
   font-size: 13px;
+  white-space: nowrap;
 }
 
 .data-table tr:hover td {
   background: rgba(212, 175, 55, 0.03);
 }
 
-.status-pending {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
+.status-pending,
+.status-processing,
+.status-shipped,
+.status-delivered,
+.status-cancelled {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 11px;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
 }
 
 .status-processing {
   background: rgba(23, 162, 184, 0.2);
   color: #17a2b8;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
 }
 
 .status-shipped {
   background: rgba(40, 167, 69, 0.2);
   color: #28a745;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
 }
 
 .status-delivered {
   background: rgba(212, 175, 55, 0.2);
   color: #d4af37;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
+}
+
+.status-cancelled {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
 }
 
 .loading {

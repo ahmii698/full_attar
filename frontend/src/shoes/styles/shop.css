@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500;1,600&family=Montserrat:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600;1,700&family=Montserrat:wght@400;500;600&display=swap");
 
 .shoes-page {
   --gold: #f5b82e;
@@ -8,11 +8,10 @@
   --text: #e8e8e8;
   --muted: #8a8a8a;
 
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 18px;
+  /* App.css ke .page-content padding-top ko cancel karta hai (header ke baad gap khatam) */
+  margin-top: -110px;
+
   min-height: 100vh;
-  padding: 16px;
   background: var(--bg);
   color: var(--text);
   font-family: "Montserrat", sans-serif;
@@ -23,12 +22,66 @@
 .shoes-page *::after { box-sizing: border-box; }
 .shoes-page button { font-family: inherit; cursor: pointer; }
 
-/* ---------- Sidebar ---------- */
+/* ---------- Banner (full width) ---------- */
+.shoes-banner {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(20px, 4vw, 56px);
+  background-color: #0a0a0a;
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
+  border-bottom: 1px solid rgba(245, 184, 46, 0.25);
+  overflow: hidden;
+}
+.shoes-banner__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 35%, rgba(0, 0, 0, 0.1) 70%, rgba(0, 0, 0, 0) 100%);
+}
+.shoes-banner__text { position: relative; z-index: 1; max-width: 520px; }
+.shoes-banner__eyebrow {
+  display: block; margin-bottom: 10px;
+  font-size: 12px; font-weight: 500; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gold);
+}
+.shoes-banner h1 {
+  margin: 0; font-family: "Playfair Display", serif; font-style: italic;
+  font-weight: 700; font-size: clamp(38px, 5vw, 64px);
+  letter-spacing: 1px; text-transform: uppercase; color: var(--gold); line-height: 1.05;
+}
+.shoes-banner p { margin: 16px 0 24px; font-size: 15px; color: #e0e0e0; }
+.shoes-banner__cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 22px; font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--gold); background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--gold); border-radius: 8px; transition: all 0.25s;
+}
+.shoes-banner__cta:hover { background: var(--gold); color: #000; }
+
+/* ---------- Body: sidebar + main ---------- */
+.shoes-body {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 24px;
+  align-items: start;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px clamp(20px, 4vw, 56px) 48px;
+  scroll-margin-top: 20px;
+}
+
+/* ---------- Sidebar (fixed length, sticky) ---------- */
 .shoes-sidebar {
   position: sticky;
-  top: 120px;
+  top: 20px;
   align-self: start;
-  max-height: calc(100vh - 136px);
+  height: calc(100vh - 40px);
+  max-height: 760px;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
   padding: 18px 14px;
   background: var(--card);
@@ -37,8 +90,7 @@
   scrollbar-width: thin;
   scrollbar-color: var(--gold-soft) transparent;
 }
-.sb-block { padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
-.sb-block:last-of-type { border-bottom: none; }
+.sb-block { padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); flex-shrink: 0; }
 .sb-title {
   display: flex; align-items: center; gap: 6px;
   margin: 0 0 10px; font-size: 11px; font-weight: 600;
@@ -84,7 +136,8 @@
 .sb-color.active { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 .sb-clear {
-  width: 100%; padding: 11px; font-size: 11px; font-weight: 600; letter-spacing: 1px;
+  width: 100%; margin-top: auto; flex-shrink: 0;
+  padding: 11px; font-size: 11px; font-weight: 600; letter-spacing: 1px;
   color: var(--gold); background: transparent;
   border: 1px solid var(--gold-soft); border-radius: 8px; transition: all 0.2s;
 }
@@ -93,27 +146,8 @@
 /* ---------- Main ---------- */
 .shoes-main { min-width: 0; }
 
-/* Banner */
-.shoes-banner {
-  position: relative; height: 120px; margin-bottom: 14px;
-  display: flex; align-items: center; padding: 0 26px;
-  background-color: #0a0a0a; background-size: cover; background-position: center 60%;
-  background-repeat: no-repeat;
-  border: 1px solid rgba(245, 184, 46, 0.15); border-radius: 14px; overflow: hidden;
-}
-.shoes-banner__overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.2) 100%);
-}
-.shoes-banner__text { position: relative; z-index: 1; }
-.shoes-banner h1 {
-  margin: 0; font-family: "Playfair Display", serif; font-style: italic;
-  font-weight: 600; font-size: 38px; color: var(--gold); line-height: 1.1;
-}
-.shoes-banner p { margin: 4px 0 0; font-size: 13px; color: #d4d4d4; }
-
 /* Toolbar */
-.shoes-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.shoes-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .shoes-views { display: flex; gap: 8px; }
 .shoes-views button {
   width: 36px; height: 36px; display: grid; place-items: center;
@@ -127,8 +161,8 @@
 }
 .shoes-sort option { background: #0b0b0b; color: #ddd; }
 
-/* Grid */
-.shoes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+/* Grid: 3 cards per row */
+.shoes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .shoes-empty { text-align: center; padding: 60px 0; color: var(--muted); font-size: 14px; }
 
 /* Card */
@@ -143,7 +177,7 @@
   box-shadow: 0 10px 30px rgba(245, 184, 46, 0.08);
 }
 .shoe-card__img {
-  position: relative; height: 160px; overflow: hidden;
+  position: relative; height: 200px; overflow: hidden;
   background: radial-gradient(circle at 50% 70%, rgba(245, 184, 46, 0.18), #0a0a0a 70%);
 }
 .shoe-card__img::after {
@@ -157,19 +191,19 @@
   font-size: 10px; font-weight: 600; letter-spacing: 0.5px; color: var(--gold);
   background: rgba(20, 15, 0, 0.85); border: 1px solid var(--gold-soft); border-radius: 8px;
 }
-.shoe-card__body { padding: 12px 14px 14px; }
+.shoe-card__body { padding: 14px 16px 16px; }
 .shoe-card__name {
   margin: 0; font-family: "Playfair Display", serif; font-style: italic;
-  font-weight: 500; font-size: 15px; color: #f2f2f2;
+  font-weight: 500; font-size: 16px; color: #f2f2f2;
 }
 .shoe-card__sub { margin: 6px 0 12px; font-size: 11px; color: var(--muted); }
 .shoe-card__row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.shoe-card__price { font-size: 13px; font-weight: 600; color: var(--gold); }
+.shoe-card__price { font-size: 14px; font-weight: 600; color: var(--gold); }
 .shoe-card__heart { padding: 0; color: #aaa; background: none; border: none; transition: color 0.2s, transform 0.2s; }
 .shoe-card__heart:hover { color: var(--gold); transform: scale(1.15); }
 .shoe-card__heart.liked { color: #e0245e; }
 .shoe-card__btn {
-  width: 100%; padding: 9px; font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  width: 100%; padding: 10px; font-size: 10px; font-weight: 600; letter-spacing: 1px;
   color: var(--gold); background: transparent;
   border: 1px solid var(--gold-soft); border-radius: 6px; transition: all 0.2s;
 }
@@ -183,14 +217,30 @@
 .shoes-grid.list .shoe-card__btn { max-width: 220px; }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1300px) { .shoes-grid:not(.list) { grid-template-columns: repeat(3, 1fr); } }
+/* App.css ke .page-content padding-top ke saath match */
+@media (max-width: 992px) {
+  .shoes-page { margin-top: -90px; }
+}
+@media (max-width: 768px) {
+  .shoes-page { margin-top: -80px; }
+}
+@media (max-width: 480px) {
+  .shoes-page { margin-top: -70px; }
+}
+
 @media (max-width: 1000px) {
-  .shoes-page { grid-template-columns: 1fr; }
-  .shoes-sidebar { position: static; max-height: none; }
+  .shoes-body { grid-template-columns: 1fr; }
+  .shoes-sidebar { position: static; height: auto; max-height: none; }
+  .sb-clear { margin-top: 0; }
   .shoes-grid:not(.list) { grid-template-columns: repeat(2, 1fr); }
+  .shoes-banner { min-height: 260px; }
+  .shoes-banner__overlay {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.6) 60%, rgba(0, 0, 0, 0.25) 100%);
+  }
 }
 @media (max-width: 560px) {
   .shoes-grid:not(.list) { grid-template-columns: 1fr; }
   .shoes-grid.list .shoe-card { grid-template-columns: 1fr; }
-  .shoes-banner h1 { font-size: 30px; }
+  .shoes-banner { min-height: 220px; }
+  .shoes-banner p { font-size: 13px; }
 }

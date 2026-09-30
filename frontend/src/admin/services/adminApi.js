@@ -86,6 +86,32 @@ export const updateProduct = (id, data) => {
 
 export const deleteProduct = (id) => API.delete(`/products/${id}`)
 
+// ========== ADMIN SHOES ==========
+export const getShoes = () => API.get('/shoes')
+export const getShoe = (id) => API.get(`/shoes/${id}`)
+
+export const createShoe = (data) => {
+  return API.post('/shoes', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+export const updateShoe = (id, data) => {
+  return API.post(`/shoes/${id}?_method=PUT`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+export const deleteShoe = (id) => API.delete(`/shoes/${id}`)
+export const deleteShoeImage = (id, imageId) => API.delete(`/shoes/${id}/images/${imageId}`)
+
+// Shoes ki categories (categories2 table) public API se aati hain
+export const getShoeCategories = () => publicAPI.get('/shoe-categories')
+
 // ========== ADMIN BLOGS ==========
 export const getBlogs = () => API.get('/blogs')
 export const getBlog = (id) => API.get(`/blogs/${id}`)
