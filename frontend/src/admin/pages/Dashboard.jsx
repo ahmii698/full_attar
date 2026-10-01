@@ -1,15 +1,71 @@
 import { useState, useEffect } from 'react'
-import { FaBox, FaShoppingCart, FaUsers, FaMoneyBillWave } from 'react-icons/fa'
+import {
+  FaBox,
+  FaShoePrints,
+  FaShoppingCart,
+  FaUsers,
+  FaMoneyBillWave
+} from 'react-icons/fa'
 import { getDashboard } from '../services/adminApi'
 import '../styles/Dashboard.css'
 
+const formatMoney = (value) => `Rs. ${Number(value ?? 0).toLocaleString()}`
+
+function OrdersTable({ title, orders }) {
+  return (
+    <div className="recent-orders">
+      <h3>{title}</h3>
+      <div className="data-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(orders || []).length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center' }}>
+                  No orders yet
+                </td>
+              </tr>
+            ) : (
+              orders.map(order => (
+                <tr key={order.order_id}>
+                  <td>#{order.order_number}</td>
+                  <td>{order.full_name || order.user?.name || 'N/A'}</td>
+                  <td>{formatMoney(order.total_amount)}</td>
+                  <td>
+                    <span className={`status-${order.status}`}>{order.status}</span>
+                  </td>
+                  <td>
+                    {new Date(order.created_at || order.order_date).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 function Dashboard() {
   const [data, setData] = useState({
-    totalProducts: 0,
-    totalOrders: 0,
+    totalAttar: 0,
+    totalShoes: 0,
     totalUsers: 0,
-    totalRevenue: 0,
-    recentOrders: []
+    attarOrders: 0,
+    shoesOrders: 0,
+    attarRevenue: 0,
+    shoesRevenue: 0,
+    recentAttarOrders: [],
+    recentShoesOrders: []
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -34,13 +90,20 @@ function Dashboard() {
   if (error) return <div className="loading">{error}</div>
 
   const stats = [
-    { icon: <FaBox />, title: 'Total Products', value: data.totalProducts },
-    { icon: <FaShoppingCart />, title: 'Total Orders', value: data.totalOrders },
+    { icon: <FaBox />, title: 'Total Attar', value: data.totalAttar },
+    { icon: <FaShoePrints />, title: 'Total Shoes', value: data.totalShoes },
     { icon: <FaUsers />, title: 'Total Users', value: data.totalUsers },
+    { icon: <FaShoppingCart />, title: 'Total Orders (Attar)', value: data.attarOrders },
+    { icon: <FaShoppingCart />, title: 'Total Orders (Shoes)', value: data.shoesOrders },
     {
       icon: <FaMoneyBillWave />,
-      title: 'Total Revenue',
-      value: `Rs. ${Number(data.totalRevenue ?? 0).toLocaleString()}`
+      title: 'Total Revenue (Attar)',
+      value: formatMoney(data.attarRevenue)
+    },
+    {
+      icon: <FaMoneyBillWave />,
+      title: 'Total Revenue (Shoes)',
+      value: formatMoney(data.shoesRevenue)
     }
   ]
 
@@ -56,37 +119,8 @@ function Dashboard() {
         ))}
       </div>
 
-      <div className="recent-orders">
-        <h3>Recent Orders</h3>
-        <div className="data-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(data.recentOrders || []).map(order => (
-                <tr key={order.order_id}>
-                  <td>#{order.order_number}</td>
-                  <td>{order.full_name || order.user?.name || 'N/A'}</td>
-                  <td>Rs. {Number(order.total_amount ?? 0).toLocaleString()}</td>
-                  <td>
-                    <span className={`status-${order.status}`}>{order.status}</span>
-                  </td>
-                  <td>
-                    {new Date(order.created_at || order.order_date).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <OrdersTable title="Recent Attar Orders" orders={data.recentAttarOrders} />
+      <OrdersTable title="Recent Shoes Orders" orders={data.recentShoesOrders} />
     </div>
   )
 }

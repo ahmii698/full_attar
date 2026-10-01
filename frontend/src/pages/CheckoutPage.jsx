@@ -4,8 +4,22 @@ import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
+import { API_URL } from '../../config'
 import './CheckoutPage.css'
+
+// Cart item se shoe ki asli id nikalta hai (purane items mein shoeId nahi hota, "shoe-3-8" se parse hota hai)
+const getShoeId = (item) => {
+  if (item.shoeId) return Number(item.shoeId)
+  const parts = String(item.id).split('-')
+  return Number(parts[1])
+}
+
+// Purane items mein size nahi hota, "shoe-3-8" ke aakhri hisse se nikalte hain
+const getShoeSize = (item) => {
+  if (item.size) return Number(item.size)
+  const parts = String(item.id).split('-')
+  return parts[2] ? Number(parts[2]) : null
+}
 
 function CheckoutPage() {
   const navigate = useNavigate()
@@ -53,14 +67,27 @@ function CheckoutPage() {
     e.preventDefault()
     setLoading(true)
 
-    // ✅ FIX: Items ko sahi format mein bhejna - product_name bhi add karo
+    // Attar aur shoes ke items alag format mein jaate hain
     const items = cartItems.map(item => {
-      let mlValue = item.ml || 3
-      const mlNumber = Number(mlValue)
-      
+      if (item.type === 'shoe') {
+        const shoeId = getShoeId(item)
+        return {
+          item_type: 'shoe',
+          product_id: shoeId,
+          shoe_id: shoeId,
+          product_name: item.name,
+          quantity: item.quantity || 1,
+          size: getShoeSize(item),
+          ml: null,
+          price: Number(item.priceNum || 0)
+        }
+      }
+
+      const mlNumber = Number(item.ml || 3)
       return {
+        item_type: 'attar',
         product_id: item.id,
-        product_name: item.name, // ✅ product_name add karo
+        product_name: item.name,
         quantity: item.quantity || 1,
         ml: isNaN(mlNumber) || mlNumber <= 0 ? 3 : mlNumber,
         price: Number(item.priceNum || 0)
@@ -85,7 +112,7 @@ function CheckoutPage() {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch(`${API_URL}/orders`, {  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -418,8 +445,11 @@ function CheckoutPage() {
               <h3>Order Summary</h3>
               <p className="item-count">{getCartCount()} items</p>
               {cartItems.map(item => (
-                <div key={item.id} className="summary-item">
-                  <span>{item.name} x{item.quantity} {item.ml ? `(${item.ml}ml)` : '(3ml)'}</span>
+                <div key={`${item.id}-${item.ml}`} className="summary-item">
+                  <span>
+                    {item.name} x{item.quantity}
+                    {item.type === 'shoe' ? '' : ` (${item.ml || 3}ml)`}
+                  </span>
                   <span>Rs. {((item.priceNum || 0) * item.quantity).toLocaleString()}</span>
                 </div>
               ))}

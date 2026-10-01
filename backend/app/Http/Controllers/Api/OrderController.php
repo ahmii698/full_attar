@@ -7,7 +7,7 @@ use App\Models\OrderItem;
 use App\Models\PaymentConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -24,19 +24,32 @@ class OrderController extends Controller
                 'zipcode' => 'nullable|string|max:50',
                 'notes' => 'nullable|string',
                 'payment_method' => 'required|in:bank_transfer,scan_qr,mobile_banking',
-                'items' => 'required|array',
-                'items.*.product_id' => 'required|exists:products,product_id',
+                'items' => 'required|array|min:1',
+                'items.*.item_type' => 'required|in:attar,shoe',
+                'items.*.product_id' => 'required|integer',
                 'items.*.product_name' => 'required|string',
                 'items.*.quantity' => 'required|integer|min:1',
-                // ✅ YAHAN CHANGE KARO - SIRF 3, 6, 12 VALID HAIN
                 'items.*.ml' => 'nullable|integer|in:3,6,12',
                 'items.*.price' => 'required|numeric|min:0',
                 'shipping_amount' => 'nullable|numeric|min:0'
             ]);
 
+            // Har item apni sahi table mein exist karna chahiye
+            foreach ($request->items as $item) {
+                $exists = $item['item_type'] === 'shoe'
+                    ? DB::table('shoes')->where('shoe_id', $item['product_id'])->exists()
+                    : DB::table('products')->where('product_id', $item['product_id'])->exists();
+
+                if (!$exists) {
+                    return response()->json([
+                        'error' => "Invalid {$item['item_type']} id: {$item['product_id']}"
+                    ], 422);
+                }
+            }
+
             $userId = Auth::id();
             $shippingAmount = $request->shipping_amount ?? 200;
-            
+
             $subtotal = 0;
             foreach ($request->items as $item) {
                 $subtotal += $item['price'] * $item['quantity'];
@@ -66,9 +79,9 @@ class OrderController extends Controller
                 OrderItem::create([
                     'order_id' => $order->order_id,
                     'product_id' => $item['product_id'],
+                    'item_type' => $item['item_type'],
                     'product_name' => $item['product_name'],
                     'quantity' => $item['quantity'],
-                    // ✅ YAHAN BHI DEFAULT 3 KARO
                     'ml' => $item['ml'] ?? 3,
                     'price' => $item['price']
                 ]);
@@ -85,7 +98,7 @@ class OrderController extends Controller
                     'shipping' => $shippingAmount
                 ]
             ], 201);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage(),
@@ -104,7 +117,7 @@ class OrderController extends Controller
                 ->where('user_id', $userId)
                 ->orderBy('order_id', 'desc')
                 ->get();
-                
+
             return response()->json($orders);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -119,25 +132,25 @@ class OrderController extends Controller
             $order = Order::with(['items', 'paymentConfirmation'])
                 ->where('user_id', $userId)
                 ->findOrFail($id);
-                
+
             return response()->json($order);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    // ✅ Track order by order number (Public - No Auth Required)
+    // Track order by order number (Public - No Auth Required)
     public function trackByOrderNumber($orderNumber)
     {
         try {
             $order = Order::with(['items'])
                 ->where('order_number', $orderNumber)
                 ->first();
-            
+
             if (!$order) {
                 return response()->json(['error' => 'Order not found'], 404);
             }
-            
+
             return response()->json($order);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -155,26 +168,23 @@ class OrderController extends Controller
 
             $userId = Auth::id();
             $order = Order::where('user_id', $userId)->findOrFail($id);
-            
-            // Check if payment confirmation already exists
+
             $existing = PaymentConfirmation::where('order_id', $order->order_id)->first();
             if ($existing) {
                 return response()->json(['error' => 'Payment confirmation already submitted'], 400);
             }
 
-            // Upload screenshot
             $file = $request->file('screenshot');
             $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file->getClientOriginalName());
             $destinationPath = public_path('uploads/payments');
-            
+
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
             }
-            
+
             $file->move($destinationPath, $filename);
             $screenshotPath = '/uploads/payments/' . $filename;
 
-            // Create payment confirmation
             $confirmation = PaymentConfirmation::create([
                 'order_id' => $order->order_id,
                 'user_id' => $userId,
@@ -184,7 +194,6 @@ class OrderController extends Controller
                 'status' => 'pending'
             ]);
 
-            // Update order payment status
             $order->payment_status = 'pending';
             $order->save();
 
@@ -193,7 +202,7 @@ class OrderController extends Controller
                 'message' => 'Payment confirmation uploaded successfully',
                 'data' => $confirmation
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -208,50 +217,50 @@ class OrderController extends Controller
                 ->where('user_id', $userId)
                 ->where('order_id', $id)
                 ->first();
-                
+
             if (!$confirmation) {
                 return response()->json(['error' => 'Payment confirmation not found'], 404);
             }
-            
+
             return response()->json($confirmation);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
     // Place Order (Legacy - keep for compatibility)
     public function placeOrder(Request $request)
     {
         return $this->store($request);
     }
-    
+
     // My Orders (Legacy)
     public function myOrders()
     {
         return $this->index();
     }
-    
+
     // Wishlist
     public function getWishlist()
     {
         return response()->json([]);
     }
-    
+
     public function addToWishlist(Request $request)
     {
         return response()->json(['message' => 'Use WishlistController']);
     }
-    
+
     public function removeFromWishlist($id)
     {
         return response()->json(['message' => 'Use WishlistController']);
     }
-    
+
     public function profile()
     {
         return response()->json(Auth::user());
     }
-    
+
     public function updateProfile(Request $request)
     {
         $user = Auth::user();

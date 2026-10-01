@@ -81,10 +81,6 @@ export default function Shop() {
     (s) => !filters.search || s.name.toLowerCase().includes(filters.search.toLowerCase())
   );
 
-  const handleAddToCart = (shoe) => {
-    console.log("Added to cart:", shoe.name);
-  };
-
   const scrollToProducts = () => {
     bodyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -120,7 +116,7 @@ export default function Shop() {
           ) : products.length ? (
             <div className={`shoes-grid ${view}`}>
               {products.map((shoe) => (
-                <ProductCard key={shoe.id} shoe={shoe} onAddToCart={handleAddToCart} />
+                <ProductCard key={shoe.id} shoe={shoe} />
               ))}
             </div>
           ) : (

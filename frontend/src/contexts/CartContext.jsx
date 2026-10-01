@@ -16,7 +16,7 @@ export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([])
   const [wishlistItems, setWishlistItems] = useState([])
   const [isLoaded, setIsLoaded] = useState(false)
-  
+
   useEffect(() => {
     if (user) {
       setCartItems(user.cart || [])
@@ -31,33 +31,31 @@ export function CartProvider({ children }) {
 
   const cartString = JSON.stringify(cartItems)
   const wishlistString = JSON.stringify(wishlistItems)
-  
+
   useEffect(() => {
     if (user && isLoaded && cartString !== JSON.stringify(user.cart || [])) {
       updateUserCart(cartItems)
     }
   }, [cartString, user, isLoaded, updateUserCart])
-  
+
   useEffect(() => {
     if (user && isLoaded && wishlistString !== JSON.stringify(user.wishlist || [])) {
       updateUserWishlist(wishlistItems)
     }
   }, [wishlistString, user, isLoaded, updateUserWishlist])
-  
-  // ✅ ADD TO CART - WITH CONSOLE LOGS
+
+  // ADD TO CART
   const addToCart = useCallback((product, quantity = 1) => {
     if (!user) {
-      console.log('❌ No user, cannot add to cart')
       return false
     }
-    
-    console.log('📦 Product received in addToCart:', product)
-    console.log('📦 product.ml_prices:', product.ml_prices)
-    
+
     setCartItems(prev => {
-      const ml = product.ml || 50
+      const isShoe = product.type === 'shoe'
+      // Shoes mein ml nahi hota
+      const ml = isShoe ? null : (product.ml || 50)
       const existing = prev.find(item => item.id === product.id && item.ml === ml)
-      
+
       if (existing) {
         return prev.map(item =>
           item.id === product.id && item.ml === ml
@@ -65,27 +63,22 @@ export function CartProvider({ children }) {
             : item
         )
       }
-      
-      // ✅ Get ml_prices from product
+
       let mlPrices = {}
-      
-      // Check product.ml_prices
+
       if (product.ml_prices && typeof product.ml_prices === 'object') {
         mlPrices = product.ml_prices
-        console.log('✅ Got ml_prices from product.ml_prices:', mlPrices)
       }
-      
-      // If empty, check product.product.ml_prices
+
       if (Object.keys(mlPrices).length === 0 && product.product?.ml_prices) {
         mlPrices = product.product.ml_prices
-        console.log('✅ Got ml_prices from product.product.ml_prices:', mlPrices)
       }
-      
-      console.log('✅ Final mlPrices being stored:', mlPrices)
-      
-      // ✅ Store product with ml_prices
-      const newItem = { 
+
+      const newItem = {
         id: product.id,
+        type: product.type || 'attar', // 'shoe' ya 'attar'
+        shoeId: product.shoeId || null,
+        size: product.size || null,
         name: product.name,
         price: product.price,
         priceNum: product.priceNum || product.price_num || 0,
@@ -97,21 +90,19 @@ export function CartProvider({ children }) {
           ml_prices: mlPrices
         }
       }
-      
-      console.log('✅ New cart item created:', newItem)
-      
+
       return [...prev, newItem]
     })
     return true
   }, [user])
-  
-  // ✅ REMOVE FROM CART
+
+  // REMOVE FROM CART
   const removeFromCart = useCallback((productId) => {
     if (!user) return
     setCartItems(prev => prev.filter(item => item.id !== productId))
   }, [user])
-  
-  // ✅ UPDATE QUANTITY
+
+  // UPDATE QUANTITY
   const updateQuantity = useCallback((productId, quantity) => {
     if (!user) return
     if (quantity <= 0) {
@@ -124,16 +115,16 @@ export function CartProvider({ children }) {
       )
     )
   }, [user, removeFromCart])
-  
-  // ✅ UPDATE CART ML
+
+  // UPDATE CART ML
   const updateCartML = useCallback((productId, newMl, newPrice) => {
     if (!user) return
-    
+
     setCartItems(prev => {
       return prev.map(item => {
         if (item.id === productId) {
           const mlPrices = item.ml_prices || item.product?.ml_prices || {}
-          
+
           return {
             ...item,
             ml: newMl,
@@ -150,14 +141,14 @@ export function CartProvider({ children }) {
       })
     })
   }, [user])
-  
-  // ✅ CLEAR CART
+
+  // CLEAR CART
   const clearCart = useCallback(() => {
     if (!user) return
     setCartItems([])
   }, [user])
-  
-  // ✅ WISHLIST FUNCTIONS
+
+  // WISHLIST FUNCTIONS
   const addToWishlist = useCallback((product) => {
     if (!user) return false
     setWishlistItems(prev => {
@@ -166,19 +157,19 @@ export function CartProvider({ children }) {
     })
     return true
   }, [user])
-  
+
   const removeFromWishlist = useCallback((productId) => {
     if (!user) return
     setWishlistItems(prev => prev.filter(item => item.id !== productId))
   }, [user])
-  
+
   const moveToCart = useCallback((product) => {
     if (!user) return
     addToCart(product, 1)
     removeFromWishlist(product.id)
   }, [user, addToCart, removeFromWishlist])
-  
-  // ✅ GET CART TOTAL
+
+  // GET CART TOTAL
   const getCartTotal = useCallback(() => {
     return cartItems.reduce((total, item) => {
       const price = item.priceNum || 0
@@ -186,12 +177,12 @@ export function CartProvider({ children }) {
       return total + (price * qty)
     }, 0)
   }, [cartItems])
-  
-  // ✅ GET CART COUNT
+
+  // GET CART COUNT
   const getCartCount = useCallback(() => {
     return cartItems.reduce((count, item) => count + (item.quantity || 0), 0)
   }, [cartItems])
-  
+
   const value = {
     cartItems,
     wishlistItems,
@@ -206,7 +197,7 @@ export function CartProvider({ children }) {
     getCartTotal,
     getCartCount
   }
-  
+
   return (
     <CartContext.Provider value={value}>
       {children}

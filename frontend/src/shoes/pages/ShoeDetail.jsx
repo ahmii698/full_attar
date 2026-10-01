@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { API_URL, STORAGE_URL } from "../../../config";
+import { useCart } from "../../contexts/CartContext";
 import "../styles/shoe-detail.css";
 
 // Sizes hamesha yehi hain (DB mein bhi sirf 3 se 10 allowed hain)
@@ -50,6 +51,7 @@ const FEATURES = [
 
 export default function ShoeDetail() {
   const { id } = useParams();
+  const { addToCart, addToWishlist, removeFromWishlist, wishlistItems } = useCart();
 
   const [shoe, setShoe] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,7 +60,7 @@ export default function ShoeDetail() {
   const [active, setActive] = useState(0);
   const [size, setSize] = useState(null);
   const [qty, setQty] = useState(1);
-  const [wishlisted, setWishlisted] = useState(false);
+  const [added, setAdded] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -70,6 +72,7 @@ export default function ShoeDetail() {
     setActive(0);
     setSize(null);
     setQty(1);
+    setAdded(false);
     setError("");
 
     fetch(`${API_URL}/shoes/${id}`, { signal: controller.signal })
@@ -116,6 +119,11 @@ export default function ShoeDetail() {
   }
 
   const images = shoe.images;
+  const priceNum = Number(shoe.price) || 0;
+
+  // Wishlist id wahi hai jo ProductCard mein hai, taake dil dono jagah sync rahe
+  const wishlistId = `shoe-${shoe.id}`;
+  const wishlisted = wishlistItems.some((item) => item.id === wishlistId);
 
   const prev = () => setActive((i) => (i - 1 + images.length) % images.length);
   const next = () => setActive((i) => (i + 1) % images.length);
@@ -125,14 +133,49 @@ export default function ShoeDetail() {
       setError("Please select a size");
       return;
     }
+
+    // Har size ka alag cart item (shoe-3-8 = shoe 3, size 8)
+    const ok = addToCart(
+      {
+        id: `${wishlistId}-${size}`,
+        type: "shoe",
+        shoeId: shoe.id,
+        size,
+        name: `${shoe.name} (Size ${size})`,
+        price: `Rs. ${priceNum.toLocaleString()}`,
+        priceNum,
+        image: images[0] || "",
+      },
+      qty
+    );
+
+    if (!ok) {
+      setError("Pehle login karein");
+      return;
+    }
+
     setError("");
-    console.log("Added to cart:", { id: shoe.id, name: shoe.name, size, qty });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   const handleWishlist = () => {
-    const nextState = !wishlisted;
-    setWishlisted(nextState);
-    console.log(nextState ? "Added to wishlist:" : "Removed from wishlist:", shoe.name);
+    if (wishlisted) {
+      removeFromWishlist(wishlistId);
+      return;
+    }
+
+    const ok = addToWishlist({
+      id: wishlistId,
+      type: "shoe",
+      shoeId: shoe.id,
+      name: shoe.name,
+      price: `Rs. ${priceNum.toLocaleString()}`,
+      priceNum,
+      image: images[0] || "",
+    });
+
+    if (!ok) setError("Pehle login karein");
   };
 
   const description =
@@ -188,7 +231,7 @@ export default function ShoeDetail() {
           <section className="sd-info">
             <h1 className="sd-name">{shoe.name}</h1>
             <p className="sd-sub">{shoe.sub}</p>
-            <p className="sd-price">Rs. {shoe.price.toLocaleString()}</p>
+            <p className="sd-price">Rs. {priceNum.toLocaleString()}</p>
             <p className="sd-desc">{description}</p>
 
             {/* Size */}
@@ -229,7 +272,7 @@ export default function ShoeDetail() {
             {/* Actions */}
             <button className="sd-btn sd-btn--gold" onClick={handleAddToCart}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4h2l2.4 11h11l2-8H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM17 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" /></svg>
-              ADD TO CART
+              {added ? "ADDED ✓" : "ADD TO CART"}
             </button>
 
             <button

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'  // ✅ useLocation add kiya
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { 
   FiSearch, FiUser, FiShoppingCart, FiMenu, FiX, FiHeart, FiLogOut,
   FiGrid, FiWind, FiTag, FiStar, FiUsers
@@ -11,7 +11,7 @@ import { API_URL } from '../../config'
 
 function Navbar() {
   const navigate = useNavigate()
-  const location = useLocation()  // ✅ current page check karne ke liye
+  const location = useLocation()
   const { user, logout } = useAuth()
   const { getCartCount, wishlistItems } = useCart()
   
@@ -224,7 +224,6 @@ function Navbar() {
     }
   }, [])
 
-  // ✅ Check if current page is home
   const isHomePage = location.pathname === '/'
 
   return (
@@ -405,6 +404,11 @@ function Navbar() {
               </div>
             )}
           </div>
+
+          {/* ✅ SHOES - SHOP ke barabar */}
+          <NavLink to="/shoes" className={({ isActive }) => isActive ? 'bottom-nav-link active' : 'bottom-nav-link'}>
+            SHOES
+          </NavLink>
           
           <NavLink to="/best-sellers" className={({ isActive }) => isActive ? 'bottom-nav-link active' : 'bottom-nav-link'}>
             BEST SELLERS
@@ -424,7 +428,7 @@ function Navbar() {
         </div>
       </div>
 
-      {/* ✅ SPACER - ONLY ON NON-HOME PAGES */}
+      {/* SPACER - ONLY ON NON-HOME PAGES */}
       {!isHomePage && <div className="navbar-spacer"></div>}
       
       {/* ===== MOBILE MENU ===== */}
@@ -432,6 +436,7 @@ function Navbar() {
         <div className="mobile-menu">
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>HOME</Link>
           <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)}>SHOP</Link>
+          <Link to="/shoes" onClick={() => setIsMobileMenuOpen(false)}>SHOES</Link>
           <Link to="/best-sellers" onClick={() => setIsMobileMenuOpen(false)}>BEST SELLERS</Link>
           <Link to="/deals" onClick={() => setIsMobileMenuOpen(false)}>DEALS</Link>
           <Link to="/blogs" onClick={() => setIsMobileMenuOpen(false)}>BLOGS</Link>
