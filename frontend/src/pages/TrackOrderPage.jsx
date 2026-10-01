@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { FaSearch, FaCheckCircle, FaBox, FaTruck, FaShippingFast, FaClipboardList, FaExclamationTriangle } from 'react-icons/fa'
-import { API_URL } from '../../config'  // ✅ IMPORT FROM CONFIG
+import { API_URL } from '../../config'
 import './TrackOrderPage.css'
+
+// Shoe item pehchanne ke liye (backend ml=3 bhej de tab bhi galat na dikhe)
+const isShoeItem = (item) =>
+  item.item_type === 'shoe' || !!item.shoe_id || !!item.size
 
 function TrackOrderPage() {
   const [orderId, setOrderId] = useState('')
@@ -25,7 +29,7 @@ function TrackOrderPage() {
     try {
       const token = localStorage.getItem('token')
       
-      const response = await fetch(`${API_URL}/orders/track/${orderId.trim()}`, {  // ✅ USING API_URL
+      const response = await fetch(`${API_URL}/orders/track/${orderId.trim()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +49,7 @@ function TrackOrderPage() {
       }
       
       if (token) {
-        const userOrdersRes = await fetch(`${API_URL}/orders`, {  // ✅ USING API_URL
+        const userOrdersRes = await fetch(`${API_URL}/orders`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -131,7 +135,7 @@ function TrackOrderPage() {
     return colorMap[orderStatus.status] || '#d4af37'
   }
   
-  // ✅ Calculate grand total (subtotal + shipping)
+  // Calculate grand total (subtotal + shipping)
   const getGrandTotal = (order) => {
     const subtotal = Number(order.total_amount) || 0
     const shipping = 200
@@ -243,16 +247,21 @@ function TrackOrderPage() {
             {orderStatus.items && orderStatus.items.length > 0 && (
               <div className="order-items">
                 <h4>Items Ordered</h4>
-                {orderStatus.items.map((item, idx) => (
-                  <div key={idx} className="order-item">
-                    <div className="item-info">
-                      <span className="item-name">{item.product_name || item.name}</span>
-                      <span className="item-qty">Qty: {item.quantity}</span>
-                      {item.ml && <span className="item-ml">{item.ml}ml</span>}
+                {orderStatus.items.map((item, idx) => {
+                  const shoe = isShoeItem(item)
+                  return (
+                    <div key={idx} className="order-item">
+                      <div className="item-info">
+                        <span className="item-name">{item.product_name || item.name}</span>
+                        <span className="item-qty">Qty: {item.quantity}</span>
+                        {shoe
+                          ? item.size && <span className="item-ml">Size {item.size}</span>
+                          : item.ml && <span className="item-ml">{item.ml}ml</span>}
+                      </div>
+                      <div className="item-price">Rs. {Number(item.price * item.quantity).toLocaleString()}</div>
                     </div>
-                    <div className="item-price">Rs. {Number(item.price * item.quantity).toLocaleString()}</div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
             
